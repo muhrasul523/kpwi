@@ -456,7 +456,7 @@
 
     <script>
         // CONFIGURASI BACKEND - PASTIKAN MENGGANTI INI JIKA SUDAH PUNYA API GAS
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbzM3kPGssQtttMFAbM_U1T-q26_3pXWPC-C5thrCV7sohSRHP4AH2aUP_f_2LZr8G8/exec"; 
+        const GAS_URL = "ISI_URL_DEPLOY_GAS_ANDA_DISINI"; 
         
         // Ubah jadi FALSE jika aplikasi sudah terhubung ke database Google Sheet yang asli
         const IS_PREVIEW = true; 
@@ -531,8 +531,12 @@
             if (qsPage === 'mandiri') {
                 document.getElementById('main-nav').classList.add('hidden');
                 switchView('mandiri-flow');
-            } else if (qsPage === 'scanner') {
+            } else if (qsPage === 'scanner' || qsPage === 'presensi') {
                 switchView('scanner');
+            } else if (qsPage === 'monitor') {
+                switchView('monitor');
+            } else if (qsPage === 'admin') {
+                switchView('admin');
             } else {
                 switchView('menu');
             }
@@ -929,11 +933,12 @@
         }
 
         function generateSystemURLs() {
-            let linkUtama = db.config.find(c=>c.Key==='link_utama')?.Value || baseUrl;
-            let linkMandiri = db.config.find(c=>c.Key==='link_presensi_mandiri')?.Value || (baseUrl + '?page=mandiri');
+            let baseNoParams = window.location.href.split('?')[0];
+            let linkUtama = db.config.find(c=>c.Key==='link_utama')?.Value || baseNoParams;
+            let linkMandiri = db.config.find(c=>c.Key==='link_presensi_mandiri')?.Value || (baseNoParams + '?page=mandiri');
             document.getElementById('url-main').value = linkUtama; document.getElementById('url-mandiri').value = linkMandiri;
             
-            new QRious({ element: document.getElementById('qr-monitor-canvas'), value: 'https://s.wahdah.or.id/kpwi-presensimandiri', size: 300, level: 'H', foreground: '#1e3a8a' });
+            new QRious({ element: document.getElementById('qr-monitor-canvas'), value: linkMandiri, size: 300, level: 'H', foreground: '#1e3a8a' });
         }
 
         function updateMonitorStats() {
