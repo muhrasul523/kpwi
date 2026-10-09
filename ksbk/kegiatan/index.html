@@ -5,23 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Kegiatan KSBK</title>
     
-    <!-- Meta Tags untuk Preview WhatsApp (Open Graph) -->
-    <!-- Wajib Absolute URL karena WhatsApp tidak bisa membaca relative URL pada saat preview -->
+    <!-- Meta Tags WA Preview -->
     <meta property="og:title" content="Monitoring Kinerja Pegawai KSBK">
     <meta property="og:description" content="Aplikasi Input Kegiatan dan Monitoring Kinerja Pegawai Pusat.">
+    <!-- Wajib absolute URL untuk image WhatsApp Preview -->
     <meta property="og:image" content="https://kpwi.github.io/monitoring_kinerja_pegawai.png">
     <meta property="og:url" content="https://kpwi.github.io/presensi/">
     <meta property="og:type" content="website">
     
-    <!-- Favicon -->
+    <!-- Favicon (Memastikan logo GitHub) -->
     <link rel="icon" type="image/png" href="../logo_wahdah_islamiyah.png">
 
-    <!-- Fonts & Icons -->
+    <!-- Fonts & Dependencies -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
-    <!-- Theme Engine Script -->
+    <!-- Script Deteksi Tema (Mencegah flicker layar) -->
     <script>
         const getPreferredTheme = () => {
             if (localStorage.getItem('ksbk-theme')) return localStorage.getItem('ksbk-theme');
@@ -31,95 +31,103 @@
     </script>
 
     <style>
-        /* Definisi Palet Warna Identitas & Tema */
         :root {
-            /* Light Theme (Base) */
-            --bg-body: #f4f7fa;
+            /* Tema Biru Terang (Light Mode) */
+            --bg-body: #F4F7FA;
             --bg-card: #ffffff;
             --text-main: #0D223A;
-            --text-muted: #3B7A57;
+            --text-muted: #5a6b82;
             --border-color: #C8E6EB;
             --input-bg: #ffffff;
-            --table-hover: #f1f8f9;
+            --table-hover: #f1f8fa;
             --table-odd: #ffffff;
-            --table-even: #f9fbfd;
-            --table-header-bg: #C8E6EB;
-            --theme-color: #2E8B57; /* Green Brand */
-            --theme-hover: #3B7A57;
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --shadow-color: rgba(13, 34, 58, 0.08);
+            --table-even: #f8fbff;
+            --table-header-bg: #e5eff5;
             
-            /* Warna Identitas Spesifik */
-            --brand-dark: #1B365D;
-            --brand-accent: #FFD700;
+            /* Warna Identitas Brand KSBK */
+            --brand-dark: #1B365D;    /* Navy Blue - Logo */
+            --brand-deep: #0D223A;    /* Very Dark Blue */
+            --brand-light: #C8E6EB;   /* Ice Blue */
+            --theme-color: #1B365D;   /* Main button color */
+            --theme-hover: #264a7f;
+            
+            /* Aksen */
+            --brand-accent: #FFD700;  /* Gold */
+            --brand-aqua: #85C1B3;    /* Tosca Green */
             --brand-orange: #C67D17;
             --brand-red: #E52B2A;
-            --brand-aqua: #85C1B3;
+            
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --shadow-color: rgba(13, 34, 58, 0.08);
         }
         
         [data-bs-theme="dark"] {
-            /* Dark Theme Override */
-            --bg-body: #0a1423; /* Darker than brand dark blue */
-            --bg-card: #0D223A;
-            --text-main: #ffffff;
-            --text-muted: #85C1B3;
-            --border-color: #1B365D;
-            --input-bg: #0b1c30;
-            --table-hover: #162c4a;
+            /* Tema Gelap dengan Kontras Tinggi (Dark Mode) */
+            --bg-body: #050f1a;       /* Background sangat gelap agar card terlihat */
+            --bg-card: #0D223A;       /* Brand Deep Blue untuk wadah form/card */
+            --text-main: #F4F7FA;     /* Teks sangat putih/cerah */
+            --text-muted: #85C1B3;    /* Aksen tosca lembut untuk subteks */
+            --border-color: #1a3250;  
+            --input-bg: #091829;
+            --table-hover: #122c4a;
             --table-odd: #0D223A;
-            --table-even: #0f2743;
-            --table-header-bg: #1B365D;
-            --theme-color: #2E8B57;
-            --theme-hover: #85C1B3;
+            --table-even: #0a1b2e;
+            --table-header-bg: #132a45;
+            
+            --theme-color: #3b82f6;   /* Terangkan tombol menjadi biru cerah di dark mode */
+            --theme-hover: #60a5fa;
+            
             --glass-bg: rgba(13, 34, 58, 0.90);
-            --shadow-color: rgba(0, 0, 0, 0.5);
+            --shadow-color: rgba(0, 0, 0, 0.6);
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.3s, color 0.3s; margin: 0; padding: 0; }
         
-        /* Layouts & Backgrounds */
+        /* Layout Login Box 100% Center (Perbaikan letak form) */
         .login-wrapper { 
-            min-height: 100vh; display: flex; align-items: center; justify-content: center; 
-            background: linear-gradient(135deg, var(--brand-dark), #0D223A, var(--theme-color));
+            width: 100vw; 
+            min-height: 100vh; 
+            display: flex; align-items: center; justify-content: center; 
+            background: linear-gradient(135deg, var(--brand-dark), var(--brand-deep), var(--brand-aqua));
             background-size: 200% 200%;
             animation: gradientMove 12s ease infinite;
             padding: 20px;
+            margin: 0;
+            position: absolute; top: 0; left: 0;
         }
         @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         
+        /* Elemen Form & UI modern */
         .card-custom { background: var(--bg-card); border-radius: 20px; box-shadow: 0 10px 30px var(--shadow-color); border: 1px solid var(--border-color); transition: background-color 0.3s, border-color 0.3s; }
         .glass-effect { backdrop-filter: blur(16px); background: var(--glass-bg); }
         
-        /* Inputs & Buttons */
         .input-elegant { border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 16px; width: 100%; transition: all 0.3s; background-color: var(--input-bg); color: var(--text-main); }
-        .input-elegant:focus { outline: none; box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.15); border-color: var(--theme-color); }
-        .input-elegant.val-success { border-color: var(--theme-color) !important; }
+        .input-elegant:focus { outline: none; box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.15); border-color: var(--theme-color); }
+        .input-elegant.val-success { border-color: #28a745 !important; }
         .input-elegant.val-error { border-color: var(--brand-red) !important; }
         
         .btn-theme { background-color: var(--theme-color); color: white; border: none; transition: all 0.3s ease; }
-        .btn-theme:hover { background-color: var(--theme-hover); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(46, 139, 87, 0.3); }
-        .btn-brand-dark { background-color: var(--brand-dark); color: white; }
-        .btn-brand-dark:hover { background-color: #12243d; color: white; }
+        .btn-theme:hover { background-color: var(--theme-hover); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(27, 54, 93, 0.3); }
         
-        /* Custom Navbar */
-        .navbar-custom { background: var(--brand-dark); border-bottom: 2px solid var(--theme-color); }
+        /* Navbar */
+        .navbar-custom { background: var(--brand-dark); border-bottom: 2px solid var(--brand-accent); }
         
         /* Dashboard Stat Cards */
         .stat-card { border-radius: 16px; padding: 24px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 20px var(--shadow-color); border: none; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
         .stat-card::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%); pointer-events: none; }
-        .stat-card h3 { margin: 0; font-weight: 800; font-size: 2rem; position: relative; z-index: 1;}
+        .stat-card h3 { margin: 0; font-weight: 800; font-size: 2.2rem; position: relative; z-index: 1;}
         .stat-card p { margin: 0; font-size: 0.95rem; opacity: 0.9; font-weight: 500; position: relative; z-index: 1;}
         .stat-icon { font-size: 3.5rem; position: absolute; right: -10px; bottom: -15px; opacity: 0.25; transform: rotate(-10deg); transition: transform 0.3s; }
         .stat-card:hover .stat-icon { transform: rotate(0deg) scale(1.1); }
         
-        /* Gradients for Stats based on requested colors */
-        .bg-grad-total { background: linear-gradient(135deg, var(--brand-dark), #0D223A); }
-        .bg-grad-online { background: linear-gradient(135deg, var(--theme-color), var(--theme-hover)); }
-        .bg-grad-offline { background: linear-gradient(135deg, var(--brand-orange), var(--brand-accent)); color: black !important; }
-        .bg-grad-hybrid { background: linear-gradient(135deg, var(--brand-aqua), var(--theme-hover)); }
+        /* Gradients Stat (Menyesuaikan dengan biru & warna sekunder) */
+        .bg-grad-total { background: linear-gradient(135deg, var(--brand-dark), #102340); }
+        .bg-grad-online { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+        .bg-grad-offline { background: linear-gradient(135deg, var(--brand-orange), #d97706); }
+        .bg-grad-hybrid { background: linear-gradient(135deg, var(--brand-aqua), #059669); }
 
-        /* Tables & Tabs */
+        /* Tables & Tabs (Fixing contrast and zebra style) */
         .table { color: var(--text-main); border-color: var(--border-color); }
         .table-striped-custom > tbody > tr:nth-of-type(odd) > td { background-color: var(--table-odd); border-bottom-color: var(--border-color); }
         .table-striped-custom > tbody > tr:nth-of-type(even) > td { background-color: var(--table-even); border-bottom-color: var(--border-color); }
@@ -132,14 +140,14 @@
         .nav-tabs .nav-link.active { color: var(--theme-color); background-color: transparent; border-bottom: 3px solid var(--theme-color); }
         .nav-tabs { border-bottom: 1px solid var(--border-color); }
 
-        /* Loading Overlay */
+        /* Loading Overlay Simple & Cepat */
         #loadingOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--glass-bg); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center;
-            z-index: 9999; visibility: hidden; opacity: 0; transition: opacity 0.3s; flex-direction: column;
+            background: var(--glass-bg); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center;
+            z-index: 9999; visibility: hidden; opacity: 0; transition: opacity 0.2s; flex-direction: column;
         }
         #loadingOverlay.show { visibility: visible; opacity: 1; }
-        .spinner { width: 50px; height: 50px; border: 4px solid var(--border-color); border-top: 4px solid var(--theme-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top: 4px solid var(--theme-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         .app-section { display: none; }
@@ -152,36 +160,41 @@
             .card-custom { box-shadow: none; border: 1px solid #ddd; }
             .stat-card { background: white; color: black; border: 1px solid #ccc; box-shadow: none; }
             .stat-card h3, .stat-card p { color: black !important; }
+            .table-striped-custom > tbody > tr > td { background-color: white !important; color: black !important; border-bottom: 1px solid #ddd;}
+            .table-custom-header > th { background-color: #f1f1f1 !important; color: black !important;}
         }
     </style>
 </head>
 <body>
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay">
-        <div class="spinner mb-3"></div>
-        <h5 id="loaderText" class="fw-bold" style="color: var(--theme-color);">Memproses...</h5>
+        <div class="spinner mb-2"></div>
+        <h6 id="loaderText" class="fw-bold" style="color: var(--theme-color);">Memproses...</h6>
     </div>
 
     <div id="sec-login" class="app-section active login-wrapper">
         <div class="col-11 col-md-5 col-lg-4">
-            <div class="card-custom glass-effect p-5 text-center border-0">
+            <div class="card-custom glass-effect p-4 p-md-5 text-center border-0 shadow-lg">
                 <div class="mb-4">
                     <div style="background: var(--bg-card); padding: 15px; border-radius: 24px; display: inline-block; box-shadow: 0 4px 15px var(--shadow-color); margin-bottom: 20px;">
-                        <img src="../logo_wahdah_islamiyah.png" alt="Logo" class="img-fluid mx-auto" style="max-height: 120px; object-fit: contain;">
+                        <!-- Logo menggunakan path standar github, dengan fallback jika gambar gagal dimuat -->
+                        <img src="../logo_wahdah_islamiyah.png" alt="Logo KSBK" class="img-fluid mx-auto" style="max-height: 110px; object-fit: contain;" onerror="this.onerror=null; this.src='https://placehold.co/110x110/1B365D/FFF?text=Logo';">
                     </div>
-                    <h3 class="fw-bold mb-1" style="color: var(--theme-color);">PORTAL KSBK</h3>
+                    <h4 class="fw-bold mb-1" style="color: var(--brand-dark); text-shadow: 0px 1px 2px rgba(255,255,255,0.5);">PORTAL KSBK</h4>
                     <p class="small mb-0 fw-medium" style="color: var(--text-muted);">Sistem Monitoring Kinerja Pegawai</p>
                 </div>
+                
+                <!-- Hanya Form WA -->
                 <form id="formLogin" onsubmit="handleLogin(event)">
                     <div class="mb-4 text-start">
                         <label class="form-label small fw-semibold">Nomor WhatsApp Anda</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-whatsapp text-success"></i></span>
-                            <input type="tel" id="loginWA" class="input-elegant border-start-0 rounded-start-0 fs-5 fw-bold" placeholder="Contoh: 628..." required oninput="formatWA(this)" autocomplete="off">
+                        <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                            <span class="input-group-text border-0" style="background-color: var(--brand-light); color: var(--brand-dark);"><i class="bi bi-whatsapp"></i></span>
+                            <input type="tel" id="loginWA" class="input-elegant border-0 rounded-0 fs-5 fw-bold" placeholder="Contoh: 628..." required oninput="formatWA(this)" autocomplete="off">
                         </div>
+                        <div class="form-text small opacity-75 mt-2">Awalan 08 akan otomatis menjadi 628</div>
                     </div>
-                    <button type="submit" class="btn btn-theme w-100 py-3 fw-bold rounded-pill shadow-sm fs-6">Masuk <i class="bi bi-box-arrow-in-right ms-2"></i></button>
+                    <button type="submit" class="btn btn-theme w-100 py-3 fw-bold rounded-pill shadow fs-6">Masuk <i class="bi bi-box-arrow-in-right ms-2"></i></button>
                 </form>
             </div>
         </div>
@@ -190,11 +203,11 @@
     <div id="sec-bidang" class="app-section container mt-5 pt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card-custom p-5 text-center">
-                    <h4 class="fw-bold mb-4" style="color: var(--theme-color);">Pilih Bidang Kerja</h4>
-                    <p class="text-muted mb-4">Akun Anda memiliki akses ganda. Pilih ruang kerja:</p>
+                <div class="card-custom p-5 text-center shadow-lg">
+                    <h4 class="fw-bold mb-3" style="color: var(--theme-color);"><i class="bi bi-diagram-3-fill me-2"></i>Pilih Bidang Kerja</h4>
+                    <p class="text-muted mb-4">Akun Anda terkait dengan beberapa ruang kerja.</p>
                     <div id="bidangButtons" class="d-grid gap-3"></div>
-                    <button class="btn btn-outline-secondary mt-4 w-100 rounded-pill" onclick="logout()"><i class="bi bi-arrow-left"></i> Kembali</button>
+                    <button class="btn btn-outline-danger mt-4 w-100 rounded-pill" onclick="logout()"><i class="bi bi-arrow-left"></i> Batal / Keluar</button>
                 </div>
             </div>
         </div>
@@ -202,25 +215,26 @@
 
     <div id="sec-dashboard" class="app-section">
         <!-- Navbar Premium -->
-        <nav class="navbar navbar-custom shadow-sm mb-4 py-3 no-print">
+        <nav class="navbar navbar-custom shadow mb-4 py-2 no-print">
             <div class="container-fluid px-md-4">
                 <span class="navbar-brand mb-0 h5 fw-bold text-white d-flex align-items-center">
-                    <img src="../logo_wahdah_islamiyah.png" alt="Logo" class="me-2 bg-white rounded-circle p-1" style="height: 38px; width: 38px; object-fit: contain;">
-                    <span class="d-none d-sm-inline">DASHBOARD KSBK</span>
+                    <img src="../logo_wahdah_islamiyah.png" alt="Logo" class="me-2 bg-white rounded-circle shadow-sm" style="height: 42px; width: 42px; padding: 4px; object-fit: contain;" onerror="this.onerror=null; this.src='https://placehold.co/42x42/FFF/1B365D?text=Logo';">
+                    <span class="d-none d-sm-inline tracking-tight">DASHBOARD KSBK</span>
                 </span>
-                <div class="d-flex align-items-center gap-2 gap-md-3">
-                    
-                    <!-- Info Badge & Ganti Bidang -->
-                    <div class="d-none d-lg-flex flex-column align-items-end me-2 text-white" style="line-height:1.2">
-                        <span class="small fw-bold" id="lblUser">User</span>
-                        <span class="small text-warning" style="font-size:11px;" id="lblBidang">Bidang</span>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Info Pengguna -->
+                    <div class="d-none d-lg-flex flex-column align-items-end text-white" style="line-height:1.2">
+                        <span class="small fw-bold text-uppercase" id="lblUser">User</span>
+                        <span class="small" style="font-size:11px; color: var(--brand-accent);" id="lblBidang">Bidang</span>
                     </div>
 
-                    <button class="btn btn-sm btn-outline-light rounded-pill px-3" onclick="showSection('sec-bidang')" id="btnGantiBidang" style="display:none;" title="Ganti Bidang Kerja">
+                    <!-- Tombol Ganti Bidang & Tema (Toolbar Kanan) -->
+                    <button class="btn btn-sm btn-outline-light rounded-pill px-3 shadow-sm" onclick="showSection('sec-bidang')" id="btnGantiBidang" style="display:none;" title="Ganti Bidang Kerja">
                         <i class="bi bi-arrow-left-right me-1"></i> <span class="d-none d-md-inline">Ganti Bidang</span>
                     </button>
                     
-                    <button class="btn btn-sm btn-outline-light rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" onclick="toggleTheme()" title="Ganti Tema">
+                    <button class="btn btn-sm btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; color: var(--brand-dark);" onclick="toggleTheme()" title="Ganti Tema">
                         <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
                     </button>
 
@@ -246,7 +260,7 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="stat-card bg-grad-offline h-100">
+                    <div class="stat-card bg-grad-offline h-100 text-dark">
                         <div><p>Mode Offline</p><h3 id="stat-offline">0</h3></div>
                         <i class="bi bi-buildings stat-icon"></i>
                     </div>
@@ -260,7 +274,7 @@
             </div>
 
             <!-- Main Tabs Container -->
-            <div class="card-custom p-2 p-md-4 mb-4 shadow-sm">
+            <div class="card-custom p-3 p-md-4 mb-4 shadow-sm">
                 <!-- Tab Headers -->
                 <ul class="nav nav-tabs no-print mb-4" id="appTabs" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -273,41 +287,49 @@
 
                 <div class="tab-content" id="appTabsContent">
                     
-                    <!-- TAB REKAP DATA -->
                     <div class="tab-pane fade show active" id="content-data" role="tabpanel">
-                        <!-- Toolbar Controls -->
-                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3 no-print">
-                            <h5 class="fw-bold mb-0" style="color: var(--brand-dark);"><i class="bi bi-card-list"></i> Daftar Kinerja</h5>
-                            <div class="d-flex align-items-center gap-2 flex-wrap flex-grow-1 justify-content-end">
-                                
-                                <select id="filterBulan" class="form-select shadow-sm" style="max-width:140px; background-color: var(--input-bg); color: var(--text-main); border-color: var(--border-color);" onchange="applyFilter()">
-                                    <option value="">Semua Bulan</option>
-                                    <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
-                                    <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
-                                    <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
-                                    <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
-                                </select>
+                        <!-- Toolbar Controls: Dirombak agar fleksibel & responsif -->
+                        <div class="row align-items-center mb-3 g-2 no-print">
+                            <div class="col-12 col-md-3">
+                                <h5 class="fw-bold mb-0" style="color: var(--brand-dark);"><i class="bi bi-card-list"></i> Daftar Kinerja</h5>
+                            </div>
+                            
+                            <!-- Area Filter & Search (Mencegah elemen keluar batas di layar kecil) -->
+                            <div class="col-12 col-md-9">
+                                <div class="d-flex flex-wrap justify-content-md-end gap-2 align-items-center">
+                                    
+                                    <select id="filterBulan" class="form-select shadow-sm w-auto" style="min-width: 130px; background-color: var(--input-bg); color: var(--text-main); border-color: var(--border-color);" onchange="applyFilter()">
+                                        <option value="">Semua Bulan</option>
+                                        <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
+                                        <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
+                                        <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
+                                        <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                                    </select>
 
-                                <div class="input-group shadow-sm" style="max-width: 250px;">
-                                    <span class="input-group-text bg-transparent"><i class="bi bi-search" style="color:var(--text-muted)"></i></span>
-                                    <input type="text" id="searchBox" class="input-elegant border-start-0 rounded-start-0 m-0 py-1" style="height:38px;" placeholder="Pencarian..." onkeyup="applyFilter()">
+                                    <div class="input-group shadow-sm" style="max-width: 250px;">
+                                        <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                        <input type="text" id="searchBox" class="form-control border-start-0 ps-0" placeholder="Cari nama, skuo..." onkeyup="applyFilter()">
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-secondary shadow-sm" onclick="window.print()" title="Cetak PDF"><i class="bi bi-printer"></i></button>
+                                        <button class="btn btn-theme shadow-sm" onclick="loadTableData()" title="Segarkan Data"><i class="bi bi-arrow-clockwise"></i></button>
+                                    </div>
                                 </div>
-                                
-                                <button class="btn btn-outline-secondary shadow-sm" onclick="window.print()" title="Cetak PDF"><i class="bi bi-printer"></i></button>
-                                <button class="btn btn-theme shadow-sm" onclick="loadTableData()"><i class="bi bi-arrow-clockwise"></i></button>
                             </div>
                         </div>
 
-                        <div class="table-responsive rounded border mb-3" style="min-height: 300px; border-color: var(--border-color) !important;">
-                            <table class="table align-middle border-0 table-striped-custom mb-0 text-center">
+                        <!-- Area Tabel Data -->
+                        <div class="table-responsive rounded border mb-3" style="min-height: 350px; border-color: var(--border-color) !important;">
+                            <table class="table align-middle border-0 table-striped-custom mb-0 text-center text-nowrap">
                                 <thead>
                                     <tr class="table-custom-header">
                                         <th class="py-3" style="width:5%">No</th>
-                                        <th class="py-3" style="width:12%" onclick="setSort('Tanggal')">Tanggal <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
+                                        <th class="py-3" style="width:15%" onclick="setSort('Tanggal')">Tanggal <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
                                         <th class="py-3 text-start" style="width:25%" onclick="setSort('Nama_Kegiatan')">Nama Kegiatan <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
                                         <th class="py-3" style="width:20%" onclick="setSort('SKUO')">SKUO <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
                                         <th class="py-3" style="width:10%" onclick="setSort('Mode')">Mode <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
-                                        <th class="py-3 text-start" style="width:18%">Keterangan</th>
+                                        <th class="py-3 text-start" style="width:15%">Keterangan</th>
                                         <th class="py-3 no-print" style="width:10%">Aksi</th>
                                     </tr>
                                 </thead>
@@ -318,16 +340,15 @@
                         </div>
 
                         <!-- Pagination Section -->
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 no-print">
-                            <span class="small fw-semibold" style="color: var(--text-muted);" id="pageInfo">Menampilkan 0 data</span>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 no-print mt-2">
+                            <span class="small fw-semibold text-muted" id="pageInfo">Menampilkan 0 data</span>
                             <div class="btn-group shadow-sm">
-                                <button class="btn btn-sm btn-outline-secondary" onclick="prevPage()"><i class="bi bi-chevron-left"></i> Prev</button>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="nextPage()">Next <i class="bi bi-chevron-right"></i></button>
+                                <button class="btn btn-sm btn-outline-secondary px-3" onclick="prevPage()"><i class="bi bi-chevron-left"></i> Prev</button>
+                                <button class="btn btn-sm btn-outline-secondary px-3" onclick="nextPage()">Next <i class="bi bi-chevron-right"></i></button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB FORM INPUT -->
                     <div class="tab-pane fade" id="content-input" role="tabpanel">
                         <div class="row">
                             <div class="col-lg-8 mx-auto">
@@ -336,22 +357,23 @@
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3 mb-md-0">
                                             <label class="form-label small fw-bold" style="color: var(--brand-orange);">SKUO Bidang *</label>
-                                            <select id="inpSkuo" class="input-elegant" required onchange="validateField(this)">
+                                            <select id="inpSkuo" class="input-elegant shadow-sm" required onchange="validateField(this)">
                                                 <option value="">-- Pilih SKUO --</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label small fw-bold">Tanggal Pelaksanaan *</label>
-                                            <input type="date" id="inpTanggal" class="input-elegant" required onchange="validateField(this)">
+                                            <!-- Menggunakan type date murni bawaan browser -->
+                                            <input type="date" id="inpTanggal" class="input-elegant shadow-sm" required onchange="validateField(this)">
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label small fw-bold">Nama Kegiatan *</label>
-                                        <input type="text" id="inpNama" class="input-elegant" required placeholder="KETIK NAMA KEGIATAN" oninput="this.value = this.value.toUpperCase(); validateField(this)">
+                                        <input type="text" id="inpNama" class="input-elegant shadow-sm" required placeholder="KETIK NAMA KEGIATAN" oninput="this.value = this.value.toUpperCase(); validateField(this)">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label small fw-bold">Mode Kegiatan *</label>
-                                        <select id="inpMode" class="input-elegant" required onchange="validateField(this)">
+                                        <select id="inpMode" class="input-elegant shadow-sm" required onchange="validateField(this)">
                                             <option value="">-- Pilih Mode --</option>
                                             <option value="Online">Online</option>
                                             <option value="Offline">Offline</option>
@@ -360,10 +382,10 @@
                                     </div>
                                     <div class="mb-4">
                                         <label class="form-label small fw-bold">Keterangan / Hasil (Opsional)</label>
-                                        <textarea id="inpKeterangan" class="input-elegant" rows="3" placeholder="Catatan tambahan hasil kegiatan..."></textarea>
+                                        <textarea id="inpKeterangan" class="input-elegant shadow-sm" rows="3" placeholder="Catatan tambahan hasil kegiatan..."></textarea>
                                     </div>
-                                    <div class="text-end pt-3 border-top">
-                                        <button type="button" class="btn btn-light border px-4 me-2 shadow-sm fw-bold" style="color:var(--text-main)" onclick="resetForm()">Batal</button>
+                                    <div class="text-end pt-3 border-top mt-4">
+                                        <button type="button" class="btn btn-light border px-4 me-2 shadow-sm fw-bold text-muted" onclick="resetForm()">Batal</button>
                                         <button type="submit" class="btn btn-theme px-5 fw-bold shadow-sm rounded-pill" id="btnSimpan"><i class="bi bi-save me-1"></i> SIMPAN</button>
                                     </div>
                                 </form>
@@ -380,7 +402,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // API URL (Ubah Sesuai Kebutuhan)
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxzxJXHGLfdza0Jgq0XzvlPgJC2zy0crRxNtGYL_DsbhURuRd9tMXOF-Y_gfrD8PrnA/exec";
 
         let AppState = {
@@ -389,17 +410,15 @@
             currentPage: 1, rowsPerPage: 10, sortCol: 'Tanggal', sortAsc: false
         };
 
-        // DOM Loaded
         document.addEventListener('DOMContentLoaded', () => {
             updateThemeIcon(document.documentElement.getAttribute('data-bs-theme'));
             hideLoading();
             showSection('sec-login');
             
-            // Tab switch reload
-            document.getElementById('tab-data').addEventListener('shown.bs.tab', () => { if(AppState.bidang) loadTableData(); });
+            document.getElementById('tab-data').addEventListener('shown.bs.tab', () => { if(AppState.bidang) applyFilter(); });
         });
 
-        /* --- UI & THEME LOGIC --- */
+        // --- THEME LOGIC ---
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-bs-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -410,10 +429,11 @@
 
         function updateThemeIcon(theme) {
             const icon = document.getElementById('themeIcon');
-            if (theme === 'dark') { icon.className = 'bi bi-brightness-high-fill'; } 
+            if (theme === 'dark') { icon.className = 'bi bi-brightness-high-fill text-warning'; } 
             else { icon.className = 'bi bi-moon-stars-fill'; }
         }
 
+        // --- UX / LOADING HELPERS ---
         function showLoading(text = 'Memproses...') {
             document.getElementById('loaderText').innerText = text;
             document.getElementById('loadingOverlay').classList.add('show');
@@ -425,8 +445,9 @@
             document.getElementById(id).classList.add('active');
         }
 
+        // --- FORMATTING HELPERS ---
         function formatWA(el) {
-            let val = el.value.replace(/\D/g, ''); 
+            let val = el.value.replace(/\D/g, ''); // Hapus semua karakter selain angka
             if (val.startsWith('08')) val = '628' + val.substring(2);
             el.value = val;
         }
@@ -436,7 +457,50 @@
             else { el.classList.remove('val-success'); el.classList.add('val-error'); }
         }
 
-        /* --- API COMMUNICATION --- */
+        /* 
+           DATE PARSER KHUSUS:
+           Input HTML: yyyy-mm-dd (Misal: 2026-10-20)
+           Google Sheet: dd/mm/yyyy (Misal: 20/10/2026)
+           Tampilan UI UI: 20 Oktober 2026
+        */
+        function toSheetDate(htmlDate) {
+            if(!htmlDate) return '';
+            const parts = htmlDate.split('-'); // ex: 2026-10-20
+            if(parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return htmlDate;
+        }
+
+        function toUIDate(sheetDate) {
+            if(!sheetDate) return '-';
+            let d, m, y;
+            // Jika format dari sheet sudah DD/MM/YYYY
+            if(sheetDate.includes('/')) {
+                [d, m, y] = sheetDate.split('/');
+            } 
+            // Jika dikembalikan sebagai ISO Date string
+            else if(sheetDate.includes('-') || sheetDate.includes('T')) {
+                const dateObj = new Date(sheetDate);
+                if(!isNaN(dateObj)) {
+                    d = dateObj.getDate(); m = dateObj.getMonth() + 1; y = dateObj.getFullYear();
+                } else return sheetDate;
+            } else return sheetDate;
+
+            const months = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            return `${parseInt(d)} ${months[parseInt(m)]} ${y}`;
+        }
+
+        // Parse HTML Date untuk Edit Modal. html <input type="date"> butuh format YYYY-MM-DD
+        function toInputDate(sheetDate) {
+            if(!sheetDate) return '';
+            if(sheetDate.includes('/')) {
+                const [d, m, y] = sheetDate.split('/');
+                return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+            }
+            if(sheetDate.includes('T')) return sheetDate.split('T')[0];
+            return sheetDate;
+        }
+
+        // --- API CALLER ---
         async function apiCall(actionName, payloadData = {}) {
             try {
                 const response = await fetch(GAS_API_URL, {
@@ -444,14 +508,14 @@
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({ action: actionName, payload: payloadData })
                 });
-                if(!response.ok) throw new Error("Gagal terhubung ke Server");
+                if(!response.ok) throw new Error("Gagal terhubung API");
                 return await response.json();
             } catch (error) {
                 return { status: 'error', message: error.message };
             }
         }
 
-        /* --- AUTH FLOW --- */
+        // --- STREAMING_CHUNK:Core Aplikasi (Login, Data, Simpan) ---
         async function handleLogin(e) {
             e.preventDefault();
             const wa = document.getElementById('loginWA').value;
@@ -475,7 +539,7 @@
             container.innerHTML = '';
             bidangArr.forEach(b => {
                 const btn = document.createElement('button');
-                btn.className = 'btn btn-outline-primary py-3 fw-bold rounded-pill shadow-sm';
+                btn.className = 'btn btn-outline-primary py-3 fw-bold rounded-pill shadow-sm border-2';
                 btn.innerHTML = `<i class="bi bi-briefcase-fill me-2"></i> Ruang ${b}`;
                 btn.onclick = () => setBidangAktif(b);
                 container.appendChild(btn);
@@ -486,11 +550,10 @@
             AppState.bidang = bidang;
             document.getElementById('lblUser').innerText = AppState.nama.toUpperCase();
             document.getElementById('lblBidang').innerText = `Bidang ${AppState.bidang.toUpperCase()}`;
-            
             showSection('sec-dashboard');
             
             // Background pre-fetch
-            await loadSKUO();
+            loadSKUO();
             loadTableData(); 
         }
 
@@ -501,16 +564,13 @@
             showSection('sec-login');
         }
 
-        /* --- DATA & LOGIC --- */
         async function loadSKUO() {
             const res = await apiCall('getSKUO', { bidang: AppState.bidang });
             if(res.status === 'success') {
                 AppState.skuoList = res.data;
                 const select = document.getElementById('inpSkuo');
                 select.innerHTML = '<option value="">-- Pilih SKUO --</option>';
-                AppState.skuoList.forEach(s => {
-                    select.add(new Option(s.Nama_SKUO, s.Nama_SKUO));
-                });
+                AppState.skuoList.forEach(s => select.add(new Option(s.Nama_SKUO, s.Nama_SKUO)));
             }
         }
 
@@ -526,29 +586,41 @@
 
         async function handleSaveKegiatan(e) {
             e.preventDefault();
+            
+            const btn = document.getElementById('btnSimpan');
+            const originalBtnText = document.getElementById('editId').value ? '<i class="bi bi-pencil-square me-1"></i> PERBARUI' : '<i class="bi bi-save me-1"></i> SIMPAN';
+            
+            // Inline Loading indicator
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Menyimpan...';
+            btn.disabled = true;
+
             const payload = {
                 id: document.getElementById('editId').value,
                 noWA: AppState.noWA, nama: AppState.nama, bidang: AppState.bidang,
                 skuo: document.getElementById('inpSkuo').value,
-                tanggal: document.getElementById('inpTanggal').value,
+                tanggal: toSheetDate(document.getElementById('inpTanggal').value), // Format ke dd/mm/yyyy
                 namaKegiatan: document.getElementById('inpNama').value,
                 mode: document.getElementById('inpMode').value,
                 keterangan: document.getElementById('inpKeterangan').value
             };
 
-            showLoading('Menyimpan...');
             const endpoint = payload.id ? 'updateKegiatan' : 'saveKegiatan';
             const res = await apiCall(endpoint, payload);
             
+            btn.disabled = false;
+            btn.innerHTML = originalBtnText;
+
             if(res.status === 'success') {
-                Swal.fire({title: 'Berhasil', text: 'Data disimpan', icon: 'success', timer: 1500, showConfirmButton: false});
+                Swal.fire({title: 'Sukses', text: 'Data tersimpan', icon: 'success', timer: 1500, showConfirmButton: false});
                 resetForm();
                 new bootstrap.Tab(document.getElementById('tab-data')).show();
-                loadTableData(); // Will hide loading inside
-            } else { hideLoading(); Swal.fire('Gagal', res.message, 'error'); }
+                loadTableData(); // re-fetch data quietly di latar belakang
+            } else { 
+                Swal.fire('Gagal', res.message, 'error'); 
+            }
         }
 
-        /* --- TABEL & RENDER --- */
+        // --- STREAMING_CHUNK:Render Tabel, Filter, dan Paginasi ---
         async function loadTableData() {
             showLoading('Memuat...');
             const res = await apiCall('getKegiatan', { bidang: AppState.bidang });
@@ -557,7 +629,7 @@
             if(res.status === 'success') {
                 AppState.kegiatanList = res.data;
                 applyFilter();
-            } else { Swal.fire('Error', 'Gagal memuat data', 'error'); }
+            } else { Swal.fire('Error', 'Gagal mengambil data', 'error'); }
         }
 
         function updateStats(dataArr) {
@@ -582,21 +654,31 @@
                 
                 let matchBulan = true;
                 if(fBulan && row.Tanggal) {
-                    // Extract month from string (Asumsi format YYYY-MM-DD or DD/MM/YYYY)
+                    // Extract month dari string DD/MM/YYYY
                     const strTgl = row.Tanggal.toString();
                     let m = '';
-                    if(strTgl.includes('-') && strTgl.length >= 10) m = strTgl.split('-')[1];
-                    else if(strTgl.includes('/') && strTgl.length >= 10) m = strTgl.split('/')[1];
+                    if(strTgl.includes('/')) m = strTgl.split('/')[1];
+                    else if(strTgl.includes('-')) m = strTgl.split('-')[1]; 
                     
                     if(m !== fBulan) matchBulan = false;
                 }
                 return matchSearch && matchBulan;
             });
 
-            // Sorting logic
+            // Logika Sorting
             AppState.filteredData.sort((a, b) => {
-                let valA = (a[AppState.sortCol] || '').toString().toLowerCase();
-                let valB = (b[AppState.sortCol] || '').toString().toLowerCase();
+                let valA = a[AppState.sortCol] || '';
+                let valB = b[AppState.sortCol] || '';
+                
+                // Khusus sorting tanggal DD/MM/YYYY rubah ke YYYYMMDD untuk komparasi matematika
+                if(AppState.sortCol === 'Tanggal') {
+                   const fA = valA.toString().includes('/') ? valA.split('/').reverse().join('') : valA;
+                   const fB = valB.toString().includes('/') ? valB.split('/').reverse().join('') : valB;
+                   valA = fA; valB = fB;
+                } else {
+                   valA = valA.toString().toLowerCase(); valB = valB.toString().toLowerCase();
+                }
+
                 if(valA < valB) return AppState.sortAsc ? -1 : 1;
                 if(valA > valB) return AppState.sortAsc ? 1 : -1;
                 return 0;
@@ -625,7 +707,6 @@
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted"><i class="bi bi-folder-x fs-1 d-block mb-2"></i>Tidak ada data</td></tr>`;
             } else {
                 paginatedData.forEach((row, index) => {
-                    // Penyesuaian class badge mode
                     let badgeClass = 'bg-secondary';
                     if(row.Mode === 'Online') badgeClass = 'bg-primary';
                     if(row.Mode === 'Hybrid') badgeClass = 'bg-info text-dark';
@@ -634,37 +715,33 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td class="fw-medium text-muted">${start + index + 1}</td>
-                        <td class="fw-bold">${row.Tanggal}</td>
-                        <td class="text-start fw-bold" style="color:var(--brand-orange)">${row.Nama_Kegiatan}</td>
-                        <td>${row.SKUO}</td>
+                        <td class="fw-bold" style="color: var(--brand-dark);">${toUIDate(row.Tanggal)}</td>
+                        <td class="text-start fw-bold" style="color: var(--brand-orange);">${row.Nama_Kegiatan}</td>
+                        <td class="text-wrap" style="max-width: 200px;">${row.SKUO}</td>
                         <td><span class="badge ${badgeClass} rounded-pill px-3 py-2 shadow-sm">${row.Mode}</span></td>
-                        <td class="text-start small text-muted">${row.Keterangan || '-'}</td>
+                        <td class="text-start small text-muted text-wrap" style="max-width: 250px;">${row.Keterangan || '-'}</td>
                         <td class="no-print">
-                            <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm me-1" onclick="editData('${row.ID}')" title="Edit"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger rounded-circle shadow-sm" onclick="deleteData('${row.ID}')" title="Hapus"><i class="bi bi-trash"></i></button>
+                            <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm me-1" style="width:32px; height:32px;" onclick="editData('${row.ID}')" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger rounded-circle shadow-sm" style="width:32px; height:32px;" onclick="deleteData('${row.ID}')" title="Hapus"><i class="bi bi-trash"></i></button>
                         </td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
-            document.getElementById('pageInfo').innerText = `Menampilkan ${start + 1} - ${Math.min(end, AppState.filteredData.length)} dari ${AppState.filteredData.length} data`;
+            document.getElementById('pageInfo').innerText = `Menampilkan ${start + (paginatedData.length > 0 ? 1 : 0)} - ${start + paginatedData.length} dari ${AppState.filteredData.length} data`;
         }
 
         function prevPage() { if (AppState.currentPage > 1) { AppState.currentPage--; renderTable(); } }
         function nextPage() { if ((AppState.currentPage * AppState.rowsPerPage) < AppState.filteredData.length) { AppState.currentPage++; renderTable(); } }
 
-        /* --- EDIT & DELETE --- */
+        // --- STREAMING_CHUNK:Edit & Hapus ---
         function editData(id) {
             const data = AppState.kegiatanList.find(k => k.ID === id);
             if(!data) return;
             
             document.getElementById('editId').value = data.ID;
             document.getElementById('inpSkuo').value = data.SKUO;
-            
-            let tgl = data.Tanggal;
-            if(tgl && tgl.includes('T')) tgl = tgl.split('T')[0];
-            document.getElementById('inpTanggal').value = tgl;
-            
+            document.getElementById('inpTanggal').value = toInputDate(data.Tanggal); // Ubah ke html date value
             document.getElementById('inpNama').value = data.Nama_Kegiatan;
             document.getElementById('inpMode').value = data.Mode;
             document.getElementById('inpKeterangan').value = data.Keterangan;
