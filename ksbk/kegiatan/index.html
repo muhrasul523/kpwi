@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Kegiatan KSBK</title>
+    
+    <!-- Meta Tags untuk Preview WhatsApp (Open Graph) -->
+    <meta property="og:title" content="Monitoring Kinerja Pegawai KSBK">
+    <meta property="og:description" content="Aplikasi Input Kegiatan dan Monitoring Kinerja Pegawai Pusat.">
+    <meta property="og:image" content="../monitoring_kinerja_pegawai.png">
+    <meta property="og:url" content="https://kpwi.github.io/presensi/">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="../logo_wahdah_islamiyah.png" type="image/png">
+
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <style>
+        /* Definisi Palet Warna Identitas */
+        :root {
+            --brand-dark-blue: #0D223A;
+            --brand-blue: #1B365D;
+            --brand-light-blue: #C8E6EB;
+            --brand-aqua: #85C1B3;
+            --brand-green: #2E8B57;
+            --brand-green-alt: #3B7A57;
+            --brand-gold: #FFD700;
+            --brand-orange: #C67D17;
+            --brand-red: #E52B2A;
+            --brand-black: #000000;
+            --brand-white: #ffffff;
+            
+            /* Variabel Default (Dark Mode Fallback sebelum JS jalan) */
+            --bg-body: var(--brand-dark-blue);
+            --bg-card: var(--brand-blue);
+            --text-main: var(--brand-light-blue);
+            --text-muted: var(--brand-aqua);
+            --border-color: var(--brand-green-alt);
+            --input-bg: rgba(13, 34, 58, 0.8);
+            --input-text: var(--brand-white);
+            --table-header-bg: #0a1727;
+            --shadow-color: rgba(0,0,0,0.5);
+        }
+
+        /* Override Variabel Saat Mode Terang Aktif */
+        body.light-mode {
+            --bg-body: #f4f7fa;
+            --bg-card: var(--brand-white);
+            --text-main: var(--brand-dark-blue);
+            --text-muted: #555555;
+            --border-color: #d1d5db;
+            --input-bg: var(--brand-white);
+            --input-text: var(--brand-black);
+            --table-header-bg: var(--brand-light-blue);
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            box-shadow: 0 8px 16px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+        
+        .card-header { border-bottom: 1px solid var(--border-color); }
+        
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 1px solid var(--border-color);
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border-color: var(--brand-aqua);
+            box-shadow: 0 0 0 0.25rem rgba(133, 193, 179, 0.4);
+        }
+
+        /* Tombol & Aksen */
+        .btn-primary { background-color: var(--brand-green); border-color: var(--brand-green); color: var(--brand-white); }
+        .btn-primary:hover { background-color: var(--brand-green-alt); border-color: var(--brand-green-alt); }
+        .btn-success { background-color: var(--brand-green-alt); border-color: var(--brand-green-alt); color: var(--brand-white); }
+        .btn-warning { background-color: var(--brand-gold); border-color: var(--brand-gold); color: var(--brand-black); }
+        .btn-warning:hover { background-color: var(--brand-orange); border-color: var(--brand-orange); color: var(--brand-white); }
+        .btn-danger { background-color: var(--brand-red); border-color: var(--brand-red); color: var(--brand-white); }
+        
+        /* Tabel */
+        .table { color: var(--text-main); }
+        .table>:not(caption)>*>* { background-color: transparent; color: var(--text-main); border-bottom-color: var(--border-color); }
+        .table thead th { background-color: var(--table-header-bg); border-color: var(--border-color); cursor: pointer;}
+        
+        /* Nav Tabs */
+        .nav-tabs .nav-link { color: var(--text-muted); border-color: transparent; }
+        .nav-tabs .nav-link.active {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            border-color: var(--border-color) var(--border-color) var(--bg-card);
+            font-weight: bold;
+        }
+        .nav-tabs { border-bottom: 1px solid var(--border-color); }
+
+        /* Loader & Sections */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column; opacity: 0.95;
+        }
+        .app-section { display: none; }
+        .app-section.active { display: block; animation: fadeIn 0.5s; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Hiasan Logo */
+        .brand-logo { max-width: 120px; height: auto; margin-bottom: 15px; }
+        
+        /* Navbar Custom */
+        .custom-navbar { background: linear-gradient(90deg, var(--brand-dark-blue), var(--brand-blue)); color: var(--brand-white); }
+        
+        @media print {
+            body { background: white !important; color: black !important; }
+            .no-print { display: none !important; }
+            .card { box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <img src="../logo_wahdah_islamiyah.png" alt="Logo" class="brand-logo mb-4" style="max-width: 80px; animation: pulse 2s infinite;">
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem; color: var(--brand-green) !important;"></div>
+        <h5 id="loaderText" style="color: var(--text-main);">Memuat Sistem...</h5>
+    </div>
+
+    <div id="sec-login" class="app-section container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card p-2 border-0" style="background: linear-gradient(145deg, var(--bg-card), var(--bg-body));">
+                    <div class="card-header text-center border-0 pt-4 pb-0">
+                        <img src="../logo_wahdah_islamiyah.png" alt="Logo" class="brand-logo">
+                        <h4 class="mt-2 mb-0" style="color: var(--text-main); font-weight: 700;">PORTAL KSBK</h4>
+                        <small style="color: var(--text-muted);">Monitoring Kinerja Pegawai</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="formLogin">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">ID / Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background:var(--brand-green); color:white; border:none;"><i class="bi bi-person"></i></span>
+                                    <input type="text" id="loginUsername" class="form-control" required autocomplete="off" placeholder="contoh: admin">
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" style="background:var(--brand-green); color:white; border:none;"><i class="bi bi-key"></i></span>
+                                    <input type="password" id="loginPassword" class="form-control" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold"><i class="bi bi-box-arrow-in-right"></i> MASUK SYSTEM</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-bidang" class="app-section container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header text-center py-3">
+                        <h5 class="mb-0 fw-bold">Pilih Lingkup Bidang Kerja</h5>
+                    </div>
+                    <div class="card-body text-center p-4">
+                        <p>Akun Anda memiliki multi-akses. Silakan pilih bidang kerja:</p>
+                        <div id="bidangButtons" class="d-grid gap-3 mt-4"></div>
+                        <button class="btn btn-danger mt-4 w-100" onclick="logout()"><i class="bi bi-power"></i> Kembali</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="sec-dashboard" class="app-section">
+        <!-- Navbar -->
+        <nav class="navbar custom-navbar shadow-sm p-3 mb-4 no-print">
+            <div class="container-fluid">
+                <a class="navbar-brand text-white fw-bold d-flex align-items-center" href="#">
+                    <img src="../logo_wahdah_islamiyah.png" alt="Logo" width="30" class="d-inline-block align-text-top me-2 bg-white rounded-circle p-1">
+                    DASHBOARD KSBK
+                </a>
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Theme Toggle -->
+                    <button class="btn btn-sm btn-outline-light rounded-circle" onclick="toggleTheme()" id="btnTheme" title="Ganti Tema">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+                    
+                    <span class="text-white-50 d-none d-md-inline"><i class="bi bi-person-circle"></i> <span id="lblUser"></span></span>
+                    <span class="badge" style="background-color: var(--brand-gold); color: black;"><i class="bi bi-tags"></i> <span id="lblBidang"></span></span>
+                    <button class="btn btn-sm btn-danger fw-bold" onclick="logout()"><i class="bi bi-power"></i> Keluar</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid px-md-4">
+            <!-- Tabs -->
+            <ul class="nav nav-tabs no-print mb-4" id="appTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold" id="tab-input" data-bs-toggle="tab" data-bs-target="#content-input" type="button"><i class="bi bi-pencil-square"></i> Input Kegiatan</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" id="tab-data" data-bs-toggle="tab" data-bs-target="#content-data" type="button"><i class="bi bi-table"></i> Rekapitulasi Kinerja</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="appTabsContent">
+                <div class="tab-pane fade show active" id="content-input" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8 mx-auto">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-transparent"><h5 class="mb-0 fw-bold">Formulir Kegiatan Harian</h5></div>
+                                <div class="card-body p-4">
+                                    <form id="formKegiatan">
+                                        <input type="hidden" id="editId">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-bold" style="color: var(--brand-orange);">SKUO Bidang *</label>
+                                                <select id="inpSkuo" class="form-select" required>
+                                                    <option value="">-- Pilih SKUO --</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mt-3 mt-md-0">
+                                                <label class="form-label fw-bold">Tanggal Pelaksanaan *</label>
+                                                <input type="date" id="inpTanggal" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Nama Kegiatan *</label>
+                                            <input type="text" id="inpNama" class="form-control" required placeholder="KETIK NAMA KEGIATAN" oninput="this.value = this.value.toUpperCase()">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Mode Kegiatan *</label>
+                                            <select id="inpMode" class="form-select" required>
+                                                <option value="">-- Pilih Mode --</option>
+                                                <option value="Online">Online / Daring</option>
+                                                <option value="Offline">Offline / Luring</option>
+                                                <option value="Hybrid">Hybrid</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="form-label fw-bold">Keterangan / Hasil (Opsional)</label>
+                                            <textarea id="inpKeterangan" class="form-control" rows="3" placeholder="Catatan tambahan hasil kegiatan..."></textarea>
+                                        </div>
+                                        <div class="text-end">
+                                            <button type="button" class="btn btn-secondary me-2 fw-bold" onclick="resetForm()">Batal</button>
+                                            <button type="submit" class="btn btn-primary px-4 fw-bold" id="btnSimpan"><i class="bi bi-save"></i> SIMPAN DATA</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="content-data" role="tabpanel">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-transparent d-flex flex-column flex-md-row justify-content-between align-items-md-center py-3">
+                            <h5 class="mb-3 mb-md-0 fw-bold">Basis Data Kinerja Pegawai</h5>
+                            <div class="no-print d-flex flex-wrap gap-2">
+                                <input type="text" id="searchInput" class="form-control form-control-sm w-auto" placeholder="Pencarian Global..." onkeyup="filterTable()">
+                                <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="window.print()"><i class="bi bi-printer"></i> Cetak</button>
+                                <button class="btn btn-sm btn-primary fw-bold" onclick="loadTableData()"><i class="bi bi-arrow-clockwise"></i> Refresh API</button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 text-center align-middle" id="dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%" onclick="sortTable(0)">No <i class="bi bi-arrow-down-up small"></i></th>
+                                            <th width="12%" onclick="sortTable(1)">Tanggal <i class="bi bi-arrow-down-up small"></i></th>
+                                            <th width="28%" onclick="sortTable(2)">Nama Kegiatan <i class="bi bi-arrow-down-up small"></i></th>
+                                            <th width="20%" onclick="sortTable(3)">SKUO <i class="bi bi-arrow-down-up small"></i></th>
+                                            <th width="10%" onclick="sortTable(4)">Mode <i class="bi bi-arrow-down-up small"></i></th>
+                                            <th width="15%">Keterangan</th>
+                                            <th width="10%" class="no-print">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody">
+                                        <!-- Render by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="p-3 d-flex justify-content-between align-items-center border-top no-print" style="border-color: var(--border-color) !important;">
+                                <small id="pageInfo" class="fw-bold">Menampilkan 0 data</small>
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="prevPage()"><i class="bi bi-chevron-left"></i> Prev</button>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="nextPage()">Next <i class="bi bi-chevron-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // MASUKKAN URL WEB APP ANDA DI SINI
+        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxzxJXHGLfdza0Jgq0XzvlPgJC2zy0crRxNtGYL_DsbhURuRd9tMXOF-Y_gfrD8PrnA/exec";
+
+        let AppState = {
+            user: null, bidang: null, skuoList: [], kegiatanList: [], currentPage: 1, rowsPerPage: 10
+        };
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('ksbk_theme');
+            if (savedTheme) {
+                document.body.classList.toggle('light-mode', savedTheme === 'light');
+            } else {
+                // Deteksi preferensi OS (default menyesuaikan)
+                const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+                document.body.classList.toggle('light-mode', prefersLight);
+            }
+            updateThemeIcon();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('ksbk_theme', isLight ? 'light' : 'dark');
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const isLight = document.body.classList.contains('light-mode');
+            const icon = document.querySelector('#btnTheme i');
+            if(isLight) {
+                icon.className = 'bi bi-moon-fill'; // Jika terang, ikon bulan (untuk switch ke gelap)
+            } else {
+                icon.className = 'bi bi-sun-fill text-warning'; // Jika gelap, ikon matahari (untuk switch ke terang)
+            }
+        }
+
+        // Fungsi ini menggunakan text/plain POST untuk mem-bypass CORS preflight OPTIONS GAS
+        async function apiCall(actionName, payloadData = {}) {
+            try {
+                const requestObj = { action: actionName, payload: payloadData };
+                const response = await fetch(GAS_API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8", 
+                    },
+                    body: JSON.stringify(requestObj)
+                });
+                
+                if(!response.ok) throw new Error("Gagal terhubung ke Server Database");
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("API Error:", error);
+                return { status: 'error', message: error.message };
+            }
+        }
+
+        function showLoading(text = 'Memuat...') {
+            document.getElementById('loaderText').innerText = text;
+            document.getElementById('loader').style.display = 'flex';
+        }
+        function hideLoading() { document.getElementById('loader').style.display = 'none'; }
+        
+        function showSection(id) {
+            document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function toast(icon, title) {
+            Swal.fire({
+                toast: true, position: 'top-end', icon: icon, title: title,
+                showConfirmButton: false, timer: 3000, timerProgressBar: true
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            hideLoading();
+            showSection('sec-login');
+
+            document.getElementById('formLogin').addEventListener('submit', handleLogin);
+            document.getElementById('formKegiatan').addEventListener('submit', handleSaveKegiatan);
+            
+            document.getElementById('tab-data').addEventListener('shown.bs.tab', loadTableData);
+        });
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            showLoading("Verifikasi Kredensial via API...");
+            const user = document.getElementById('loginUsername').value.trim();
+            const pass = document.getElementById('loginPassword').value;
+
+            const res = await apiCall('login', { username: user, password: pass });
+            hideLoading();
+
+            if(res.status === 'success') {
+                AppState.user = res.username;
+                const bidangArr = res.bidang;
+                
+                if(bidangArr.length > 1) {
+                    renderBidangSelector(bidangArr);
+                    showSection('sec-bidang');
+                } else {
+                    setBidangAktif(bidangArr[0]);
+                }
+            } else {
+                Swal.fire('Gagal', res.message, 'error');
+            }
+        }
+
+        function renderBidangSelector(bidangArr) {
+            const container = document.getElementById('bidangButtons');
+            container.innerHTML = '';
+            bidangArr.forEach(b => {
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-outline-primary py-3 fw-bold';
+                btn.innerHTML = `<i class="bi bi-briefcase-fill"></i> Bidang ${b}`;
+                btn.onclick = () => setBidangAktif(b);
+                container.appendChild(btn);
+            });
+        }
+
+        async function setBidangAktif(bidang) {
+            AppState.bidang = bidang;
+            document.getElementById('lblUser').innerText = AppState.user.toUpperCase();
+            document.getElementById('lblBidang').innerText = AppState.bidang.toUpperCase();
+            
+            showSection('sec-dashboard');
+            toast('success', `Berhasil masuk: Bidang ${bidang}`);
+            
+            await loadSKUO();
+        }
+
+        function logout() {
+            AppState = { user: null, bidang: null, skuoList: [], kegiatanList: [], currentPage: 1, rowsPerPage: 10 };
+            document.getElementById('formLogin').reset();
+            resetForm();
+            showSection('sec-login');
+        }
+
+        async function loadSKUO() {
+            showLoading('Sinkronisasi SKUO...');
+            const res = await apiCall('getSKUO', { bidang: AppState.bidang });
+            if(res.status === 'success') {
+                AppState.skuoList = res.data;
+                const select = document.getElementById('inpSkuo');
+                select.innerHTML = '<option value="">-- Pilih SKUO --</option>';
+                AppState.skuoList.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.Nama_SKUO;
+                    opt.textContent = s.Nama_SKUO;
+                    select.appendChild(opt);
+                });
+            }
+            hideLoading();
+        }
+
+        function resetForm() {
+            document.getElementById('formKegiatan').reset();
+            document.getElementById('editId').value = '';
+            const btn = document.getElementById('btnSimpan');
+            btn.innerHTML = '<i class="bi bi-save"></i> SIMPAN DATA';
+            btn.className = 'btn btn-primary px-4 fw-bold';
+        }
+
+        async function handleSaveKegiatan(e) {
+            e.preventDefault();
+            const payload = {
+                id: document.getElementById('editId').value,
+                username: AppState.user,
+                bidang: AppState.bidang,
+                skuo: document.getElementById('inpSkuo').value,
+                tanggal: document.getElementById('inpTanggal').value,
+                namaKegiatan: document.getElementById('inpNama').value,
+                mode: document.getElementById('inpMode').value,
+                keterangan: document.getElementById('inpKeterangan').value
+            };
+
+            showLoading('Mengirim data ke Server...');
+            let actionText = payload.id ? 'Diperbarui' : 'Disimpan';
+            const apiEndpoint = payload.id ? 'updateKegiatan' : 'saveKegiatan';
+            
+            const res = await apiCall(apiEndpoint, payload);
+            hideLoading();
+
+            if(res.status === 'success') {
+                Swal.fire('Berhasil', `Data sukses ${actionText}!`, 'success');
+                resetForm();
+                new bootstrap.Tab(document.getElementById('tab-data')).show();
+                loadTableData();
+            } else {
+                Swal.fire('Gagal', res.message, 'error');
+            }
+        }
+
+        async function loadTableData() {
+            showLoading('Memuat Basis Data...');
+            const res = await apiCall('getKegiatan', { bidang: AppState.bidang });
+            if(res.status === 'success') {
+                AppState.kegiatanList = res.data;
+                AppState.currentPage = 1;
+                renderTable();
+            } else {
+                toast('error', 'Gagal memuat tabel');
+            }
+            hideLoading();
+        }
+
+        function renderTable(dataToRender = AppState.kegiatanList) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            const start = (AppState.currentPage - 1) * AppState.rowsPerPage;
+            const end = start + AppState.rowsPerPage;
+            const paginatedData = dataToRender.slice(start, end);
+
+            if(paginatedData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted">Data kosong.</td></tr>`;
+            } else {
+                paginatedData.forEach((row, index) => {
+                    const badgeClass = row.Mode === 'Online' ? 'bg-info text-dark' : (row.Mode === 'Offline' ? 'bg-secondary' : 'bg-success');
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${start + index + 1}</td>
+                        <td class="fw-bold">${row.Tanggal}</td>
+                        <td class="text-start" style="color: var(--brand-orange); font-weight:600;">${row.Nama_Kegiatan}</td>
+                        <td>${row.SKUO}</td>
+                        <td><span class="badge ${badgeClass}">${row.Mode}</span></td>
+                        <td class="text-start small">${row.Keterangan || '-'}</td>
+                        <td class="no-print">
+                            <button class="btn btn-sm btn-warning mb-1" onclick="editData('${row.ID}')"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger mb-1" onclick="deleteData('${row.ID}')"><i class="bi bi-trash"></i></button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+            document.getElementById('pageInfo').innerText = `Menampilkan ${start + 1} - ${Math.min(end, dataToRender.length)} dari ${dataToRender.length} entri`;
+        }
+
+        function prevPage() { if (AppState.currentPage > 1) { AppState.currentPage--; renderTable(); } }
+        function nextPage() { if ((AppState.currentPage * AppState.rowsPerPage) < AppState.kegiatanList.length) { AppState.currentPage++; renderTable(); } }
+
+        function filterTable() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = AppState.kegiatanList.filter(r => 
+                (r.Nama_Kegiatan || '').toLowerCase().includes(term) || (r.SKUO || '').toLowerCase().includes(term)
+            );
+            AppState.currentPage = 1; renderTable(filtered);
+        }
+
+        let sortAsc = true;
+        function sortTable(colIndex) {
+            const keys = ['No', 'Tanggal', 'Nama_Kegiatan', 'SKUO', 'Mode'];
+            const key = keys[colIndex];
+            if(!key || key === 'No') return;
+            sortAsc = !sortAsc;
+            AppState.kegiatanList.sort((a, b) => {
+                let valA = (a[key] || '').toString().toLowerCase();
+                let valB = (b[key] || '').toString().toLowerCase();
+                if(valA < valB) return sortAsc ? -1 : 1;
+                if(valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+            renderTable();
+        }
+
+        function editData(id) {
+            const data = AppState.kegiatanList.find(k => k.ID === id);
+            if(!data) return;
+            
+            document.getElementById('editId').value = data.ID;
+            document.getElementById('inpSkuo').value = data.SKUO;
+            
+            let tgl = data.Tanggal;
+            if(tgl && tgl.includes('T')) tgl = tgl.split('T')[0];
+            document.getElementById('inpTanggal').value = tgl;
+            
+            document.getElementById('inpNama').value = data.Nama_Kegiatan;
+            document.getElementById('inpMode').value = data.Mode;
+            document.getElementById('inpKeterangan').value = data.Keterangan;
+
+            const btn = document.getElementById('btnSimpan');
+            btn.innerHTML = '<i class="bi bi-pencil-square"></i> PERBARUI DATA';
+            btn.className = 'btn btn-warning text-dark px-4 fw-bold';
+            
+            new bootstrap.Tab(document.getElementById('tab-input')).show();
+        }
+
+        function deleteData(id) {
+            Swal.fire({
+                title: 'Hapus Data?', text: "Data kinerja ini akan dihapus permanen!",
+                icon: 'warning', showCancelButton: true, confirmButtonColor: '#E52B2A',
+                cancelButtonColor: '#6c757d', confirmButtonText: 'Ya, Hapus!'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    showLoading('Menghapus data di Server...');
+                    const res = await apiCall('deleteKegiatan', { id: id, username: AppState.user });
+                    if(res.status === 'success') {
+                        Swal.fire('Terhapus!', 'Data berhasil dihapus.', 'success');
+                        loadTableData();
+                    } else { 
+                        Swal.fire('Gagal', res.message, 'error'); hideLoading(); 
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
