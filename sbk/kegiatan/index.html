@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Meta Tags untuk Preview WhatsApp (Open Graph) -->
+    <meta property="og:title" content="Kontrol Kegiatan SBK">
+    <meta property="og:description" content="Sistem Pengontrolan & Pelaporan Kinerja SBK">
+    <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
+    <meta property="og:type" content="website">
+    
     <title>Kontrol Kegiatan SBK</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,9 +37,10 @@
         .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 10px 40px rgba(30, 58, 138, 0.08); }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         /* Modal Tabs */
         .tab-btn { transition: all 0.3s; border-bottom: 2px solid transparent; }
@@ -41,26 +51,24 @@
 
     <!-- LOADING OVERLAY -->
     <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-all duration-300">
-        <i class="fa-solid fa-spinner fa-spin text-5xl text-brand-gold mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"></i>
-        <div class="w-72 max-w-[80vw] h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner border border-blue-800">
+        <img src="../../logo_wahdah_islamiyah.png" alt="Logo" class="h-24 mb-6 drop-shadow-xl animate-pulse" onerror="this.src='https://placehold.co/150x150/1e3a8a/ffffff?text=Logo'">
+        <div class="w-64 max-w-[80vw] h-2 bg-blue-900 rounded-full overflow-hidden shadow-inner border border-blue-800">
             <div class="h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_1s_ease-in-out_infinite] shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
         </div>
         <p class="mt-4 text-sm font-medium text-blue-200" id="loadingText">Memuat Sistem... <span id="loadingPercent">0%</span></p>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         
         <!-- HEADER -->
-        <div class="text-center mb-6 fade-in hidden" id="headerLogo">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-blue text-brand-gold text-3xl mb-3 shadow-lg">
-                <i class="fa-solid fa-clipboard-check"></i>
-            </div>
+        <div class="text-center mb-8 fade-in hidden" id="headerLogo">
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-16 mx-auto mb-3 drop-shadow-lg" onerror="this.style.display='none'">
             <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kontrol Kegiatan SBK</h1>
-            <p class="text-gray-500 mt-1 text-sm font-medium">Sistem Pengontrolan & Pelaporan Kinerja</p>
+            <p class="text-gray-500 mt-1 text-xs md:text-sm font-medium">Sistem Pengontrolan & Pelaporan Kinerja</p>
         </div>
 
         <!-- 1. VIEW LOGIN -->
-        <div id="loginView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 fade-in border-t-4 border-t-brand-blue hidden mt-10">
+        <div id="loginView" class="max-w-md mx-auto glass-panel rounded-2xl p-6 md:p-8 fade-in border-t-4 border-t-brand-blue hidden">
             <h2 class="text-xl font-bold text-center text-brand-blue mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-brand-gold"></i>Login SBK</h2>
             <p class="text-sm text-center text-gray-500 mb-6">Masukkan nomor WhatsApp Anda.</p>
             <form onsubmit="handleLogin(event)">
@@ -74,11 +82,11 @@
             </form>
         </div>
 
-        <!-- 2. VIEW PILIH BIDANG -->
-        <div id="pilihBidangView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 fade-in border-t-4 border-t-brand-gold hidden mt-10">
-            <h2 class="text-xl font-bold text-center text-brand-blue mb-2">Pilih Bidang Kerja</h2>
-            <p class="text-sm text-center text-gray-500 mb-6" id="welcomePilihBidang">Selamat datang,</p>
-            <div id="listBidang" class="space-y-3"></div>
+        <!-- 2. VIEW PILIH SKUO -->
+        <div id="pilihSkuoView" class="max-w-md mx-auto glass-panel rounded-2xl p-6 md:p-8 fade-in border-t-4 border-t-brand-gold hidden">
+            <h2 class="text-xl font-bold text-center text-brand-blue mb-2">Pilih SKUO</h2>
+            <p class="text-sm text-center text-gray-500 mb-6" id="welcomePilihSkuo">Selamat datang,</p>
+            <div id="listSkuo" class="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar"></div>
             <button onclick="logout()" class="mt-6 w-full text-red-500 hover:text-red-700 text-sm font-medium transition-colors">
                 <i class="fa-solid fa-arrow-left mr-1"></i> Batal & Kembali
             </button>
@@ -88,50 +96,50 @@
         <div id="mainAppView" class="hidden fade-in">
             
             <!-- User Info Card -->
-            <div class="max-w-7xl mx-auto bg-gradient-to-r from-brand-blue to-blue-800 rounded-2xl p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30">
-                        <i class="fa-solid fa-user-tie text-2xl text-brand-gold"></i>
+            <div class="max-w-7xl mx-auto bg-gradient-to-r from-brand-blue to-blue-800 rounded-2xl p-4 md:p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30 shrink-0">
+                        <i class="fa-solid fa-user-tie text-xl md:text-2xl text-brand-gold"></i>
                     </div>
-                    <div>
-                        <p class="text-xs text-blue-200 font-medium uppercase tracking-wider">Akses SBK Aktif</p>
-                        <h2 class="text-lg font-bold" id="infoNama">Nama User</h2>
-                        <p class="text-sm text-blue-100"><i class="fa-solid fa-layer-group text-brand-gold mr-1"></i> Bidang: <span id="infoBidang" class="font-semibold"></span></p>
+                    <div class="flex-1 overflow-hidden">
+                        <p class="text-[10px] md:text-xs text-blue-200 font-medium uppercase tracking-wider">Akses SBK Aktif</p>
+                        <h2 class="text-base md:text-lg font-bold truncate" id="infoNama">Nama User</h2>
+                        <p class="text-xs md:text-sm text-blue-100 truncate"><i class="fa-solid fa-layer-group text-brand-gold mr-1"></i> SKUO: <span id="infoSkuo" class="font-semibold"></span></p>
                     </div>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="switchRole()" id="btnSwitchRole" class="hidden bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-white/20">
-                        <i class="fa-solid fa-arrow-right-arrow-left"></i> Ganti Bidang
+                <div class="flex gap-2 w-full md:w-auto justify-end">
+                    <button onclick="switchRole()" id="btnSwitchRole" class="hidden bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors flex items-center gap-2 border border-white/20">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i> Ganti SKUO
                     </button>
-                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-red-400">
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors flex items-center gap-2 border border-red-400">
                         <i class="fa-solid fa-power-off"></i> Keluar
                     </button>
                 </div>
             </div>
 
             <!-- TAB CONTENT: DATA TABLE -->
-            <div class="max-w-7xl mx-auto glass-panel rounded-2xl p-6 border-t-4 border-t-brand-gold">
+            <div class="max-w-7xl mx-auto glass-panel rounded-2xl p-4 md:p-6 border-t-4 border-t-brand-gold">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 border-b pb-4 border-gray-200">
-                    <div>
-                        <h3 class="text-lg font-bold text-brand-blue flex items-center"><i class="fa-solid fa-list-check text-brand-gold mr-2"></i> Daftar Kegiatan (Perlu Dikontrol)</h3>
-                        <p class="text-xs text-gray-500 mt-1">Pilih kegiatan untuk mengisi form Pra dan Pasca kegiatan.</p>
+                    <div class="w-full md:w-auto text-left">
+                        <h3 class="text-base md:text-lg font-bold text-brand-blue flex items-center"><i class="fa-solid fa-list-check text-brand-gold mr-2"></i> Daftar Kegiatan</h3>
+                        <p class="text-[10px] md:text-xs text-gray-500 mt-1">Pilih kegiatan untuk mengontrol indikator kinerjanya.</p>
                     </div>
                     
                     <div class="relative w-full md:w-64">
-                        <input type="text" id="searchTable" onkeyup="filterTableUI()" placeholder="Cari kegiatan..." class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white">
+                        <input type="text" id="searchTable" onkeyup="filterTableUI()" placeholder="Cari nama kegiatan..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white shadow-sm">
                         <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                     </div>
                 </div>
 
                 <div class="overflow-x-auto rounded-xl border border-gray-200">
-                    <table class="w-full text-left text-sm" id="dataTable">
+                    <table class="w-full text-left text-xs md:text-sm" id="dataTable">
                         <thead class="bg-brand-blue text-white whitespace-nowrap">
                             <tr>
-                                <th class="px-4 py-3 font-semibold text-center w-12">No</th>
-                                <th class="px-4 py-3 font-semibold">Nama Kegiatan</th>
-                                <th class="px-4 py-3 font-semibold">Tanggal</th>
-                                <th class="px-4 py-3 font-semibold">Status Kontrol</th>
-                                <th class="px-4 py-3 font-semibold text-center w-28">Aksi</th>
+                                <th class="px-3 md:px-4 py-3 font-semibold text-center w-10">No</th>
+                                <th class="px-3 md:px-4 py-3 font-semibold">Nama Kegiatan</th>
+                                <th class="px-3 md:px-4 py-3 font-semibold">Tanggal</th>
+                                <th class="px-3 md:px-4 py-3 font-semibold">Status Kontrol</th>
+                                <th class="px-3 md:px-4 py-3 font-semibold text-center w-24">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-gray-200 bg-white/60">
@@ -144,22 +152,22 @@
     </div>
 
     <!-- MODAL FORM KONTROL -->
-    <div id="modalKontrol" class="fixed inset-0 z-[100] hidden bg-gray-900 bg-opacity-60 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="modalKontrolContent">
+    <div id="modalKontrol" class="fixed inset-0 z-[100] hidden bg-gray-900 bg-opacity-60 flex items-center justify-center p-2 md:p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="modalKontrolContent">
             
             <!-- Header Modal -->
-            <div class="p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex justify-between items-center">
-                <div>
-                    <h3 class="text-xl font-bold text-brand-blue flex items-center gap-2"><i class="fa-solid fa-sliders text-brand-gold"></i> Form Kontrol Kegiatan</h3>
-                    <p class="text-sm font-semibold text-gray-600 mt-1" id="modalSubtitle">Nama Kegiatan</p>
+            <div class="p-4 md:p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex justify-between items-center shrink-0">
+                <div class="overflow-hidden pr-2">
+                    <h3 class="text-base md:text-xl font-bold text-brand-blue flex items-center gap-2 truncate"><i class="fa-solid fa-sliders text-brand-gold shrink-0"></i> Form Kontrol</h3>
+                    <p class="text-xs md:text-sm font-semibold text-gray-600 mt-0.5 truncate" id="modalSubtitle">Nama Kegiatan</p>
                 </div>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-50 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-50 rounded-full w-8 h-8 flex items-center justify-center transition-colors shrink-0">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             
             <!-- Body Modal -->
-            <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50 custom-scrollbar">
+            <div class="p-4 md:p-6 overflow-y-auto flex-1 bg-gray-50/50 custom-scrollbar">
                 
                 <form id="formKontrol">
                     <input type="hidden" id="idKegiatan">
@@ -167,29 +175,29 @@
                     <input type="hidden" id="namaSkuoModal">
 
                     <!-- Custom Tabs UI -->
-                    <div class="flex gap-2 mb-6 bg-gray-200/60 p-1.5 rounded-xl">
-                        <button type="button" id="tabPraBtn" onclick="switchModalTab('pra')" class="flex-1 py-2.5 text-sm font-bold rounded-lg bg-white text-brand-blue shadow-sm transition-all border border-gray-200 flex items-center justify-center gap-2">
+                    <div class="flex gap-2 mb-6 bg-gray-200/60 p-1 rounded-xl">
+                        <button type="button" id="tabPraBtn" onclick="switchModalTab('pra')" class="flex-1 py-2 text-xs md:text-sm font-bold rounded-lg bg-white text-brand-blue shadow-sm transition-all border border-gray-200 flex items-center justify-center gap-1 md:gap-2 whitespace-nowrap">
                             <i class="fa-regular fa-calendar-check text-brand-gold"></i> PRA KEGIATAN
                         </button>
-                        <button type="button" id="tabPascaBtn" onclick="switchModalTab('pasca')" class="flex-1 py-2.5 text-sm font-bold rounded-lg text-gray-500 hover:text-brand-blue hover:bg-white/50 transition-all flex items-center justify-center gap-2">
+                        <button type="button" id="tabPascaBtn" onclick="switchModalTab('pasca')" class="flex-1 py-2 text-xs md:text-sm font-bold rounded-lg text-gray-500 hover:text-brand-blue hover:bg-white/50 transition-all flex items-center justify-center gap-1 md:gap-2 whitespace-nowrap">
                             <i class="fa-solid fa-flag-checkered"></i> PASCA KEGIATAN
                         </button>
                     </div>
 
                     <!-- TAB 1: PRA KEGIATAN -->
-                    <div id="modalTabPra" class="space-y-6 animate-[fadeIn_0.3s_ease-out]">
+                    <div id="modalTabPra" class="space-y-4 md:space-y-6 animate-[fadeIn_0.3s_ease-out]">
                         
                         <!-- Reminder -->
-                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <div class="bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm">
                             <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-bell text-brand-gold"></i> Reminder Kegiatan</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 mb-1.5">Tanggal Reminder</label>
                                     <input type="date" id="pra_reminder_tgl" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 mb-1.5">Screenshot Bukti (Gambar)</label>
-                                    <input type="file" id="pra_reminder_file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100">
+                                    <input type="file" id="pra_reminder_file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100">
                                     <input type="hidden" id="pra_reminder_file_url">
                                     <div id="pra_reminder_link" class="mt-2 text-xs"></div>
                                 </div>
@@ -197,12 +205,12 @@
                         </div>
 
                         <!-- SPP -->
-                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <div class="bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm">
                             <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-file-invoice text-brand-gold"></i> Surat Permintaan Pelaksanaan (SPP)</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 mb-1.5">Nomor SPP</label>
-                                    <input type="text" id="pra_spp_no" placeholder="Contoh: 001/SPP/X/2026" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm">
+                                    <input type="text" id="pra_spp_no" placeholder="001/SPP/X/2026" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 mb-1.5">Tanggal SPP</label>
@@ -211,31 +219,44 @@
                             </div>
                         </div>
 
-                        <!-- Koordinasi & Persuratan -->
-                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                            <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-handshake text-brand-gold"></i> Koordinasi & Persuratan</h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-600 mb-2">Layanan Umum yang Terkoordinasi</label>
-                                    <div id="layananUmumContainer" class="flex flex-wrap gap-3">
-                                        <!-- Checkboxes injected by JS -->
-                                    </div>
+                        <!-- Koordinasi Pelayanan -->
+                        <div class="bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-handshake text-brand-gold"></i> Koordinasi Pelayanan</h4>
+                            <div>
+                                <div id="koordinasiContainer" class="flex flex-wrap gap-2 md:gap-3">
+                                    <!-- Checkboxes injected by JS -->
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-600 mb-1.5">Catatan Persuratan</label>
-                                    <textarea id="pra_persuratan" rows="2" placeholder="Tuliskan status persuratan jika ada..." class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Persuratan -->
+                        <div class="bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-envelope-open-text text-brand-gold"></i> Persuratan</h4>
+                            
+                            <div class="mb-4">
+                                <label class="block text-xs font-bold text-gray-600 mb-1.5">Jumlah Permintaan Surat</label>
+                                <input type="number" id="pra_surat_diminta" placeholder="0" class="w-full md:w-1/3 rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 mb-2 border-b pb-1">Daftar Surat yang Dibuat</label>
+                                <div id="suratListContainer" class="space-y-3 mb-3">
+                                    <!-- Dynamic Rows -->
                                 </div>
+                                <button type="button" onclick="addSuratRow()" class="text-xs font-bold text-brand-blue bg-blue-50 hover:bg-blue-100 border border-blue-200 py-1.5 px-3 rounded-lg transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Tambah Surat
+                                </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- TAB 2: PASCA KEGIATAN -->
-                    <div id="modalTabPasca" class="hidden space-y-6 animate-[fadeIn_0.3s_ease-out]">
+                    <div id="modalTabPasca" class="hidden space-y-4 md:space-y-6 animate-[fadeIn_0.3s_ease-out]">
                         
                         <!-- Status -->
-                        <div class="bg-white p-5 rounded-xl border-l-4 border-l-brand-blue shadow-sm">
+                        <div class="bg-white p-4 md:p-5 rounded-xl border-l-4 border-l-brand-blue shadow-sm">
                             <label class="block text-sm font-bold text-gray-700 mb-2">Status Akhir Kegiatan</label>
-                            <select id="pasca_status" class="w-full md:w-1/2 rounded-lg border-gray-300 border px-3 py-2.5 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-gray-50 font-semibold">
+                            <select id="pasca_status" class="w-full md:w-1/2 rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-gray-50 font-semibold">
                                 <option value="">-- Pilih Status --</option>
                                 <option value="Terlaksana">Terlaksana</option>
                                 <option value="Dibatalkan">Dibatalkan</option>
@@ -243,12 +264,12 @@
                         </div>
 
                         <!-- Arsip LPJ -->
-                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <div class="bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm">
                             <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-folder-open text-brand-gold"></i> Pengarsipan LPJ</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 mb-1.5">Upload File LPJ (PDF)</label>
-                                    <input type="file" id="pasca_lpj_file" accept=".pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100">
+                                    <input type="file" id="pasca_lpj_file" accept=".pdf" class="w-full text-sm text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100">
                                     <input type="hidden" id="pasca_lpj_file_url">
                                     <div id="pasca_lpj_link_info" class="mt-2 text-xs"></div>
                                 </div>
@@ -258,18 +279,18 @@
                                 </div>
                                 <div class="md:col-span-2">
                                     <input type="hidden" id="pasca_lpj_timestamp">
-                                    <div id="lpj_timestamp_info" class="text-xs text-brand-blue bg-blue-50 p-2 rounded border border-blue-100 hidden"><i class="fa-regular fa-clock"></i> Timestamp: <span></span></div>
+                                    <div id="lpj_timestamp_info" class="text-xs text-brand-blue bg-blue-50 p-2 rounded border border-blue-100 hidden"><i class="fa-regular fa-clock"></i> Timestamp Diarsip: <span></span></div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- SPB -->
-                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <div class="bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm">
                             <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-receipt text-brand-gold"></i> Surat Pertanggungjawaban Belanja (SPB)</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 mb-1.5">Nomor SPB</label>
-                                    <input type="text" id="pasca_spb_no" placeholder="Contoh: 001/SPB/X/2026" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm">
+                                    <input type="text" id="pasca_spb_no" placeholder="001/SPB/X/2026" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-gray-600 mb-1.5">Tanggal SPB</label>
@@ -284,9 +305,9 @@
             </div>
             
             <!-- Footer Modal -->
-            <div class="p-5 border-t border-gray-200 bg-white flex justify-end gap-3 rounded-b-2xl">
-                <button type="button" class="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition-colors text-sm" onclick="closeModal()">Tutup</button>
-                <button type="button" class="px-6 py-2.5 rounded-xl bg-brand-blue text-white font-bold hover:bg-blue-800 shadow-md transition-all flex items-center gap-2 text-sm" onclick="saveKontrolData()"><i class="fa-solid fa-save"></i> Simpan Progress</button>
+            <div class="p-4 md:p-5 border-t border-gray-200 bg-white flex justify-end gap-2 md:gap-3 rounded-b-2xl shrink-0">
+                <button type="button" class="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition-colors text-xs md:text-sm" onclick="closeModal()">Tutup</button>
+                <button type="button" class="px-5 py-2 rounded-xl bg-brand-blue text-white font-bold hover:bg-blue-800 shadow-md transition-all flex items-center gap-2 text-xs md:text-sm" onclick="saveKontrolData()"><i class="fa-solid fa-save"></i> Simpan Progress</button>
             </div>
         </div>
     </div>
@@ -298,13 +319,13 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbw2jUI_nr8ozuN2eo_UDX4m4RAQOZr6UrOA8bmcf1juOfdKRx2fqie3PFz7kjwzfjLJ/exec';
 
         // GLOBAL STATE
-        let db = { akun: [], skuo: [], kegiatan: [], kontrol: [], config: [] };
-        let currentUser = { wa: "", nama: "", listBidang: [] };
-        let currentBidang = "";
+        let db = { akun: [], skuo: [], bidang: [], kegiatan: [], kontrol: [], config: [] };
+        let currentUser = { wa: "", nama: "", listSkuoId: [] };
+        let currentSkuoId = "";
+        let currentSkuoNama = "";
 
-        // --- FETCH WRAPPER (Mendukung Simulation Mode otomatis jika gagal/Canvas) ---
+        // --- FETCH WRAPPER ---
         async function fetchAPI(payload) {
-            // Jika berjalan di Canvas (tidak ada google.script.run dan hostname lokal), gunakan mock data
             if (typeof google === 'undefined' && (window.location.hostname === '' || window.location.hostname === 'localhost' || window.location.hostname.includes('googleusercontent'))) {
                 return simulateBackend(payload);
             }
@@ -327,29 +348,27 @@
             }
         }
 
-        // --- SIMULATION BACKEND (Khusus untuk tampilan Canvas/Preview) ---
+        // --- SIMULATION BACKEND ---
         function simulateBackend(payload) {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     if (payload.action === 'getAllData') {
                         resolve({
-                            akun: [
-                                { id: "U1", no_wa: "6281234567890", nama: "Admin Canvas", bidang_kerja: "Keuangan,Operasional" }
-                            ],
+                            akun: [ { id: "USR1", no_wa: "628123", nama: "Ahmad Canvas", skuo_id: "SKUO-1,SKUO-2" } ],
+                            bidang: [ { id: "BDG-1", nama_bidang: "Keuangan" } ],
                             skuo: [
-                                { id: "SK-1", bidang_kerja: "Keuangan", nama_skuo: "Penyusunan Anggaran" },
-                                { id: "SK-2", bidang_kerja: "Keuangan", nama_skuo: "Audit Internal" },
-                                { id: "SK-3", bidang_kerja: "Operasional", nama_skuo: "Maintenance" }
+                                { id: "SKUO-1", bidang_kerja_id: "BDG-1", nama_skuo: "Penyusunan Anggaran" },
+                                { id: "SKUO-2", bidang_kerja_id: "BDG-1", nama_skuo: "Audit Internal" }
                             ],
                             kegiatan: [
-                                { id: "K-1", no_wa: "628123", nama: "Admin", bidang_kerja: "Keuangan", nama_kegiatan: "RAPAT TAHUNAN", skuo: "Penyusunan Anggaran", tanggal: "15/10/2026", mode: "Offline" },
-                                { id: "K-2", no_wa: "628123", nama: "Admin", bidang_kerja: "Keuangan", nama_kegiatan: "AUDIT CABANG", skuo: "Audit Internal", tanggal: "20/10/2026", mode: "Online" }
+                                { id: "K-1", no_wa: "628123", nama: "Ahmad", bidang_kerja_id: "BDG-1", skuo_id: "SKUO-1", nama_kegiatan: "RAPAT TAHUNAN", tanggal: "15/10/2026", mode: "Offline" },
+                                { id: "K-2", no_wa: "628123", nama: "Ahmad", bidang_kerja_id: "BDG-1", skuo_id: "SKUO-2", nama_kegiatan: "AUDIT CABANG", tanggal: "20/10/2026", mode: "Online" }
                             ],
                             kontrol: db.kontrol || [],
                             config: [
-                                { kategori: "Layanan_Umum", nilai: "Konsumsi" },
-                                { kategori: "Layanan_Umum", nilai: "Peminjaman Ruangan" },
-                                { kategori: "Layanan_Umum", nilai: "Sound System" }
+                                { kategori: "Koordinasi_Pelayanan", nilai: "Konsumsi" },
+                                { kategori: "Koordinasi_Pelayanan", nilai: "Peminjaman Ruangan" },
+                                { kategori: "Koordinasi_Pelayanan", nilai: "Berita Acara" }
                             ]
                         });
                     } else if (payload.action === 'saveKontrolData') {
@@ -402,15 +421,15 @@
                 document.getElementById('headerLogo').classList.remove('hidden');
                 document.getElementById('loginView').classList.remove('hidden');
                 
-                // Render Checkboxes Layanan Umum
-                const container = document.getElementById('layananUmumContainer');
+                // Render Checkboxes Koordinasi Pelayanan
+                const container = document.getElementById('koordinasiContainer');
                 container.innerHTML = '';
-                const layananList = db.config.filter(c => c.kategori === 'Layanan_Umum');
-                layananList.forEach((item, i) => {
+                const configList = db.config.filter(c => c.kategori === 'Koordinasi_Pelayanan');
+                configList.forEach((item, i) => {
                     container.innerHTML += `
-                        <label class="inline-flex items-center bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
-                            <input type="checkbox" class="chk-layanan w-4 h-4 text-brand-blue border-gray-300 rounded focus:ring-brand-blue" value="${item.nilai}" id="chkLU_${i}">
-                            <span class="ml-2 text-xs font-medium text-gray-700">${item.nilai}</span>
+                        <label class="inline-flex items-center bg-gray-50 border border-gray-200 px-2 py-1.5 md:px-3 md:py-2 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+                            <input type="checkbox" class="chk-koordinasi w-4 h-4 text-brand-blue border-gray-300 rounded focus:ring-brand-blue" value="${item.nilai}">
+                            <span class="ml-2 text-[10px] md:text-xs font-medium text-gray-700">${item.nilai}</span>
                         </label>
                     `;
                 });
@@ -431,12 +450,17 @@
 
         function formatToInputDate(dateStr) {
             if(!dateStr) return "";
-            if(dateStr.includes('-')) return dateStr; // Already yyyy-mm-dd
+            if(dateStr.includes('-')) return dateStr; 
             const parts = dateStr.split('/');
             if(parts.length !== 3) return dateStr;
             const d = parts[0].padStart(2, '0');
             const m = parts[1].padStart(2, '0');
             return `${parts[2]}-${m}-${d}`;
+        }
+        
+        function getSkuoName(id) {
+            const s = db.skuo.find(x => x.id === id);
+            return s ? s.nama_skuo : id;
         }
 
         // --- AUTH & NAVIGATION ---
@@ -452,23 +476,30 @@
 
             currentUser.wa = wa;
             currentUser.nama = userAccount.nama;
-            currentUser.listBidang = userAccount.bidang_kerja.split(',').map(b => b.trim());
+            // Split ID SKUO (asumsi dipisah koma)
+            currentUser.listSkuoId = userAccount.skuo_id ? userAccount.skuo_id.split(',').map(s => s.trim()) : [];
 
-            if (currentUser.listBidang.length === 1) {
-                enterApp(currentUser.listBidang[0]);
+            if (currentUser.listSkuoId.length === 0) {
+                Swal.fire('Akses Ditolak', 'Akun Anda belum dipetakan ke SKUO manapun.', 'error');
+                return;
+            }
+
+            if (currentUser.listSkuoId.length === 1) {
+                enterApp(currentUser.listSkuoId[0]);
             } else {
                 document.getElementById('loginView').classList.add('hidden');
-                document.getElementById('pilihBidangView').classList.remove('hidden');
-                document.getElementById('welcomePilihBidang').innerText = `Selamat datang, ${currentUser.nama}. Pilih akses Anda:`;
+                document.getElementById('pilihSkuoView').classList.remove('hidden');
+                document.getElementById('welcomePilihSkuo').innerText = `Selamat datang, ${currentUser.nama}. Pilih SKUO Anda:`;
                 
-                const listDiv = document.getElementById('listBidang');
+                const listDiv = document.getElementById('listSkuo');
                 listDiv.innerHTML = '';
-                currentUser.listBidang.forEach(bidang => {
+                currentUser.listSkuoId.forEach(id => {
+                    const skuoName = getSkuoName(id);
                     listDiv.innerHTML += `
-                        <button onclick="enterApp('${bidang}')" class="w-full text-left bg-white border border-gray-200 hover:border-brand-blue hover:shadow-md p-4 rounded-xl transition-all flex items-center justify-between group">
+                        <button onclick="enterApp('${id}')" class="w-full text-left bg-white border border-gray-200 hover:border-brand-blue hover:shadow-md p-3 md:p-4 rounded-xl transition-all flex items-center justify-between group">
                             <div>
-                                <p class="text-xs text-gray-500 mb-0.5">Akses sebagai SBK</p>
-                                <p class="font-bold text-brand-blue">${bidang}</p>
+                                <p class="text-[10px] md:text-xs text-gray-500 mb-0.5">Akses ID: ${id}</p>
+                                <p class="font-bold text-sm md:text-base text-brand-blue">${skuoName}</p>
                             </div>
                             <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-gold"></i>
                         </button>
@@ -477,17 +508,18 @@
             }
         }
 
-        function enterApp(bidang) {
-            currentBidang = bidang;
+        function enterApp(skuoId) {
+            currentSkuoId = skuoId;
+            currentSkuoNama = getSkuoName(skuoId);
             
             document.getElementById('loginView').classList.add('hidden');
-            document.getElementById('pilihBidangView').classList.add('hidden');
+            document.getElementById('pilihSkuoView').classList.add('hidden');
             document.getElementById('mainAppView').classList.remove('hidden');
             
             document.getElementById('infoNama').innerText = currentUser.nama;
-            document.getElementById('infoBidang').innerText = currentBidang;
+            document.getElementById('infoSkuo').innerText = currentSkuoNama;
 
-            if (currentUser.listBidang.length > 1) {
+            if (currentUser.listSkuoId.length > 1) {
                 document.getElementById('btnSwitchRole').classList.remove('hidden');
             }
             
@@ -496,15 +528,16 @@
 
         function switchRole() {
             document.getElementById('mainAppView').classList.add('hidden');
-            document.getElementById('pilihBidangView').classList.remove('hidden');
+            document.getElementById('pilihSkuoView').classList.remove('hidden');
         }
 
         function logout() {
-            currentUser = { wa: "", nama: "", listBidang: [] };
-            currentBidang = "";
+            currentUser = { wa: "", nama: "", listSkuoId: [] };
+            currentSkuoId = "";
+            currentSkuoNama = "";
             document.getElementById('loginWa').value = "";
             document.getElementById('mainAppView').classList.add('hidden');
-            document.getElementById('pilihBidangView').classList.add('hidden');
+            document.getElementById('pilihSkuoView').classList.add('hidden');
             document.getElementById('loginView').classList.remove('hidden');
         }
 
@@ -513,35 +546,34 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             
-            // Filter kegiatan berdasarkan Bidang Kerja yang dipilih
-            let myKegiatan = db.kegiatan.filter(k => k.bidang_kerja === currentBidang);
+            // Filter kegiatan berdasarkan SKUO ID yang dipilih
+            let myKegiatan = db.kegiatan.filter(k => k.skuo_id === currentSkuoId);
             
             if (myKegiatan.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 italic">Belum ada data kegiatan untuk bidang ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 italic text-sm">Belum ada data kegiatan untuk SKUO ini.</td></tr>`;
                 return;
             }
 
             myKegiatan.forEach((keg, index) => {
                 const kontrol = db.kontrol.find(c => c.id_kegiatan === keg.id);
-                let statusBadge = '<span class="bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded text-[10px] font-bold uppercase">Belum Diisi</span>';
+                let statusBadge = '<span class="bg-gray-100 text-gray-600 border border-gray-200 px-2 py-1 rounded text-[9px] md:text-[10px] font-bold uppercase">Belum Diisi</span>';
                 
                 if (kontrol) {
-                    if (kontrol.pasca_status === 'Terlaksana') statusBadge = '<span class="bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded text-[10px] font-bold uppercase">Terlaksana</span>';
-                    else if (kontrol.pasca_status === 'Dibatalkan') statusBadge = '<span class="bg-red-50 text-red-700 border border-red-200 px-2 py-1 rounded text-[10px] font-bold uppercase">Dibatalkan</span>';
-                    else statusBadge = '<span class="bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-1 rounded text-[10px] font-bold uppercase">Diproses</span>';
+                    if (kontrol.pasca_status === 'Terlaksana') statusBadge = '<span class="bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded text-[9px] md:text-[10px] font-bold uppercase">Terlaksana</span>';
+                    else if (kontrol.pasca_status === 'Dibatalkan') statusBadge = '<span class="bg-red-50 text-red-700 border border-red-200 px-2 py-1 rounded text-[9px] md:text-[10px] font-bold uppercase">Dibatalkan</span>';
+                    else statusBadge = '<span class="bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-1 rounded text-[9px] md:text-[10px] font-bold uppercase">Diproses</span>';
                 }
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-blue-50/40 transition-colors">
-                        <td class="px-4 py-3 text-center text-gray-500 text-xs">${index + 1}</td>
-                        <td class="px-4 py-3 font-bold text-brand-blue text-sm">
+                        <td class="px-3 md:px-4 py-3 text-center text-gray-500 text-xs">${index + 1}</td>
+                        <td class="px-3 md:px-4 py-3 font-bold text-brand-blue text-xs md:text-sm">
                             ${keg.nama_kegiatan}
-                            <div class="text-[10px] text-gray-400 font-normal mt-0.5"><i class="fa-solid fa-layer-group"></i> ${keg.skuo}</div>
                         </td>
-                        <td class="px-4 py-3 text-gray-700 text-xs">${keg.tanggal}</td>
-                        <td class="px-4 py-3">${statusBadge}</td>
-                        <td class="px-4 py-3 text-center">
-                            <button class="bg-brand-blue hover:bg-blue-800 text-white px-3 py-1.5 rounded shadow-sm text-xs font-semibold transition-colors flex items-center gap-1 mx-auto" onclick="openModal('${keg.id}')">
+                        <td class="px-3 md:px-4 py-3 text-gray-700 text-xs">${keg.tanggal}</td>
+                        <td class="px-3 md:px-4 py-3">${statusBadge}</td>
+                        <td class="px-3 md:px-4 py-3 text-center">
+                            <button class="bg-brand-blue hover:bg-blue-800 text-white px-2 py-1.5 md:px-3 md:py-1.5 rounded shadow-sm text-xs font-semibold transition-colors flex items-center justify-center gap-1 mx-auto whitespace-nowrap" onclick="openModal('${keg.id}')">
                                 <i class="fa-solid fa-pen-to-square"></i> Kontrol
                             </button>
                         </td>
@@ -562,18 +594,64 @@
             }
         }
 
+        // --- DYNAMIC SURAT LOGIC ---
+        function addSuratRow(no = "", perihal = "", tgl = "") {
+            const container = document.getElementById('suratListContainer');
+            const rowId = `surat_${Date.now()}_${Math.floor(Math.random()*1000)}`;
+            const html = `
+                <div id="${rowId}" class="surat-row flex flex-col md:flex-row gap-2 bg-gray-50 p-3 rounded border border-gray-200 relative">
+                    <button type="button" onclick="document.getElementById('${rowId}').remove()" class="absolute top-2 right-2 text-red-400 hover:text-red-600 md:relative md:top-0 md:right-0 md:self-end md:mb-1"><i class="fa-solid fa-circle-minus text-lg"></i></button>
+                    <div class="flex-1 pr-6 md:pr-0">
+                        <input type="text" class="surat-no w-full rounded border-gray-300 border px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-brand-blue" placeholder="Nomor Surat" value="${no}">
+                    </div>
+                    <div class="flex-[2]">
+                        <input type="text" class="surat-perihal w-full rounded border-gray-300 border px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-brand-blue" placeholder="Perihal" value="${perihal}">
+                    </div>
+                    <div class="flex-1">
+                        <input type="date" class="surat-tgl w-full rounded border-gray-300 border px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-brand-blue" value="${formatToInputDate(tgl)}">
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function getSuratDataJSON() {
+            const rows = document.querySelectorAll('.surat-row');
+            let data = [];
+            rows.forEach(row => {
+                data.push({
+                    no: row.querySelector('.surat-no').value,
+                    perihal: row.querySelector('.surat-perihal').value,
+                    tgl: row.querySelector('.surat-tgl').value
+                });
+            });
+            return JSON.stringify(data);
+        }
+
+        function renderSuratDataJSON(jsonStr) {
+            document.getElementById('suratListContainer').innerHTML = '';
+            if(!jsonStr) return;
+            try {
+                const data = JSON.parse(jsonStr);
+                data.forEach(s => addSuratRow(s.no, s.perihal, s.tgl));
+            } catch(e) { console.error("Gagal parse surat JSON", e); }
+        }
+
         // --- MODAL & FORM KONTROL LOGIC ---
         function switchModalTab(tab) {
+            const classActive = "flex-1 py-2 text-xs md:text-sm font-bold rounded-lg bg-white text-brand-blue shadow-sm transition-all border border-gray-200 flex items-center justify-center gap-1 md:gap-2 whitespace-nowrap";
+            const classInactive = "flex-1 py-2 text-xs md:text-sm font-bold rounded-lg text-gray-500 hover:text-brand-blue hover:bg-white/50 transition-all flex items-center justify-center gap-1 md:gap-2 whitespace-nowrap";
+            
             if (tab === 'pra') {
                 document.getElementById('modalTabPra').classList.remove('hidden');
                 document.getElementById('modalTabPasca').classList.add('hidden');
-                document.getElementById('tabPraBtn').className = "flex-1 py-2.5 text-sm font-bold rounded-lg bg-white text-brand-blue shadow-sm transition-all border border-gray-200 flex items-center justify-center gap-2";
-                document.getElementById('tabPascaBtn').className = "flex-1 py-2.5 text-sm font-bold rounded-lg text-gray-500 hover:text-brand-blue hover:bg-white/50 transition-all flex items-center justify-center gap-2";
+                document.getElementById('tabPraBtn').className = classActive;
+                document.getElementById('tabPascaBtn').className = classInactive;
             } else {
                 document.getElementById('modalTabPra').classList.add('hidden');
                 document.getElementById('modalTabPasca').classList.remove('hidden');
-                document.getElementById('tabPraBtn').className = "flex-1 py-2.5 text-sm font-bold rounded-lg text-gray-500 hover:text-brand-blue hover:bg-white/50 transition-all flex items-center justify-center gap-2";
-                document.getElementById('tabPascaBtn').className = "flex-1 py-2.5 text-sm font-bold rounded-lg bg-white text-brand-blue shadow-sm transition-all border border-gray-200 flex items-center justify-center gap-2";
+                document.getElementById('tabPraBtn').className = classInactive;
+                document.getElementById('tabPascaBtn').className = classActive;
             }
         }
 
@@ -583,12 +661,13 @@
             
             document.getElementById('idKegiatan').value = idKegiatan;
             document.getElementById('namaKegiatanModal').value = keg.nama_kegiatan;
-            document.getElementById('namaSkuoModal').value = keg.skuo;
+            document.getElementById('namaSkuoModal').value = currentSkuoNama;
             
             document.getElementById('formKontrol').reset();
+            document.getElementById('suratListContainer').innerHTML = '';
             
-            // Reset state
-            document.querySelectorAll('.chk-layanan').forEach(chk => chk.checked = false);
+            // Reset state upload
+            document.querySelectorAll('.chk-koordinasi').forEach(chk => chk.checked = false);
             document.getElementById('pra_reminder_file_url').value = '';
             document.getElementById('pra_reminder_link').innerHTML = '';
             document.getElementById('pasca_lpj_file_url').value = '';
@@ -603,16 +682,18 @@
                 if(data.pra_reminder_tgl) document.getElementById('pra_reminder_tgl').value = formatToInputDate(data.pra_reminder_tgl);
                 if(data.pra_spp_no) document.getElementById('pra_spp_no').value = data.pra_spp_no;
                 if(data.pra_spp_tgl) document.getElementById('pra_spp_tgl').value = formatToInputDate(data.pra_spp_tgl);
-                if(data.pra_persuratan) document.getElementById('pra_persuratan').value = data.pra_persuratan;
+                if(data.pra_surat_diminta) document.getElementById('pra_surat_diminta').value = data.pra_surat_diminta;
                 
+                renderSuratDataJSON(data.pra_surat_dibuat);
+
                 if(data.pra_reminder_file) {
                     document.getElementById('pra_reminder_file_url').value = data.pra_reminder_file;
-                    document.getElementById('pra_reminder_link').innerHTML = `<a href="${data.pra_reminder_file}" target="_blank" class="text-blue-600 hover:underline"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Bukti Tersimpan</a>`;
+                    document.getElementById('pra_reminder_link').innerHTML = `<a href="${data.pra_reminder_file}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Bukti</a>`;
                 }
 
-                if(data.pra_layanan_umum) {
-                    const selected = data.pra_layanan_umum.split(',');
-                    document.querySelectorAll('.chk-layanan').forEach(chk => {
+                if(data.pra_koordinasi) {
+                    const selected = data.pra_koordinasi.split(',');
+                    document.querySelectorAll('.chk-koordinasi').forEach(chk => {
                         if (selected.includes(chk.value)) chk.checked = true;
                     });
                 }
@@ -631,7 +712,7 @@
 
                 if(data.pasca_lpj_file) {
                     document.getElementById('pasca_lpj_file_url').value = data.pasca_lpj_file;
-                    document.getElementById('pasca_lpj_link_info').innerHTML = `<a href="${data.pasca_lpj_file}" target="_blank" class="text-blue-600 hover:underline"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat PDF Tersimpan</a>`;
+                    document.getElementById('pasca_lpj_link_info').innerHTML = `<a href="${data.pasca_lpj_file}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat PDF Arsip</a>`;
                 }
             }
             
@@ -662,21 +743,22 @@
         });
 
         async function saveKontrolData() {
-            // Cek Checkbox Layanan
-            let layananUmumArr = [];
-            document.querySelectorAll('.chk-layanan:checked').forEach(chk => layananUmumArr.push(chk.value));
+            // Cek Checkbox Koordinasi
+            let koordinasiArr = [];
+            document.querySelectorAll('.chk-koordinasi:checked').forEach(chk => koordinasiArr.push(chk.value));
 
             let payload = {
                 id_kegiatan: document.getElementById('idKegiatan').value,
                 nama_kegiatan: document.getElementById('namaKegiatanModal').value,
-                skuo_nama: document.getElementById('namaSkuoModal').value,
+                skuo_nama: document.getElementById('namaSkuoModal').value, // Digunakan hanya untuk format nama file
                 
                 pra_reminder_tgl: document.getElementById('pra_reminder_tgl').value,
                 pra_reminder_file_url: document.getElementById('pra_reminder_file_url').value,
                 pra_spp_no: document.getElementById('pra_spp_no').value,
                 pra_spp_tgl: document.getElementById('pra_spp_tgl').value,
-                pra_layanan_umum: layananUmumArr.join(','),
-                pra_persuratan: document.getElementById('pra_persuratan').value,
+                pra_koordinasi: koordinasiArr.join(','),
+                pra_surat_diminta: document.getElementById('pra_surat_diminta').value,
+                pra_surat_dibuat: getSuratDataJSON(),
                 
                 pasca_status: document.getElementById('pasca_status').value,
                 pasca_lpj_file_url: document.getElementById('pasca_lpj_file_url').value,
