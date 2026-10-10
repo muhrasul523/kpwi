@@ -71,14 +71,15 @@
         .animation-delay-4000 { animation-delay: 4s; }
     </style>
 </head>
-<body class="antialiased selection:bg-brand-gold selection:text-brand-blue flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+<body class="antialiased selection:bg-brand-gold selection:text-brand-blue flex flex-col min-h-screen relative overflow-x-hidden">
 
-    <!-- Animasi Background Blobs untuk kesan modern -->
-    <div class="absolute top-0 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob z-0"></div>
-    <div class="absolute top-0 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-2000 z-0"></div>
-    <div class="absolute -bottom-8 left-40 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-4000 z-0"></div>
+    <!-- Animasi Background Blobs (Diubah menjadi fixed & pointer-events-none agar rapi saat discroll) -->
+    <div class="fixed top-0 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob z-0 pointer-events-none"></div>
+    <div class="fixed top-0 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-2000 z-0 pointer-events-none"></div>
+    <div class="fixed -bottom-8 left-40 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-4000 z-0 pointer-events-none"></div>
 
-    <div class="w-full max-w-4xl relative z-10 flex flex-col items-center">
+    <!-- MAIN WRAPPER: Menggunakan my-auto agar otomatis tengah jika layar besar, tapi aman discroll jika layar kecil -->
+    <div class="w-full max-w-4xl mx-auto my-auto relative z-10 flex flex-col items-center py-12 px-4 sm:px-6">
         
         <!-- HEADER / LOGO SECTION -->
         <div class="text-center mb-10 fade-in w-full">
@@ -90,7 +91,7 @@
             </div>
             
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-brand-blue via-blue-700 to-blue-500 drop-shadow-sm pb-1">
-                Portal Kinerja
+                - PORTAL KINERJA -
             </h1>
             
             <!-- Deskripsi 3 Baris dengan Makassar -->
