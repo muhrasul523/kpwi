@@ -40,7 +40,6 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        /* Mengamankan modal scroll area */
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     </style>
 </head>
@@ -98,7 +97,7 @@
     </div>
 
     <!-- 3. MAIN APP VIEW (DASHBOARD KONTROL) -->
-    <div id="mainAppView" class="hidden fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+    <div id="mainAppView" class="hidden fade-in max-w-[95rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         
         <div class="text-center mb-6 fade-in flex flex-col md:flex-row items-center justify-center gap-3">
             <img src="../../logo_wahdah_islamiyah.png" alt="Logo Aplikasi" class="h-10 md:h-12 drop-shadow-md" onerror="this.src='https://placehold.co/150x150/ffffff/1e3a8a?text=Logo'">
@@ -156,14 +155,17 @@
                 </div>
             </div>
 
+            <!-- MODIFIKASI: Penambahan Header Mode dan Keterangan -->
             <div class="overflow-x-auto rounded-xl border border-gray-200">
                 <table class="w-full text-left text-xs md:text-sm" id="dataTable">
                     <thead class="bg-brand-blue text-white whitespace-nowrap">
                         <tr>
                             <th class="px-3 md:px-4 py-3 font-semibold text-center w-10 cursor-pointer" onclick="sortTable(0)">No <i class="fa-solid fa-sort text-[10px]"></i></th>
                             <th class="px-3 md:px-4 py-3 font-semibold cursor-pointer" onclick="sortTable(1)">Nama Kegiatan <i class="fa-solid fa-sort text-[10px]"></i></th>
-                            <th class="px-3 md:px-4 py-3 font-semibold cursor-pointer w-56" onclick="sortTable(2, true)">Tanggal <i class="fa-solid fa-sort text-[10px]"></i></th>
-                            <th class="px-3 md:px-4 py-3 font-semibold cursor-pointer" onclick="sortTable(3)">Status Kinerja <i class="fa-solid fa-sort text-[10px]"></i></th>
+                            <th class="px-3 md:px-4 py-3 font-semibold cursor-pointer w-48" onclick="sortTable(2, true)">Tanggal <i class="fa-solid fa-sort text-[10px]"></i></th>
+                            <th class="px-3 md:px-4 py-3 font-semibold w-24">Mode</th>
+                            <th class="px-3 md:px-4 py-3 font-semibold">Keterangan</th>
+                            <th class="px-3 md:px-4 py-3 font-semibold cursor-pointer" onclick="sortTable(5)">Status Kinerja <i class="fa-solid fa-sort text-[10px]"></i></th>
                             <th class="px-3 md:px-4 py-3 font-semibold text-center w-32">Aksi</th>
                         </tr>
                     </thead>
@@ -549,6 +551,9 @@
             document.getElementById('loginView').classList.remove('hidden');
         }
 
+        // =====================================
+        // MODIFIKASI: Render Table Baru
+        // =====================================
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
@@ -556,7 +561,7 @@
             let myKegiatan = db.kegiatan.filter(k => k.skuo_id === currentSkuoId);
             
             if (myKegiatan.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 italic text-sm">Belum ada data kegiatan untuk SKUO ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-500 italic text-sm">Belum ada data kegiatan untuk SKUO ini.</td></tr>`;
                 return;
             }
 
@@ -583,6 +588,8 @@
                             ${formatDisplayDateIndo(keg.tanggal)} 
                             ${getCountdownBadge(keg.tanggal, statusRaw)}
                         </td>
+                        <td class="px-3 md:px-4 py-3 text-gray-600 font-semibold text-xs whitespace-nowrap">${keg.mode || '-'}</td>
+                        <td class="px-3 md:px-4 py-3 text-gray-500 text-[10px] md:text-xs truncate max-w-[200px]" title="${keg.keterangan || ''}">${keg.keterangan || '-'}</td>
                         <td class="px-3 md:px-4 py-3">${statusBadge}</td>
                         <td class="px-3 md:px-4 py-3 text-center">
                             <button class="bg-brand-blue hover:bg-blue-800 text-white px-2 py-1.5 md:px-3 md:py-1.5 rounded shadow-sm text-xs font-semibold transition-colors flex items-center justify-center gap-1 mx-auto whitespace-nowrap" onclick="openModal('${keg.id}')">
@@ -692,7 +699,7 @@
                 let filesData = [];
                 if (fileInput.files.length > 0) {
                     for(let i=0; i < fileInput.files.length; i++) {
-                        if (i >= 3) break; // Hard limit 3 files per row (jaga-jaga jika bypass alert)
+                        if (i >= 3) break; 
                         let fileBase64 = await compressImage(fileInput.files[i], 150);
                         let fileName = fileInput.files[i].name.replace(/\.[^/.]+$/, "") + ".jpg";
                         filesData.push({ base64: fileBase64, name: fileName });
@@ -713,7 +720,6 @@
                         <input type="text" class="surat-no w-full rounded border-gray-300 border px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-brand-blue uppercase" placeholder="Nomor Surat" value="${no}" oninput="this.value = this.value.toUpperCase()">
                     </div>
                     <div class="flex-[2]">
-                        <!-- Menambahkan fungsi otomatis huruf kapital untuk field Perihal -->
                         <input type="text" class="surat-perihal w-full rounded border-gray-300 border px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-brand-blue uppercase" placeholder="Perihal" value="${perihal}" oninput="this.value = this.value.toUpperCase()">
                     </div>
                     <div class="flex-1">
@@ -954,6 +960,7 @@
             }
         }
 
+        // UPDATE simulasi dummy (agar include Mode dan Keterangan)
         function simulateBackend(payload) {
             return new Promise((resolve) => {
                 setTimeout(() => {
@@ -962,7 +969,7 @@
                         for(let i=1; i<=10; i++) {
                             let skuo = (i % 2 === 0) ? "SKUO-2" : "SKUO-1";
                             let namaK = `KEGIATAN SIMULASI ${i} TAHUN 2026`;
-                            dummyKgt.push({ id: `KGT-${i}`, skuo_id: skuo, nama_kegiatan: namaK, tanggal: `15/10/2026` });
+                            dummyKgt.push({ id: `KGT-${i}`, skuo_id: skuo, nama_kegiatan: namaK, tanggal: `15/10/2026`, mode: "Offline", keterangan: "Keterangan contoh simulasi" });
                             let isDone = i <= 5;
                             dummyKtrl.push({
                                 id_kegiatan: `KGT-${i}`, nama_kegiatan: namaK,
@@ -972,7 +979,7 @@
                             });
                         }
                         resolve({
-                            akun: [ { id: "USR1", no_wa: "628123", nama: "Muh. Yusuf Rachman Rivai", skuo_id: "SKUO-1,SKUO-2" } ],
+                            akun: [ { id: "USR1", no_wa: "628123", email: "sbk@mail.com", nama: "Muh. Yusuf Rachman Rivai", skuo_id: "SKUO-1,SKUO-2" } ],
                             skuo: [ { id: "SKUO-1", nama_skuo: "Penyusunan Anggaran" }, { id: "SKUO-2", nama_skuo: "Audit Internal" } ],
                             kegiatan: dummyKgt, kontrol: dummyKtrl,
                             config: [ { kategori: "Koordinasi_Pelayanan", nilai: "Konsumsi" }, { kategori: "Koordinasi_Pelayanan", nilai: "Peminjaman Ruangan" }, { kategori: "Koordinasi_Pelayanan", nilai: "Berita Acara" }, { kategori: "Koordinasi_Pelayanan", nilai: "Zoom / Multimedia" } ]
