@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="Input Kegiatan Koordinator Staf Bidang Kerja">
+    <meta property="og:description" content="Aplikasi pengontrolan kinerja pegawai Kantor Pusat Wahdah Islamiyah.">
+    <!-- OG Image untuk preview link (sesuai request) -->
+    <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
+    
     <title>Input Kegiatan KSBK</title>
+    <!-- Favicon logo tab browser (sesuai request) -->
+    <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -40,22 +46,27 @@
 </head>
 <body class="antialiased selection:bg-brand-gold selection:text-brand-blue" onload="initSystem()">
 
-    <!-- LOADING OVERLAY (DIPERCEPAT & BUG NULL TERATASI) -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-opacity duration-200">
-        <i class="fa-solid fa-circle-notch fa-spin text-5xl text-brand-gold mb-6"></i>
-        <div class="w-64 h-2 bg-blue-900 rounded-full overflow-hidden shadow-inner">
-            <div class="h-full bg-brand-gold w-full animate-[pulse_0.6s_ease-in-out_infinite]"></div>
+    <!-- LOADING OVERLAY (UPGRADED) -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-opacity duration-300">
+        <!-- Lingkaran Berputar & Logo -->
+        <div class="relative flex justify-center items-center mb-8">
+            <div class="absolute w-24 h-24 border-4 border-brand-gold border-t-transparent border-b-transparent rounded-full animate-spin"></div>
+            <div class="absolute w-20 h-20 border-4 border-blue-400 border-l-transparent border-r-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo" class="h-12 w-12 drop-shadow-md z-10" onerror="this.style.display='none'">
         </div>
-        <!-- ID loadingText dikembalikan agar tidak terjadi null error di Javascript -->
-        <p id="loadingText" class="mt-4 text-sm font-medium text-blue-100">Memuat data... <span id="loadingPercent">0%</span></p>
+        <!-- Progress Bar Linier -->
+        <div class="w-64 h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner relative">
+            <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_0.8s_ease-in-out_infinite] rounded-full"></div>
+        </div>
+        <!-- Teks Umum -->
+        <p id="loadingText" class="mt-5 text-sm font-semibold text-blue-100 tracking-wide">Memuat data... <span id="loadingPercent" class="text-brand-gold font-bold">0%</span></p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <!-- HEADER -->
         <div class="text-center mb-6 fade-in hidden" id="headerLogo">
-            <!-- URL Logo dikembalikan ke path lokal untuk mencegah ERR_SSL_VERSION_OR_CIPHER_MISMATCH -->
-            <img src="../../logo_wahdah_islamiyah.png" alt="Logo" class="h-16 mx-auto mb-3 drop-shadow-xl" onerror="this.style.display='none'">
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-16 mx-auto mb-3 drop-shadow-xl" onerror="this.style.display='none'">
             <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kinerja Pegawai</h1>
             <p class="text-gray-500 mt-1 text-sm font-medium">Kantor Pusat Wahdah Islamiyah</p>
         </div>
@@ -173,10 +184,40 @@
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 border-b pb-4">
                     <h3 class="text-lg font-bold text-brand-blue flex items-center"><i class="fa-solid fa-list-check text-brand-gold mr-2"></i> Daftar Kegiatan</h3>
                     
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <select id="filterBidangTable" onchange="applyTableState()" class="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white"></select>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-2 w-full">
+                        <!-- FILTER 1: BULAN -->
+                        <select id="filterBulanTable" onchange="applyTableState()" class="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white">
+                            <option value="Semua">Semua Bulan</option>
+                            <option value="01">Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+
+                        <!-- FILTER 2: SKUO -->
+                        <select id="filterSkuoTable" onchange="applyTableState()" class="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white truncate">
+                            <!-- Diisi dinamis via JS berdasarkan akses user -->
+                            <option value="Semua">Semua SKUO</option>
+                        </select>
+
+                        <!-- FILTER 3: MODE -->
+                        <select id="filterModeTable" onchange="applyTableState()" class="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white">
+                            <option value="Semua">Semua Mode</option>
+                            <option value="Offline">Offline</option>
+                            <option value="Online">Online</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
                         
-                        <div class="relative flex-1 md:w-64">
+                        <!-- SEARCH BAR -->
+                        <div class="relative">
                             <input type="text" id="searchTable" oninput="applyTableState()" placeholder="Pencarian bebas..." class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white">
                             <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                         </div>
@@ -216,11 +257,8 @@
         let currentBidangId = "";
         let tomSelectInstance = null;
 
-        // TABLE STATE (Untuk Sort & Filter Terpadu)
-        let tableState = {
-            sortBy: 'tanggal', 
-            sortAsc: false 
-        };
+        // TABLE STATE
+        let tableState = { sortBy: 'tanggal', sortAsc: false };
 
         // --- FETCH WRAPPER ---
         async function fetchAPI(payload) {
@@ -239,7 +277,7 @@
             } catch (error) {
                 console.error("API Fetch Error:", error); 
                 if (window.location.hostname === '' || window.location.hostname.includes('googleusercontent')) {
-                    console.warn("Berjalan di Mode Simulasi (Fallback)");
+                    console.warn("Berjalan di Mode Simulasi");
                     return getSimulationData();
                 }
                 throw error;
@@ -250,8 +288,11 @@
             return {
                 bidang: [{ id: "BDG001", nama_bidang: "BIDANG PENDIDIKAN" }],
                 akun: [{ id: "KSBK001", no_wa: "6281234567890", nama: "Admin Pusat", bidang_kerja_id: "BDG001" }],
-                skuo: [{ id: "SKUO001", bidang_kerja_id: "BDG001", nama_skuo: "DEPARTEMEN PENDIDIKAN ANAK" }],
-                kegiatan: [{ id: "SIM-1", no_wa: "6281234567890", nama: "Admin Pusat", bidang_kerja_id: "BDG001", skuo_id: "SKUO001", nama_kegiatan: "RAPAT", tanggal: "10/10/2026", mode: "Offline", keterangan: "Testing" }]
+                skuo: [{ id: "SKUO001", bidang_kerja_id: "BDG001", nama_skuo: "DEPARTEMEN PENDIDIKAN ANAK" }, { id: "SKUO002", bidang_kerja_id: "BDG001", nama_skuo: "LEMBAGA SEKOLAH DASAR" }],
+                kegiatan: [
+                    { id: "SIM-1", no_wa: "6281234567890", nama: "Admin", bidang_kerja_id: "BDG001", skuo_id: "SKUO001", nama_kegiatan: "RAPAT TAHUNAN", tanggal: "10/10/2026", mode: "Offline", keterangan: "Testing" },
+                    { id: "SIM-2", no_wa: "6281234567890", nama: "Admin", bidang_kerja_id: "BDG001", skuo_id: "SKUO002", nama_kegiatan: "EVALUASI GURU", tanggal: "05/11/2026", mode: "Online", keterangan: "Google Meet" }
+                ]
             };
         }
 
@@ -260,11 +301,8 @@
         let loadProgress = 0;
 
         function startLoading(text = "Memuat data...") {
-            // Defensive programming: pastikan elemen ada sebelum diubah
             const textEl = document.getElementById('loadingText');
-            if (textEl) {
-                textEl.innerHTML = `${text} <span id="loadingPercent">0%</span>`;
-            }
+            if (textEl) { textEl.innerHTML = `${text} <span id="loadingPercent" class="text-brand-gold font-bold">0%</span>`; }
             
             const overlay = document.getElementById('loadingOverlay');
             if (overlay) {
@@ -275,11 +313,11 @@
             loadProgress = 0;
             clearInterval(loadInterval);
             loadInterval = setInterval(() => {
-                loadProgress += Math.floor(Math.random() * 30) + 20;
+                loadProgress += Math.floor(Math.random() * 20) + 15;
                 if (loadProgress > 95) loadProgress = 95;
                 const pct = document.getElementById('loadingPercent');
                 if(pct) pct.innerText = loadProgress + '%';
-            }, 50);
+            }, 60);
         }
 
         function endLoading() {
@@ -290,7 +328,7 @@
                 const overlay = document.getElementById('loadingOverlay');
                 if (overlay) overlay.style.opacity = '0';
                 setTimeout(() => { if(overlay) overlay.style.display = 'none'; }, 200);
-            }, 100);
+            }, 200);
         }
 
         async function initSystem() {
@@ -306,16 +344,14 @@
                     sortField: { field: "text", direction: "asc" },
                     placeholder: "Pilih / Cari SKUO..."
                 });
-                
                 endLoading();
             } catch (error) {
                 console.error("InitSystem Error:", error);
                 endLoading();
                 Swal.fire({
                     icon: 'error', title: 'Gagal Memuat', 
-                    html: 'Pastikan aplikasi sudah di-deploy menggunakan <b>Versi Baru</b>.<br><br><span class="text-xs text-gray-400">Atur "Execute As" ke "Me", dan "Access" ke "Anyone".</span>',
-                    confirmButtonText: 'Muat Ulang',
-                    confirmButtonColor: '#1e3a8a'
+                    html: 'Sistem tidak dapat terhubung. Muat ulang halaman.',
+                    confirmButtonText: 'Muat Ulang'
                 }).then(() => location.reload());
             }
         }
@@ -379,20 +415,6 @@
             currentUser.nama = userAccount.nama;
             currentUser.listBidangId = String(userAccount.bidang_kerja_id).split(',').map(b => b.trim());
 
-            const filterSelect = document.getElementById('filterBidangTable');
-            filterSelect.innerHTML = "";
-            if (currentUser.listBidangId.length > 1) {
-                filterSelect.innerHTML = `<option value="Semua">Semua Bidang</option>`;
-                filterSelect.disabled = false;
-            } else {
-                filterSelect.disabled = true;
-            }
-            
-            currentUser.listBidangId.forEach(bId => {
-                const bObj = db.bidang.find(b => b.id === bId);
-                filterSelect.innerHTML += `<option value="${bId}">${bObj ? bObj.nama_bidang : bId}</option>`;
-            });
-
             if (currentUser.listBidangId.length === 1) {
                 enterApp(currentUser.listBidangId[0]);
             } else {
@@ -427,7 +449,19 @@
             document.getElementById('infoBidang').innerText = bObj ? bObj.nama_bidang : currentBidangId;
             
             setupForm();
+            populateSkuoFilter();
             applyTableState();
+        }
+
+        function populateSkuoFilter() {
+            const filterSkuo = document.getElementById('filterSkuoTable');
+            filterSkuo.innerHTML = '<option value="Semua">Semua SKUO</option>';
+            
+            // Generate list SKUO yang hanya berelasi dengan bidang user yang sedang aktif
+            const mySkuo = db.skuo.filter(s => s.bidang_kerja_id === currentBidangId);
+            mySkuo.forEach(s => {
+                filterSkuo.innerHTML += `<option value="${s.id}">${s.nama_skuo}</option>`;
+            });
         }
 
         function logout() {
@@ -481,7 +515,7 @@
             const isEdit = document.getElementById('formMode').value === 'edit';
             const action = isEdit ? 'updateKegiatan' : 'saveKegiatan';
             
-            startLoading(isEdit ? "Menyimpan Perubahan..." : "Mengirim Data...");
+            startLoading(isEdit ? "Menyimpan..." : "Menyimpan...");
 
             try {
                 db = await fetchAPI({ action: action, data: payload });
@@ -499,7 +533,7 @@
             const data = db.kegiatan.find(k => k.id === id);
             if (!data) return;
             if (data.bidang_kerja_id !== currentBidangId) {
-                Swal.fire('Akses Ditolak', 'Anda tidak dapat mengedit kegiatan bidang lain.', 'warning');
+                Swal.fire('Akses Ditolak', 'Bukan kegiatan bidang Anda.', 'warning');
                 return;
             }
 
@@ -521,7 +555,7 @@
         function deleteData(id) {
             const data = db.kegiatan.find(k => k.id === id);
             if (data && data.bidang_kerja_id !== currentBidangId) {
-                Swal.fire('Akses Ditolak', 'Anda tidak dapat menghapus kegiatan bidang lain.', 'warning');
+                Swal.fire('Akses Ditolak', 'Bukan kegiatan bidang Anda.', 'warning');
                 return;
             }
 
@@ -570,16 +604,33 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
             
-            const filterValue = document.getElementById('filterBidangTable').value;
+            const filterBulan = document.getElementById('filterBulanTable').value;
+            const filterSkuo = document.getElementById('filterSkuoTable').value;
+            const filterMode = document.getElementById('filterModeTable').value;
             const searchValue = document.getElementById('searchTable').value.toLowerCase();
             
-            // 1. FILTER BIDANG
+            // 1. BASE DATA (Berdasarkan bidang user saat login)
             let myData = db.kegiatan.filter(k => currentUser.listBidangId.includes(k.bidang_kerja_id));
-            if (filterValue && filterValue !== "Semua") {
-                myData = myData.filter(k => k.bidang_kerja_id === filterValue);
+
+            // 2. FILTER BULAN
+            if (filterBulan && filterBulan !== "Semua") {
+                myData = myData.filter(k => {
+                    const parsed = parseDateRobust(k.tanggal);
+                    return parsed.m.padStart(2, '0') === filterBulan;
+                });
             }
 
-            // 2. SEARCH
+            // 3. FILTER SKUO
+            if (filterSkuo && filterSkuo !== "Semua") {
+                myData = myData.filter(k => k.skuo_id === filterSkuo);
+            }
+
+            // 4. FILTER MODE
+            if (filterMode && filterMode !== "Semua") {
+                myData = myData.filter(k => String(k.mode).toLowerCase() === filterMode.toLowerCase());
+            }
+
+            // 5. SEARCH GLOBAL (Mencari di semua teks yang tampil)
             if (searchValue) {
                 myData = myData.filter(k => {
                     const bObj = db.bidang.find(b => b.id === k.bidang_kerja_id);
@@ -591,7 +642,7 @@
                 });
             }
 
-            // 3. SORT
+            // 6. SORTING ALGORITHM
             myData.sort((a, b) => {
                 let valA = a[tableState.sortBy];
                 let valB = b[tableState.sortBy];
@@ -615,7 +666,7 @@
                 return 0;
             });
             
-            // RENDER HTML
+            // 7. RENDER HTML
             if (myData.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-500 italic">Data tidak ditemukan.</td></tr>`;
                 return;
