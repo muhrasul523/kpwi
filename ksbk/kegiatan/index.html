@@ -7,7 +7,7 @@
     <meta property="og:description" content="Aplikasi pengontrolan kinerja pegawai Kantor Pusat Wahdah Islamiyah.">
     <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
     
-    <title>Input Kegiatan Koordinator Staf Bidang Kerja</title>
+    <title>Input Kegiatan KSBK</title>
     <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -51,7 +51,7 @@
         <div class="w-72 max-w-[80vw] h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner border border-blue-800">
             <div class="h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_1s_ease-in-out_infinite] shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
         </div>
-        <p class="mt-4 text-sm font-medium text-blue-200" id="loadingText">Memuat Sistem... <span id="loadingPercent">0%</span></p>
+        <p class="mt-4 text-sm font-medium text-blue-200" id="loadingText">Sedang memuat data... <span id="loadingPercent">0%</span></p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -91,7 +91,7 @@
         <!-- 3. MAIN APP VIEW -->
         <div id="mainAppView" class="hidden fade-in">
             
-            <!-- User Info Card (Diubah ke gradien hijau sesuai instruksi) -->
+            <!-- User Info Card -->
             <div class="max-w-5xl mx-auto bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-4 w-full">
                     <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30 flex-shrink-0">
@@ -241,15 +241,32 @@
                 }
             } catch (error) {
                 console.error("API Error:", error);
+                
+                // --- MODE SIMULASI UNTUK KANVAS GEMINI ---
+                if (window.location.hostname === '' || window.location.hostname.includes('googleusercontent')) {
+                    console.warn("Berjalan di Mode Simulasi karena Fetch Gagal.");
+                    return getSimulationData();
+                }
+                
                 throw error;
             }
         }
 
-        // --- CORE SYSTEM & LOADING (PERSENTASE) ---
+        // Data Simulasi (Fallback Canvas)
+        function getSimulationData() {
+            return {
+                bidang: [{ id: "BDG001", nama_bidang: "BIDANG DAKWAH KADERISASI" }],
+                akun: [{ id: "KSBK001", no_wa: "6281234567890", nama: "Admin Pusat", bidang_kerja_id: "BDG001" }],
+                skuo: [{ id: "SKUO001", bidang_kerja_id: "BDG001", nama_skuo: "DEPARTEMEN DAKWAH MASJID" }],
+                kegiatan: []
+            };
+        }
+
+        // --- CORE SYSTEM & LOADING ---
         let loadInterval;
         let loadProgress = 0;
 
-        function startLoading(text = "Memuat Aplikasi...") {
+        function startLoading(text = "Sedang memuat data...") {
             document.getElementById('loadingText').innerHTML = `${text} <span id="loadingPercent">0%</span>`;
             document.getElementById('loadingOverlay').style.display = 'flex';
             setTimeout(() => { document.getElementById('loadingOverlay').style.opacity = '1'; }, 10);
@@ -293,7 +310,7 @@
                 endLoading();
                 Swal.fire({
                     icon: 'error', title: 'Koneksi Gagal', 
-                    text: 'Tidak dapat terhubung ke server. Silakan muat ulang halaman.',
+                    text: 'Pastikan URL WebApp sudah menggunakan "Versi Baru" (New Version) saat proses Deploy.',
                     confirmButtonText: 'Muat Ulang'
                 }).then(() => location.reload());
             }
@@ -306,37 +323,21 @@
             input.value = val;
         }
 
-        function formatToInputDate(dateStr) {
-            if(!dateStr) return "";
-            const parts = dateStr.split('/');
-            if(parts.length !== 3) return dateStr;
-            const d = parts[0].padStart(2, '0');
-            const m = parts[1].padStart(2, '0');
-            return `${parts[2]}-${m}-${d}`;
-        }
-
-        function formatToDBDate(dateStr) {
-            if(!dateStr) return "";
-            const parts = dateStr.split('-');
-            if(parts.length !== 3) return dateStr;
-            return `${parseInt(parts[2])}/${parseInt(parts[1])}/${parts[0]}`;
-        }
-
         function formatToDisplayDate(dateStr) {
             if(!dateStr) return "-";
-            const parts = dateStr.split('/');
+            const parts = dateStr.split('-');
             if(parts.length !== 3) return dateStr;
             const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            const d = parts[0]; 
+            const d = parts[2]; 
             const m = months[parseInt(parts[1]) - 1];
-            return `${d} ${m} ${parts[2]}`;
+            return `${d} ${m} ${parts[0]}`;
         }
 
         // --- AUTH & NAVIGATION ---
         function handleLogin(e) {
             e.preventDefault();
             const wa = document.getElementById('loginWa').value;
-            // Pencocokan string untuk mengatasi perbedaan format angka antar server
+            // Pengecekan ketat mencegah masalah tipe data int/string
             const userAccount = db.akun.find(a => String(a.no_wa) === String(wa));
             
             if (!userAccount) {
@@ -347,10 +348,9 @@
             currentUser.wa = wa;
             currentUser.nama = userAccount.nama;
             
-            // Mengambil ID Bidang Kerja dari kolom DB (mendukung koma)
+            // Mengubah bidang_kerja_id menjadi array (Mendukung user dgn 2 bidang)
             currentUser.listBidangId = String(userAccount.bidang_kerja_id).split(',').map(b => b.trim());
 
-            // Siapkan dropdown filter table berdasarkan relasi Bidang
             const filterSelect = document.getElementById('filterBidangTable');
             filterSelect.innerHTML = "";
             if (currentUser.listBidangId.length > 1) {
@@ -401,7 +401,6 @@
             
             document.getElementById('infoNama').innerText = currentUser.nama;
             
-            // Konversi ID bidang menjadi Nama Bidang untuk Header UI
             const bObj = db.bidang.find(b => b.id === currentBidangId);
             document.getElementById('infoBidang').innerText = bObj ? bObj.nama_bidang : currentBidangId;
             
@@ -437,7 +436,6 @@
 
         // --- FORM LOGIC ---
         function setupForm() {
-            // Filter list SKUO berdasarkan relasi Bidang_id yang aktif
             const mySkuo = db.skuo.filter(s => s.bidang_kerja_id === currentBidangId);
             tomSelectInstance.clear();
             tomSelectInstance.clearOptions();
@@ -451,16 +449,14 @@
         async function submitForm(e) {
             e.preventDefault();
             
-            const skuoId = document.getElementById('skuoSelect').value;
-            
             const payload = {
                 id: document.getElementById('formId').value,
                 no_wa: currentUser.wa,
                 nama: currentUser.nama,
                 bidang_kerja_id: currentBidangId,
-                skuo_id: skuoId,
+                skuo_id: document.getElementById('skuoSelect').value,
                 nama_kegiatan: document.getElementById('namaKegiatan').value.toUpperCase(),
-                tanggal: formatToDBDate(document.getElementById('tanggalInput').value),
+                tanggal: document.getElementById('tanggalInput').value, // yyyy-mm-dd format
                 mode: document.getElementById('modeInput').value,
                 keterangan: document.getElementById('keteranganInput').value
             };
@@ -500,11 +496,10 @@
             document.getElementById('formId').value = data.id;
             document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen text-brand-gold mr-2"></i> Edit Kegiatan';
             
-            // Set TomSelect menggunakan relasi skuo_id langsung
             tomSelectInstance.setValue(data.skuo_id);
 
             document.getElementById('namaKegiatan').value = data.nama_kegiatan;
-            document.getElementById('tanggalInput').value = formatToInputDate(data.tanggal);
+            document.getElementById('tanggalInput').value = data.tanggal;
             document.getElementById('modeInput').value = data.mode;
             document.getElementById('keteranganInput').value = data.keterangan || "";
             
@@ -568,7 +563,7 @@
             if (filterValue !== "Semua") myData = myData.filter(k => k.bidang_kerja_id === filterValue);
             
             if (myData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-500 italic">Belum ada riwayat kegiatan.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-500 italic">Belum ada data kegiatan yang diinput.</td></tr>`;
                 return;
             }
 
@@ -582,27 +577,27 @@
                 const btnEdit = isEditable ? `<button onclick="editData('${k.id}')" class="text-brand-gold hover:text-yellow-700 bg-yellow-50 p-1.5 rounded border border-yellow-200" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>` : '';
                 const btnDelete = isEditable ? `<button onclick="deleteData('${k.id}')" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded border border-red-200" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : '';
 
-                // Resolving Nama Bidang dan SKUO dari database Object 
+                // Ambil Nama SKUO & Bidang berdasar ID
                 const bObj = db.bidang.find(b => b.id === k.bidang_kerja_id);
-                const bidangName = bObj ? bObj.nama_bidang : k.bidang_kerja_id;
-                
+                const bName = bObj ? bObj.nama_bidang : k.bidang_kerja_id;
+
                 const sObj = db.skuo.find(s => s.id === k.skuo_id);
-                const skuoName = sObj ? sObj.nama_skuo : k.skuo_id;
+                const sName = sObj ? sObj.nama_skuo : k.skuo_id;
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-blue-50/40 transition-colors">
                         <td class="px-3 py-3 text-center text-gray-500 text-xs">${index + 1}</td>
                         <td class="px-3 py-3 font-bold text-brand-blue text-sm keep-multiline">
                             ${k.nama_kegiatan}
-                            ${currentUser.listBidangId.length > 1 ? `<div class="text-[10px] text-gray-400 font-normal mt-1"><i class="fa-solid fa-tag"></i> ${bidangName}</div>` : ''}
+                            ${currentUser.listBidangId.length > 1 ? `<div class="text-[10px] text-gray-400 font-normal mt-1"><i class="fa-solid fa-tag"></i> ${bName}</div>` : ''}
                         </td>
-                        <td class="px-3 py-3 text-gray-700 text-xs keep-multiline">${skuoName}</td>
-                        <td class="px-3 py-3 text-gray-700 text-xs font-medium whitespace-nowrap" data-date="${formatToInputDate(k.tanggal)}">${formatToDisplayDate(k.tanggal)}</td>
+                        <td class="px-3 py-3 text-gray-700 text-xs keep-multiline">${sName}</td>
+                        <td class="px-3 py-3 text-gray-700 text-xs font-medium whitespace-nowrap" data-date="${k.tanggal}">${formatToDisplayDate(k.tanggal)}</td>
                         <td class="px-3 py-3"><span class="${modeClass} px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">${k.mode}</span></td>
                         <td class="px-3 py-3 text-gray-600 text-xs keep-multiline min-w-[150px]">${k.keterangan || '-'}</td>
                         <td class="px-3 py-3 text-center">
                             <div class="flex justify-center gap-2">
-                                ${isEditable ? btnEdit + btnDelete : `<span class="text-[10px] text-gray-400 italic">Beda sesi akses</span>`}
+                                ${isEditable ? btnEdit + btnDelete : `<span class="text-[10px] text-gray-400 italic">Beda akses</span>`}
                             </div>
                         </td>
                     </tr>
