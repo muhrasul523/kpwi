@@ -51,7 +51,10 @@
         <div class="w-72 max-w-[80vw] h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner border border-blue-800">
             <div class="h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_1s_ease-in-out_infinite] shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
         </div>
-        <p class="mt-4 text-sm font-medium text-blue-200" id="loadingText">Memuat Sistem... <span id="loadingPercent">0%</span></p>
+        <div class="text-center mt-4">
+            <p class="text-sm font-medium text-blue-200" id="loadingText">Sedang memuat data ....</p>
+            <p class="text-2xl font-bold text-brand-gold mt-1 drop-shadow-md" id="loadingPercent">0%</p>
+        </div>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -217,6 +220,7 @@
         // ==========================================
         // URL WEBAPP API GOOGLE APPS SCRIPT
         // ==========================================
+        // URL sudah di-update sesuai yang Anda berikan
         const API_URL = 'https://script.google.com/macros/s/AKfycbxzxJXHGLfdza0Jgq0XzvlPgJC2zy0crRxNtGYL_DsbhURuRd9tMXOF-Y_gfrD8PrnA/exec';
 
         // GLOBAL STATE
@@ -249,8 +253,9 @@
         let loadInterval;
         let loadProgress = 0;
 
-        function startLoading(text = "Memuat Aplikasi...") {
-            document.getElementById('loadingText').innerHTML = `${text} <span id="loadingPercent">0%</span>`;
+        function startLoading(text = "Sedang memuat data ....") {
+            document.getElementById('loadingText').innerText = text;
+            document.getElementById('loadingPercent').innerText = "0%";
             document.getElementById('loadingOverlay').style.display = 'flex';
             setTimeout(() => { document.getElementById('loadingOverlay').style.opacity = '1'; }, 10);
             
@@ -276,7 +281,7 @@
 
         async function initSystem() {
             try {
-                startLoading("Mengambil data sistem...");
+                startLoading("Sedang memuat data ....");
                 db = await fetchAPI({ action: 'getAllData' });
                 
                 document.getElementById('headerLogo').classList.remove('hidden');
@@ -293,7 +298,7 @@
                 endLoading();
                 Swal.fire({
                     icon: 'error', title: 'Koneksi Gagal', 
-                    text: 'Tidak dapat terhubung ke server. Pastikan URL WebApp sudah benar.',
+                    text: `Pesan Server: ${error.message}. Pastikan URL WebApp sudah benar dan di-deploy sebagai Versi Baru.`,
                     confirmButtonText: 'Muat Ulang'
                 }).then(() => location.reload());
             }
@@ -356,7 +361,7 @@
             currentUser.wa = wa;
             currentUser.nama = userAccount.nama;
             
-            // Mendukung multi-bidang dipisah koma pada bidang_kerja_id (contoh: "BDG001,BDG002")
+            // Mendukung multi-bidang dipisah koma pada bidang_kerja_id
             currentUser.listBidangIds = userAccount.bidang_kerja_id.toString().split(',').map(b => b.trim());
 
             const filterSelect = document.getElementById('filterBidangTable');
