@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Meta Tags untuk Preview WhatsApp (Open Graph) -->
-    <meta property="og:title" content="Kontrol Kegiatan SBK">
-    <meta property="og:description" content="Sistem Pengontrolan & Pelaporan Kinerja SBK">
+    <meta property="og:title" content="Kontrol Kegiatan Staf Bidang Kerja">
+    <meta property="og:description" content="Sistem Pengontrolan & Pelaporan Kinerja Staf Bidang Kerja (SKUO)">
     <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
     <meta property="og:type" content="website">
     
@@ -58,18 +58,19 @@
         <p class="mt-4 text-sm font-medium text-blue-200" id="loadingText">Memuat Sistem... <span id="loadingPercent">0%</span></p>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+    <!-- WRAPPER UNTUK LOGIN & PILIH SKUO (Centered View) -->
+    <div id="authWrapper" class="min-h-[90vh] flex flex-col items-center justify-center px-4">
         
-        <!-- HEADER -->
-        <div class="text-center mb-8 fade-in hidden" id="headerLogo">
+        <!-- HEADER AUTH -->
+        <div class="text-center mb-8 fade-in hidden w-full" id="headerLogo">
             <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-16 mx-auto mb-3 drop-shadow-lg" onerror="this.style.display='none'">
-            <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kontrol Kegiatan SBK</h1>
-            <p class="text-gray-500 mt-1 text-xs md:text-sm font-medium">Sistem Pengontrolan & Pelaporan Kinerja</p>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kontrol Kegiatan</h1>
+            <p class="text-gray-500 mt-1 text-xs md:text-sm font-medium">Sistem Pelaporan Staf Bidang Kerja</p>
         </div>
 
         <!-- 1. VIEW LOGIN -->
-        <div id="loginView" class="max-w-md mx-auto glass-panel rounded-2xl p-6 md:p-8 fade-in border-t-4 border-t-brand-blue hidden">
-            <h2 class="text-xl font-bold text-center text-brand-blue mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-brand-gold"></i>Login SBK</h2>
+        <div id="loginView" class="w-full max-w-md glass-panel rounded-2xl p-6 md:p-8 fade-in border-t-4 border-t-brand-blue hidden">
+            <h2 class="text-xl font-bold text-center text-brand-blue mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-brand-gold"></i>Login Sistem</h2>
             <p class="text-sm text-center text-gray-500 mb-6">Masukkan nomor WhatsApp Anda.</p>
             <form onsubmit="handleLogin(event)">
                 <div class="mb-5">
@@ -82,78 +83,90 @@
             </form>
         </div>
 
-        <!-- 2. VIEW PILIH SKUO -->
-        <div id="pilihSkuoView" class="max-w-md mx-auto glass-panel rounded-2xl p-6 md:p-8 fade-in border-t-4 border-t-brand-gold hidden">
+        <!-- 2. VIEW PILIH SKUO (Scroll Halaman, bukan scroll kotak) -->
+        <div id="pilihSkuoView" class="w-full max-w-md glass-panel rounded-2xl p-6 md:p-8 fade-in border-t-4 border-t-brand-gold hidden mb-8">
             <h2 class="text-xl font-bold text-center text-brand-blue mb-2">Pilih SKUO</h2>
-            <p class="text-sm text-center text-gray-500 mb-6" id="welcomePilihSkuo">Selamat datang,</p>
-            <div id="listSkuo" class="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar"></div>
+            <p class="text-sm text-center text-gray-500 mb-6" id="welcomePilihSkuo">Selamat datang,<br>Silakan pilih SKUO Anda:</p>
+            
+            <!-- List SKUO menyesuaikan tinggi halaman secara fleksibel -->
+            <div id="listSkuo" class="space-y-3"></div>
+            
             <button onclick="logout()" class="mt-6 w-full text-red-500 hover:text-red-700 text-sm font-medium transition-colors">
                 <i class="fa-solid fa-arrow-left mr-1"></i> Batal & Kembali
             </button>
         </div>
+    </div>
 
-        <!-- 3. MAIN APP VIEW (DASHBOARD KONTROL) -->
-        <div id="mainAppView" class="hidden fade-in">
-            
-            <!-- User Info Card -->
-            <div class="max-w-7xl mx-auto bg-gradient-to-r from-brand-blue to-blue-800 rounded-2xl p-4 md:p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-4 w-full md:w-auto">
-                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30 shrink-0">
-                        <i class="fa-solid fa-user-tie text-xl md:text-2xl text-brand-gold"></i>
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                        <p class="text-[10px] md:text-xs text-blue-200 font-medium uppercase tracking-wider">Akses SBK Aktif</p>
-                        <h2 class="text-base md:text-lg font-bold truncate" id="infoNama">Nama User</h2>
-                        <p class="text-xs md:text-sm text-blue-100 truncate"><i class="fa-solid fa-layer-group text-brand-gold mr-1"></i> SKUO: <span id="infoSkuo" class="font-semibold"></span></p>
-                    </div>
+    <!-- 3. MAIN APP VIEW (DASHBOARD KONTROL) -->
+    <div id="mainAppView" class="hidden fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+        
+        <!-- Header Dashboard Apps -->
+        <div class="text-center mb-6 fade-in flex items-center justify-center gap-3">
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-10 drop-shadow-md" onerror="this.style.display='none'">
+            <div class="text-left">
+                <h1 class="text-xl font-extrabold text-brand-blue tracking-tight leading-tight">Kontrol Kegiatan</h1>
+                <p class="text-gray-500 text-xs font-medium">Staf Bidang Kerja</p>
+            </div>
+        </div>
+
+        <!-- User Info Card -->
+        <div class="max-w-7xl mx-auto bg-gradient-to-r from-brand-blue to-blue-800 rounded-2xl p-4 md:p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30 shrink-0">
+                    <i class="fa-solid fa-user-tie text-xl md:text-2xl text-brand-gold"></i>
                 </div>
-                <div class="flex gap-2 w-full md:w-auto justify-end">
-                    <button onclick="switchRole()" id="btnSwitchRole" class="hidden bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors flex items-center gap-2 border border-white/20">
-                        <i class="fa-solid fa-arrow-right-arrow-left"></i> Ganti SKUO
-                    </button>
-                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors flex items-center gap-2 border border-red-400">
-                        <i class="fa-solid fa-power-off"></i> Keluar
-                    </button>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-[10px] md:text-xs text-blue-200 font-medium uppercase tracking-wider">Staf Bidang Kerja</p>
+                    <h2 class="text-base md:text-lg font-bold truncate" id="infoNama">Nama User</h2>
+                    <p class="text-xs md:text-sm text-blue-100 truncate"><i class="fa-solid fa-layer-group text-brand-gold mr-1"></i> SKUO: <span id="infoSkuo" class="font-semibold"></span></p>
+                </div>
+            </div>
+            <div class="flex gap-2 w-full md:w-auto justify-end">
+                <button onclick="switchRole()" id="btnSwitchRole" class="hidden bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors flex items-center gap-2 border border-white/20">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i> Ganti SKUO
+                </button>
+                <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors flex items-center gap-2 border border-red-400">
+                    <i class="fa-solid fa-power-off"></i> Keluar
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: DATA TABLE -->
+        <div class="max-w-7xl mx-auto glass-panel rounded-2xl p-4 md:p-6 border-t-4 border-t-brand-gold">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 border-b pb-4 border-gray-200">
+                <div class="w-full md:w-auto text-left">
+                    <h3 class="text-base md:text-lg font-bold text-brand-blue flex items-center"><i class="fa-solid fa-list-check text-brand-gold mr-2"></i> Daftar Kegiatan</h3>
+                    <p class="text-[10px] md:text-xs text-gray-500 mt-1">Pilih kegiatan untuk mengontrol indikator kinerjanya.</p>
+                </div>
+                
+                <div class="relative w-full md:w-64">
+                    <input type="text" id="searchTable" onkeyup="filterTableUI()" placeholder="Cari nama kegiatan..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white shadow-sm">
+                    <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                 </div>
             </div>
 
-            <!-- TAB CONTENT: DATA TABLE -->
-            <div class="max-w-7xl mx-auto glass-panel rounded-2xl p-4 md:p-6 border-t-4 border-t-brand-gold">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 border-b pb-4 border-gray-200">
-                    <div class="w-full md:w-auto text-left">
-                        <h3 class="text-base md:text-lg font-bold text-brand-blue flex items-center"><i class="fa-solid fa-list-check text-brand-gold mr-2"></i> Daftar Kegiatan</h3>
-                        <p class="text-[10px] md:text-xs text-gray-500 mt-1">Pilih kegiatan untuk mengontrol indikator kinerjanya.</p>
-                    </div>
-                    
-                    <div class="relative w-full md:w-64">
-                        <input type="text" id="searchTable" onkeyup="filterTableUI()" placeholder="Cari nama kegiatan..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white shadow-sm">
-                        <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto rounded-xl border border-gray-200">
-                    <table class="w-full text-left text-xs md:text-sm" id="dataTable">
-                        <thead class="bg-brand-blue text-white whitespace-nowrap">
-                            <tr>
-                                <th class="px-3 md:px-4 py-3 font-semibold text-center w-10">No</th>
-                                <th class="px-3 md:px-4 py-3 font-semibold">Nama Kegiatan</th>
-                                <th class="px-3 md:px-4 py-3 font-semibold">Tanggal</th>
-                                <th class="px-3 md:px-4 py-3 font-semibold">Status Kontrol</th>
-                                <th class="px-3 md:px-4 py-3 font-semibold text-center w-24">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="divide-y divide-gray-200 bg-white/60">
-                            <!-- Injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                <table class="w-full text-left text-xs md:text-sm" id="dataTable">
+                    <thead class="bg-brand-blue text-white whitespace-nowrap">
+                        <tr>
+                            <th class="px-3 md:px-4 py-3 font-semibold text-center w-10">No</th>
+                            <th class="px-3 md:px-4 py-3 font-semibold">Nama Kegiatan</th>
+                            <th class="px-3 md:px-4 py-3 font-semibold">Tanggal</th>
+                            <th class="px-3 md:px-4 py-3 font-semibold">Status Kontrol</th>
+                            <th class="px-3 md:px-4 py-3 font-semibold text-center w-24">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-gray-200 bg-white/60">
+                        <!-- Injected by JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <!-- MODAL FORM KONTROL -->
     <div id="modalKontrol" class="fixed inset-0 z-[100] hidden bg-gray-900 bg-opacity-60 flex items-center justify-center p-2 md:p-4 backdrop-blur-sm transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="modalKontrolContent">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="modalKontrolContent">
             
             <!-- Header Modal -->
             <div class="p-4 md:p-5 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white flex justify-between items-center shrink-0">
@@ -196,8 +209,10 @@
                                     <input type="date" id="pra_reminder_tgl" class="w-full rounded-lg border-gray-300 border px-3 py-2 focus:ring-2 focus:ring-brand-blue outline-none text-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-600 mb-1.5">Screenshot Bukti (Gambar)</label>
-                                    <input type="file" id="pra_reminder_file" accept="image/*" class="w-full text-sm text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100">
+                                    <label class="block text-xs font-bold text-gray-600 mb-1.5">Screenshot Bukti (Hanya JPG/PNG)</label>
+                                    <!-- Accept format JPG/PNG -->
+                                    <input type="file" id="pra_reminder_file" accept="image/jpeg, image/png" class="w-full text-sm text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100">
+                                    <p class="text-[10px] text-gray-400 mt-1">*Akan otomatis dikompres menjadi &lt; 150kb sebelum diupload</p>
                                     <input type="hidden" id="pra_reminder_file_url">
                                     <div id="pra_reminder_link" class="mt-2 text-xs"></div>
                                 </div>
@@ -221,7 +236,7 @@
 
                         <!-- Koordinasi Pelayanan -->
                         <div class="bg-white p-4 md:p-5 rounded-xl border border-gray-200 shadow-sm">
-                            <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-handshake text-brand-gold"></i> Koordinasi Pelayanan</h4>
+                            <h4 class="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-handshake text-brand-gold"></i> Koordinasi Pelayanan Umum</h4>
                             <div>
                                 <div id="koordinasiContainer" class="flex flex-wrap gap-2 md:gap-3">
                                     <!-- Checkboxes injected by JS -->
@@ -348,27 +363,41 @@
             }
         }
 
-        // --- SIMULATION BACKEND ---
+        // --- SIMULATION BACKEND (BUAT 10 DATA DUMMY) ---
         function simulateBackend(payload) {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     if (payload.action === 'getAllData') {
+                        // Generate 10 Activities & 10 Controls Dummy
+                        let dummyKgt = [];
+                        let dummyKtrl = [];
+                        for(let i=1; i<=10; i++) {
+                            let skuo = (i % 2 === 0) ? "SKUO-2" : "SKUO-1";
+                            let namaK = `KEGIATAN SIMULASI ${i} TAHUN 2026`;
+                            dummyKgt.push({ id: `KGT-${i}`, skuo_id: skuo, nama_kegiatan: namaK, tanggal: `${String(i).padStart(2,'0')}/10/2026` });
+                            let isDone = i <= 5;
+                            dummyKtrl.push({
+                                id_kegiatan: `KGT-${i}`, nama_kegiatan: namaK,
+                                pra_spp_no: `00${i}/SPP/X/2026`, pra_koordinasi: "Konsumsi,Zoom / Multimedia",
+                                pasca_status: isDone ? "Terlaksana" : "",
+                                pasca_spb_no: isDone ? `00${i}/SPB/X/2026` : ""
+                            });
+                        }
+
                         resolve({
-                            akun: [ { id: "USR1", no_wa: "628123", nama: "Ahmad Canvas", skuo_id: "SKUO-1,SKUO-2" } ],
+                            akun: [ { id: "USR1", no_wa: "628123", nama: "Muh. Yusuf Rachman Rivai", skuo_id: "SKUO-1,SKUO-2" } ],
                             bidang: [ { id: "BDG-1", nama_bidang: "Keuangan" } ],
                             skuo: [
                                 { id: "SKUO-1", bidang_kerja_id: "BDG-1", nama_skuo: "Penyusunan Anggaran" },
                                 { id: "SKUO-2", bidang_kerja_id: "BDG-1", nama_skuo: "Audit Internal" }
                             ],
-                            kegiatan: [
-                                { id: "K-1", no_wa: "628123", nama: "Ahmad", bidang_kerja_id: "BDG-1", skuo_id: "SKUO-1", nama_kegiatan: "RAPAT TAHUNAN", tanggal: "15/10/2026", mode: "Offline" },
-                                { id: "K-2", no_wa: "628123", nama: "Ahmad", bidang_kerja_id: "BDG-1", skuo_id: "SKUO-2", nama_kegiatan: "AUDIT CABANG", tanggal: "20/10/2026", mode: "Online" }
-                            ],
-                            kontrol: db.kontrol || [],
+                            kegiatan: dummyKgt,
+                            kontrol: dummyKtrl,
                             config: [
                                 { kategori: "Koordinasi_Pelayanan", nilai: "Konsumsi" },
                                 { kategori: "Koordinasi_Pelayanan", nilai: "Peminjaman Ruangan" },
-                                { kategori: "Koordinasi_Pelayanan", nilai: "Berita Acara" }
+                                { kategori: "Koordinasi_Pelayanan", nilai: "Berita Acara" },
+                                { kategori: "Koordinasi_Pelayanan", nilai: "Zoom / Multimedia" }
                             ]
                         });
                     } else if (payload.action === 'saveKontrolData') {
@@ -476,7 +505,7 @@
 
             currentUser.wa = wa;
             currentUser.nama = userAccount.nama;
-            // Split ID SKUO (asumsi dipisah koma)
+            // Split ID SKUO dari database berdasarkan ID
             currentUser.listSkuoId = userAccount.skuo_id ? userAccount.skuo_id.split(',').map(s => s.trim()) : [];
 
             if (currentUser.listSkuoId.length === 0) {
@@ -489,7 +518,7 @@
             } else {
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('pilihSkuoView').classList.remove('hidden');
-                document.getElementById('welcomePilihSkuo').innerText = `Selamat datang, ${currentUser.nama}. Pilih SKUO Anda:`;
+                document.getElementById('welcomePilihSkuo').innerHTML = `Selamat datang, ${currentUser.nama}.<br>Silakan pilih SKUO Anda:`;
                 
                 const listDiv = document.getElementById('listSkuo');
                 listDiv.innerHTML = '';
@@ -498,7 +527,6 @@
                     listDiv.innerHTML += `
                         <button onclick="enterApp('${id}')" class="w-full text-left bg-white border border-gray-200 hover:border-brand-blue hover:shadow-md p-3 md:p-4 rounded-xl transition-all flex items-center justify-between group">
                             <div>
-                                <p class="text-[10px] md:text-xs text-gray-500 mb-0.5">Akses ID: ${id}</p>
                                 <p class="font-bold text-sm md:text-base text-brand-blue">${skuoName}</p>
                             </div>
                             <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-gold"></i>
@@ -512,8 +540,7 @@
             currentSkuoId = skuoId;
             currentSkuoNama = getSkuoName(skuoId);
             
-            document.getElementById('loginView').classList.add('hidden');
-            document.getElementById('pilihSkuoView').classList.add('hidden');
+            document.getElementById('authWrapper').classList.add('hidden'); // Sembunyikan wrapper auth
             document.getElementById('mainAppView').classList.remove('hidden');
             
             document.getElementById('infoNama').innerText = currentUser.nama;
@@ -528,6 +555,8 @@
 
         function switchRole() {
             document.getElementById('mainAppView').classList.add('hidden');
+            document.getElementById('authWrapper').classList.remove('hidden');
+            document.getElementById('loginView').classList.add('hidden');
             document.getElementById('pilihSkuoView').classList.remove('hidden');
         }
 
@@ -537,6 +566,7 @@
             currentSkuoNama = "";
             document.getElementById('loginWa').value = "";
             document.getElementById('mainAppView').classList.add('hidden');
+            document.getElementById('authWrapper').classList.remove('hidden');
             document.getElementById('pilihSkuoView').classList.add('hidden');
             document.getElementById('loginView').classList.remove('hidden');
         }
@@ -561,7 +591,9 @@
                 if (kontrol) {
                     if (kontrol.pasca_status === 'Terlaksana') statusBadge = '<span class="bg-green-50 text-green-700 border border-green-200 px-2 py-1 rounded text-[9px] md:text-[10px] font-bold uppercase">Terlaksana</span>';
                     else if (kontrol.pasca_status === 'Dibatalkan') statusBadge = '<span class="bg-red-50 text-red-700 border border-red-200 px-2 py-1 rounded text-[9px] md:text-[10px] font-bold uppercase">Dibatalkan</span>';
-                    else statusBadge = '<span class="bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-1 rounded text-[9px] md:text-[10px] font-bold uppercase">Diproses</span>';
+                    else if (kontrol.pra_spp_no || kontrol.pra_reminder_tgl || kontrol.pra_koordinasi) {
+                        statusBadge = '<span class="bg-yellow-50 text-yellow-700 border border-yellow-200 px-2 py-1 rounded text-[9px] md:text-[10px] font-bold uppercase">Diproses</span>';
+                    }
                 }
 
                 tbody.innerHTML += `
@@ -570,7 +602,7 @@
                         <td class="px-3 md:px-4 py-3 font-bold text-brand-blue text-xs md:text-sm">
                             ${keg.nama_kegiatan}
                         </td>
-                        <td class="px-3 md:px-4 py-3 text-gray-700 text-xs">${keg.tanggal}</td>
+                        <td class="px-3 md:px-4 py-3 text-gray-700 text-xs whitespace-nowrap">${keg.tanggal}</td>
                         <td class="px-3 md:px-4 py-3">${statusBadge}</td>
                         <td class="px-3 md:px-4 py-3 text-center">
                             <button class="bg-brand-blue hover:bg-blue-800 text-white px-2 py-1.5 md:px-3 md:py-1.5 rounded shadow-sm text-xs font-semibold transition-colors flex items-center justify-center gap-1 mx-auto whitespace-nowrap" onclick="openModal('${keg.id}')">
@@ -688,7 +720,7 @@
 
                 if(data.pra_reminder_file) {
                     document.getElementById('pra_reminder_file_url').value = data.pra_reminder_file;
-                    document.getElementById('pra_reminder_link').innerHTML = `<a href="${data.pra_reminder_file}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Bukti</a>`;
+                    document.getElementById('pra_reminder_link').innerHTML = `<a href="${data.pra_reminder_file}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 mt-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat Bukti Terakhir</a>`;
                 }
 
                 if(data.pra_koordinasi) {
@@ -712,7 +744,7 @@
 
                 if(data.pasca_lpj_file) {
                     document.getElementById('pasca_lpj_file_url').value = data.pasca_lpj_file;
-                    document.getElementById('pasca_lpj_link_info').innerHTML = `<a href="${data.pasca_lpj_file}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat PDF Arsip</a>`;
+                    document.getElementById('pasca_lpj_link_info').innerHTML = `<a href="${data.pasca_lpj_file}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 mt-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat PDF Arsip Terakhir</a>`;
                 }
             }
             
@@ -735,6 +767,7 @@
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
+        // --- KOMPRESI GAMBAR (<150KB) & UPLOAD UTILS ---
         const getBase64 = (file) => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -742,15 +775,67 @@
             reader.onerror = error => reject(error);
         });
 
+        // Algoritma Pengecilan Dimensi & Kualitas JPG menggunakan HTML Canvas
+        async function compressImage(file, maxKB = 150) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Resize down max dimension to 1200px
+                        const maxDim = 1200;
+                        if (width > maxDim || height > maxDim) {
+                            if (width > height) {
+                                height = Math.round((height *= maxDim / width));
+                                width = maxDim;
+                            } else {
+                                width = Math.round((width *= maxDim / height));
+                                height = maxDim;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        let quality = 0.9;
+                        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        let kb = Math.round(dataUrl.length * 3 / 4 / 1024);
+
+                        // Kompresi kualitas hingga size di bawah maxKB
+                        while (kb > maxKB && quality > 0.1) {
+                            quality -= 0.1;
+                            dataUrl = canvas.toDataURL('image/jpeg', quality);
+                            kb = Math.round(dataUrl.length * 3 / 4 / 1024);
+                        }
+                        
+                        console.log(`Gambar dikompres menjadi ${kb} KB (Quality: ${quality.toFixed(1)})`);
+                        resolve(dataUrl);
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
         async function saveKontrolData() {
             // Cek Checkbox Koordinasi
             let koordinasiArr = [];
             document.querySelectorAll('.chk-koordinasi:checked').forEach(chk => koordinasiArr.push(chk.value));
 
             let payload = {
+                no_wa: currentUser.wa,
+                nama_user: currentUser.nama,
                 id_kegiatan: document.getElementById('idKegiatan').value,
                 nama_kegiatan: document.getElementById('namaKegiatanModal').value,
-                skuo_nama: document.getElementById('namaSkuoModal').value, // Digunakan hanya untuk format nama file
+                skuo_nama: document.getElementById('namaSkuoModal').value, // Untuk nama file
                 
                 pra_reminder_tgl: document.getElementById('pra_reminder_tgl').value,
                 pra_reminder_file_url: document.getElementById('pra_reminder_file_url').value,
@@ -768,15 +853,21 @@
                 pasca_spb_tgl: document.getElementById('pasca_spb_tgl').value
             };
 
-            startLoading("Memproses File & Menyimpan Data...");
+            startLoading("Memproses & Menyimpan Data...");
 
             try {
+                // Proses Gambar Reminder (Kompresi ke < 150kb)
                 const fileReminder = document.getElementById('pra_reminder_file').files[0];
                 if (fileReminder) {
-                    payload.pra_reminder_file_base64 = await getBase64(fileReminder);
-                    payload.pra_reminder_file_name = fileReminder.name;
+                    if (fileReminder.type === "image/jpeg" || fileReminder.type === "image/png") {
+                        payload.pra_reminder_file_base64 = await compressImage(fileReminder, 150);
+                        payload.pra_reminder_file_name = fileReminder.name.replace(/\.[^/.]+$/, "") + ".jpg"; // Paksa ekstensi jadi jpg hasil kompres
+                    } else {
+                        throw new Error("File Reminder harus berformat JPG/PNG");
+                    }
                 }
 
+                // Proses File LPJ (PDF standard base64)
                 const fileLpj = document.getElementById('pasca_lpj_file').files[0];
                 if (fileLpj) {
                     payload.pasca_lpj_file_base64 = await getBase64(fileLpj);
@@ -791,7 +882,7 @@
                 Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Data kontrol berhasil diupdate.', timer: 2000, showConfirmButton: false });
             } catch (error) {
                 endLoading();
-                Swal.fire('Error', 'Gagal menyimpan data ke server.', 'error');
+                Swal.fire('Terjadi Kesalahan', error.message || 'Gagal menyimpan data ke server.', 'error');
             }
         }
     </script>
