@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Input Kegiatan - Wahdah Islamiyah">
+    <meta property="og:title" content="Input Kegiatan KSBK - Wahdah Islamiyah">
     <meta property="og:description" content="Aplikasi pengontrolan kinerja pegawai Kantor Pusat Wahdah Islamiyah.">
     <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
     
-    <title>Input Kegiatan Koordinator Staf Bidang Kerja</title>
+    <title>Input Kegiatan KSBK</title>
     <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -51,10 +51,7 @@
         <div class="w-72 max-w-[80vw] h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner border border-blue-800">
             <div class="h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_1s_ease-in-out_infinite] shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
         </div>
-        <div class="text-center mt-4">
-            <p class="text-sm font-medium text-blue-200" id="loadingText">Sedang memuat data ....</p>
-            <p class="text-2xl font-bold text-brand-gold mt-1 drop-shadow-md" id="loadingPercent">0%</p>
-        </div>
+        <p class="mt-4 text-sm font-medium text-blue-200" id="loadingText">Memuat Sistem... <span id="loadingPercent">0%</span></p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -62,8 +59,8 @@
         <!-- HEADER -->
         <div class="text-center mb-6 fade-in hidden" id="headerLogo">
             <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-16 mx-auto mb-3 drop-shadow-xl" onerror="this.style.display='none'">
-            <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kinerja Pegawai</h1>
-            <p class="text-gray-500 mt-1 text-sm font-medium">Koordinator Staf Bidang Kerja Kantor Pusat</p>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kinerja Pegawai KSBK</h1>
+            <p class="text-gray-500 mt-1 text-sm font-medium">Kantor Pusat Wahdah Islamiyah</p>
         </div>
 
         <!-- 1. VIEW LOGIN -->
@@ -94,16 +91,16 @@
         <!-- 3. MAIN APP VIEW -->
         <div id="mainAppView" class="hidden fade-in">
             
-            <!-- User Info Card (Gradien hijau) -->
-            <div class="max-w-5xl mx-auto bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-2xl p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- User Info Card -->
+            <div class="max-w-5xl mx-auto bg-gradient-to-r from-brand-blue to-blue-800 rounded-2xl p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30">
-                        <i class="fa-solid fa-user-tie text-2xl text-yellow-300"></i>
+                        <i class="fa-solid fa-user-tie text-2xl text-brand-gold"></i>
                     </div>
                     <div>
-                        <p class="text-[10px] sm:text-xs text-emerald-100 font-bold uppercase tracking-wider">Koordinator Staf Bidang Kerja Aktif</p>
+                        <p class="text-xs text-blue-200 font-medium uppercase tracking-wider">KSBK Aktif</p>
                         <h2 class="text-lg font-bold" id="infoNama">Nama User</h2>
-                        <p class="text-sm text-emerald-50"><i class="fa-solid fa-layer-group text-yellow-300 mr-1"></i> <span id="infoBidang">Bidang Kerja</span></p>
+                        <p class="text-sm text-blue-100"><i class="fa-solid fa-layer-group text-brand-gold mr-1"></i> <span id="infoBidang">Bidang Kerja</span></p>
                     </div>
                 </div>
                 <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-red-400">
@@ -133,6 +130,7 @@
                         <!-- SKUO -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-bold text-brand-blue mb-1.5">SKUO <span class="text-red-500">*</span></label>
+                            <!-- Value akan menyimpan ID, teks akan menampilkan Nama SKUO -->
                             <select id="skuoSelect" required class="w-full">
                                 <option value="">Pilih SKUO...</option>
                             </select>
@@ -220,13 +218,12 @@
         // ==========================================
         // URL WEBAPP API GOOGLE APPS SCRIPT
         // ==========================================
-        // URL sudah di-update sesuai yang Anda berikan
         const API_URL = 'https://script.google.com/macros/s/AKfycbxzxJXHGLfdza0Jgq0XzvlPgJC2zy0crRxNtGYL_DsbhURuRd9tMXOF-Y_gfrD8PrnA/exec';
 
         // GLOBAL STATE
-        let db = { bidang: [], akun: [], skuo: [], kegiatan: [] };
-        let currentUser = { wa: "", nama: "", listBidangIds: [] };
-        let currentBidangId = "";
+        let db = { akun: [], skuo: [], kegiatan: [] };
+        let currentUser = { wa: "", nama: "", listBidang: [] };
+        let currentBidang = "";
         let tomSelectInstance = null;
 
         // --- FETCH WRAPPER ---
@@ -249,13 +246,12 @@
             }
         }
 
-        // --- CORE SYSTEM & LOADING ---
+        // --- CORE SYSTEM & LOADING (PERSENTASE) ---
         let loadInterval;
         let loadProgress = 0;
 
-        function startLoading(text = "Sedang memuat data ....") {
-            document.getElementById('loadingText').innerText = text;
-            document.getElementById('loadingPercent').innerText = "0%";
+        function startLoading(text = "Memuat Aplikasi...") {
+            document.getElementById('loadingText').innerHTML = `${text} <span id="loadingPercent">0%</span>`;
             document.getElementById('loadingOverlay').style.display = 'flex';
             setTimeout(() => { document.getElementById('loadingOverlay').style.opacity = '1'; }, 10);
             
@@ -281,7 +277,7 @@
 
         async function initSystem() {
             try {
-                startLoading("Sedang memuat data ....");
+                startLoading("Mengambil data sistem...");
                 db = await fetchAPI({ action: 'getAllData' });
                 
                 document.getElementById('headerLogo').classList.remove('hidden');
@@ -298,7 +294,7 @@
                 endLoading();
                 Swal.fire({
                     icon: 'error', title: 'Koneksi Gagal', 
-                    text: `Pesan Server: ${error.message}. Pastikan URL WebApp sudah benar dan di-deploy sebagai Versi Baru.`,
+                    text: 'Tidak dapat terhubung ke server. Silakan muat ulang halaman.',
                     confirmButtonText: 'Muat Ulang'
                 }).then(() => location.reload());
             }
@@ -337,16 +333,6 @@
             return `${d} ${m} ${parts[2]}`;
         }
 
-        function getNamaBidang(bidangId) {
-            const b = db.bidang.find(item => item.id === bidangId);
-            return b ? b.nama_bidang : bidangId;
-        }
-        
-        function getNamaSKUO(skuoId) {
-            const s = db.skuo.find(item => item.id === skuoId);
-            return s ? s.nama_skuo : skuoId;
-        }
-
         // --- AUTH & NAVIGATION ---
         function handleLogin(e) {
             e.preventDefault();
@@ -361,24 +347,23 @@
             currentUser.wa = wa;
             currentUser.nama = userAccount.nama;
             
-            // Mendukung multi-bidang dipisah koma pada bidang_kerja_id
-            currentUser.listBidangIds = userAccount.bidang_kerja_id.toString().split(',').map(b => b.trim());
+            // Mendukung format koma pada bidang_kerja (contoh: "Keuangan,SDM,Operasional")
+            currentUser.listBidang = userAccount.bidang_kerja.split(',').map(b => b.trim());
 
             const filterSelect = document.getElementById('filterBidangTable');
             filterSelect.innerHTML = "";
-            if (currentUser.listBidangIds.length > 1) {
+            if (currentUser.listBidang.length > 1) {
                 filterSelect.innerHTML = `<option value="Semua">Semua Bidang Saya</option>`;
                 filterSelect.disabled = false;
             } else {
                 filterSelect.disabled = true;
             }
-            
-            currentUser.listBidangIds.forEach(id => {
-                filterSelect.innerHTML += `<option value="${id}">${getNamaBidang(id)}</option>`;
+            currentUser.listBidang.forEach(b => {
+                filterSelect.innerHTML += `<option value="${b}">${b}</option>`;
             });
 
-            if (currentUser.listBidangIds.length === 1) {
-                enterApp(currentUser.listBidangIds[0]);
+            if (currentUser.listBidang.length === 1) {
+                enterApp(currentUser.listBidang[0]);
             } else {
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('pilihBidangView').classList.remove('hidden');
@@ -386,12 +371,12 @@
                 
                 const listDiv = document.getElementById('listBidang');
                 listDiv.innerHTML = '';
-                currentUser.listBidangIds.forEach(id => {
+                currentUser.listBidang.forEach(bidang => {
                     listDiv.innerHTML += `
-                        <button onclick="enterApp('${id}')" class="w-full text-left bg-white border border-gray-200 hover:border-brand-blue hover:shadow-md p-4 rounded-xl transition-all flex items-center justify-between group">
+                        <button onclick="enterApp('${bidang}')" class="w-full text-left bg-white border border-gray-200 hover:border-brand-blue hover:shadow-md p-4 rounded-xl transition-all flex items-center justify-between group">
                             <div>
                                 <p class="text-xs text-gray-500 mb-0.5">Akses sebagai</p>
-                                <p class="font-bold text-brand-blue">${getNamaBidang(id)}</p>
+                                <p class="font-bold text-brand-blue">${bidang}</p>
                             </div>
                             <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-gold"></i>
                         </button>
@@ -400,23 +385,23 @@
             }
         }
 
-        function enterApp(bidangId) {
-            currentBidangId = bidangId;
+        function enterApp(bidang) {
+            currentBidang = bidang;
             
             document.getElementById('loginView').classList.add('hidden');
             document.getElementById('pilihBidangView').classList.add('hidden');
             document.getElementById('mainAppView').classList.remove('hidden');
             
             document.getElementById('infoNama').innerText = currentUser.nama;
-            document.getElementById('infoBidang').innerText = getNamaBidang(currentBidangId);
+            document.getElementById('infoBidang').innerText = currentBidang;
             
             setupForm();
             renderTable();
         }
 
         function logout() {
-            currentUser = { wa: "", nama: "", listBidangIds: [] };
-            currentBidangId = "";
+            currentUser = { wa: "", nama: "", listBidang: [] };
+            currentBidang = "";
             document.getElementById('loginWa').value = "";
             
             document.getElementById('mainAppView').classList.add('hidden');
@@ -442,12 +427,13 @@
 
         // --- FORM LOGIC ---
         function setupForm() {
-            // Filter list SKUO berdasarkan bidang_kerja_id
-            const mySkuo = db.skuo.filter(s => s.bidang_kerja_id === currentBidangId);
+            // Filter list berdasarkan kolom baru
+            const mySkuo = db.skuo.filter(s => s.bidang_kerja === currentBidang);
             tomSelectInstance.clear();
             tomSelectInstance.clearOptions();
             
             mySkuo.forEach(s => {
+                // Value menggunakan ID SKUO untuk dikirim ke backend
                 tomSelectInstance.addOption({value: s.id, text: s.nama_skuo});
             });
             resetForm();
@@ -456,12 +442,17 @@
         async function submitForm(e) {
             e.preventDefault();
             
+            const skuoId = document.getElementById('skuoSelect').value;
+            const skuoObj = db.skuo.find(s => s.id === skuoId);
+            const skuoNama = skuoObj ? skuoObj.nama_skuo : "";
+
             const payload = {
                 id: document.getElementById('formId').value,
                 no_wa: currentUser.wa,
                 nama: currentUser.nama,
-                bidang_kerja_id: currentBidangId, 
-                skuo_id: document.getElementById('skuoSelect').value, 
+                bidang_kerja: currentBidang,
+                skuo_id: skuoId,
+                skuo_nama: skuoNama,
                 nama_kegiatan: document.getElementById('namaKegiatan').value.toUpperCase(),
                 tanggal: formatToDBDate(document.getElementById('tanggalInput').value),
                 mode: document.getElementById('modeInput').value,
@@ -491,10 +482,11 @@
         }
 
         function editData(id) {
+            // Pencarian data pakai .id sesuai format JSON baru
             const data = db.kegiatan.find(k => k.id === id);
             if (!data) return;
             
-            if (data.bidang_kerja_id !== currentBidangId) {
+            if (data.bidang_kerja !== currentBidang) {
                 Swal.fire('Ditolak', 'Anda tidak bisa mengedit kegiatan dari bidang lain.', 'warning');
                 return;
             }
@@ -503,7 +495,9 @@
             document.getElementById('formId').value = data.id;
             document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen text-brand-gold mr-2"></i> Edit Kegiatan';
             
-            tomSelectInstance.setValue(data.skuo_id);
+            // Cari ID SKUO dari DB untuk nge-set Select Dropdown
+            const targetSkuo = db.skuo.find(s => s.nama_skuo === data.skuo);
+            if (targetSkuo) tomSelectInstance.setValue(targetSkuo.id);
 
             document.getElementById('namaKegiatan').value = data.nama_kegiatan;
             document.getElementById('tanggalInput').value = formatToInputDate(data.tanggal);
@@ -518,7 +512,7 @@
 
         function deleteData(id) {
             const data = db.kegiatan.find(k => k.id === id);
-            if (data && data.bidang_kerja_id !== currentBidangId) {
+            if (data && data.bidang_kerja !== currentBidang) {
                 Swal.fire('Ditolak', 'Anda tidak bisa menghapus kegiatan bidang lain.', 'warning');
                 return;
             }
@@ -536,7 +530,7 @@
                     try {
                         db = await fetchAPI({ 
                             action: 'deleteKegiatan', 
-                            data: { id: id, no_wa: currentUser.wa, nama: currentUser.nama, bidang_kerja_id: currentBidangId } 
+                            data: { id: id, no_wa: currentUser.wa, nama: currentUser.nama, bidang_kerja: currentBidang } 
                         });
                         endLoading();
                         Swal.fire('Terhapus!', 'Data berhasil dihapus.', 'success');
@@ -566,8 +560,8 @@
             
             const filterValue = document.getElementById('filterBidangTable').value;
             
-            let myData = db.kegiatan.filter(k => currentUser.listBidangIds.includes(k.bidang_kerja_id));
-            if (filterValue !== "Semua") myData = myData.filter(k => k.bidang_kerja_id === filterValue);
+            let myData = db.kegiatan.filter(k => currentUser.listBidang.includes(k.bidang_kerja));
+            if (filterValue !== "Semua") myData = myData.filter(k => k.bidang_kerja === filterValue);
             
             if (myData.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-500 italic">Belum ada data kegiatan yang diinput.</td></tr>`;
@@ -580,7 +574,7 @@
                 if(k.mode === "Offline") modeClass = "bg-green-50 text-green-700 border border-green-200";
                 if(k.mode === "Hybrid") modeClass = "bg-purple-50 text-purple-700 border border-purple-200";
 
-                const isEditable = (k.bidang_kerja_id === currentBidangId);
+                const isEditable = (k.bidang_kerja === currentBidang);
                 const btnEdit = isEditable ? `<button onclick="editData('${k.id}')" class="text-brand-gold hover:text-yellow-700 bg-yellow-50 p-1.5 rounded border border-yellow-200" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>` : '';
                 const btnDelete = isEditable ? `<button onclick="deleteData('${k.id}')" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded border border-red-200" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : '';
 
@@ -589,9 +583,9 @@
                         <td class="px-3 py-3 text-center text-gray-500 text-xs">${index + 1}</td>
                         <td class="px-3 py-3 font-bold text-brand-blue text-sm keep-multiline">
                             ${k.nama_kegiatan}
-                            ${currentUser.listBidangIds.length > 1 ? `<div class="text-[10px] text-gray-400 font-normal mt-1"><i class="fa-solid fa-tag"></i> ${getNamaBidang(k.bidang_kerja_id)}</div>` : ''}
+                            ${currentUser.listBidang.length > 1 ? `<div class="text-[10px] text-gray-400 font-normal mt-1"><i class="fa-solid fa-tag"></i> ${k.bidang_kerja}</div>` : ''}
                         </td>
-                        <td class="px-3 py-3 text-gray-700 text-xs keep-multiline">${getNamaSKUO(k.skuo_id)}</td>
+                        <td class="px-3 py-3 text-gray-700 text-xs keep-multiline">${k.skuo}</td>
                         <td class="px-3 py-3 text-gray-700 text-xs font-medium whitespace-nowrap" data-date="${formatToInputDate(k.tanggal)}">${formatToDisplayDate(k.tanggal)}</td>
                         <td class="px-3 py-3"><span class="${modeClass} px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">${k.mode}</span></td>
                         <td class="px-3 py-3 text-gray-600 text-xs keep-multiline min-w-[150px]">${k.keterangan || '-'}</td>
