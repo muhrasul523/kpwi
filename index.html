@@ -78,37 +78,39 @@
     <div class="fixed top-0 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-2000 z-0 pointer-events-none"></div>
     <div class="fixed -bottom-8 left-40 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-blob animation-delay-4000 z-0 pointer-events-none"></div>
 
-    <!-- MAIN WRAPPER: Menggunakan my-auto agar otomatis tengah jika layar besar, tapi aman discroll jika layar kecil -->
-    <div class="w-full max-w-4xl mx-auto my-auto relative z-10 flex flex-col items-center py-12 px-4 sm:px-6">
+    <!-- MAIN WRAPPER: Padding vertikal (py) dikurangi agar lebih hemat ruang -->
+    <div class="w-full max-w-4xl mx-auto my-auto relative z-10 flex flex-col items-center py-6 px-4 sm:px-6">
         
         <!-- HEADER / LOGO SECTION -->
-        <div class="text-center mb-10 fade-in w-full">
-            <div class="inline-block relative mb-6">
+        <div class="text-center mb-6 fade-in w-full">
+            <div class="inline-block relative mb-3">
                 <!-- Efek cahaya di belakang logo -->
                 <div class="absolute inset-0 bg-white rounded-full shadow-[0_0_40px_rgba(30,58,138,0.2)] animate-pulse-slow transform scale-110 -z-10"></div>
-                <!-- Path gambar logo diubah ke folder utama -->
-                <img src="logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-28 w-28 sm:h-32 sm:w-32 mx-auto drop-shadow-2xl object-contain bg-white rounded-full p-3 border-2 border-blue-50" onerror="this.style.display='none'">
+                <!-- Ukuran logo diperkecil sedikit -->
+                <img src="logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-20 w-20 sm:h-24 sm:w-24 mx-auto drop-shadow-2xl object-contain bg-white rounded-full p-2 border-2 border-blue-50" onerror="this.style.display='none'">
             </div>
             
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-brand-blue via-blue-700 to-blue-500 drop-shadow-sm pb-1">
-                - PORTAL KINERJA -
+            <!-- Ukuran judul diperkecil dan margin bawah dirapatkan -->
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-2 bg-clip-text text-transparent bg-gradient-to-r from-brand-blue via-blue-700 to-blue-500 drop-shadow-sm pb-1">
+                Portal Kinerja
             </h1>
             
-            <!-- Deskripsi 3 Baris dengan Makassar -->
-            <div class="inline-block bg-white/60 backdrop-blur-sm rounded-2xl px-6 py-3 border border-white shadow-sm">
-                <p class="text-gray-600 text-sm md:text-base font-semibold leading-relaxed">
+            <!-- Deskripsi 3 Baris - Padding dan ukuran teks disesuaikan -->
+            <div class="inline-block bg-white/60 backdrop-blur-sm rounded-xl px-5 py-2.5 border border-white shadow-sm">
+                <p class="text-gray-600 text-xs md:text-sm font-semibold leading-relaxed">
                     Sistem Terpadu Pengontrolan Kinerja Pegawai<br>
                     Kantor Pusat Wahdah Islamiyah<br>
-                    <span class="text-brand-blue font-bold text-base md:text-lg tracking-wide uppercase mt-1 inline-block">Makassar</span>
+                    <span class="text-brand-blue font-bold text-sm md:text-base tracking-wide uppercase mt-0.5 inline-block">Makassar</span>
                 </p>
             </div>
         </div>
 
         <!-- MAIN CONTAINER -->
-        <div class="w-full glass-panel rounded-[2rem] p-6 md:p-10 border-t-4 border-t-brand-gold fade-in-delayed relative overflow-hidden">
+        <div class="w-full glass-panel rounded-[2rem] p-5 md:p-7 border-t-4 border-t-brand-gold fade-in-delayed relative overflow-hidden">
             
-            <div class="text-center mb-10">
-                <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-3">Pilih Akses Masuk</h2>
+            <!-- Margin bawah judul dipangkas -->
+            <div class="text-center mb-5">
+                <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-2">Pilih Akses Masuk</h2>
                 <div class="flex justify-center items-center gap-2">
                     <div class="h-1 w-8 bg-blue-200 rounded-full"></div>
                     <div class="h-1.5 w-12 bg-brand-gold rounded-full"></div>
@@ -116,49 +118,49 @@
                 </div>
             </div>
 
-            <!-- GRID MENU BUTTONS -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <!-- GRID MENU BUTTONS: Jarak gap dikurangi -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                 
-                <!-- TOMBOL 1: KSBK -->
-                <a href="https://kpwi.wadahdigital.my.id/ksbk/kegiatan/" class="group relative overflow-hidden bg-white border-2 border-gray-100 rounded-3xl p-6 sm:p-8 cursor-pointer text-left transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(30,58,138,0.2)] hover:border-blue-200 flex flex-col h-full">
+                <!-- TOMBOL 1: KSBK (Padding dan jarak dalam dikurangi) -->
+                <a href="https://kpwi.wadahdigital.my.id/ksbk/kegiatan/" class="group relative overflow-hidden bg-white border-2 border-gray-100 rounded-2xl p-5 sm:p-6 cursor-pointer text-left transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_-10px_rgba(30,58,138,0.2)] hover:border-blue-200 flex flex-col h-full">
                     <!-- Efek latar belakang hover -->
-                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
                     
-                    <div class="w-16 h-16 bg-gradient-to-br from-brand-blue to-blue-700 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg shadow-blue-900/20 mb-6 group-hover:scale-110 transition-transform duration-300 ring-4 ring-blue-50">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-brand-blue to-blue-700 rounded-xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg shadow-blue-900/20 mb-4 group-hover:scale-110 transition-transform duration-300 ring-4 ring-blue-50">
                         <i class="fa-solid fa-user-tie"></i>
                     </div>
                     
-                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 group-hover:text-brand-blue transition-colors leading-tight">Koordinator Staf <br> Bidang Kerja (KSBK)</h3>
-                    <p class="text-sm text-gray-500 mb-8 flex-grow leading-relaxed">Masuk untuk mengelola, menginput, dan memonitor seluruh kegiatan pada tingkat koodinator bidang kerja.</p>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2 group-hover:text-brand-blue transition-colors leading-tight">Koordinator Staf <br> Bidang Kerja (KSBK)</h3>
+                    <p class="text-xs sm:text-sm text-gray-500 mb-4 flex-grow leading-relaxed">Kelola, input, dan monitor kegiatan tingkat koodinator bidang kerja.</p>
                     
-                    <div class="inline-flex items-center text-brand-blue font-bold text-sm bg-blue-50 px-4 py-2.5 rounded-xl w-fit group-hover:bg-brand-blue group-hover:text-white transition-all duration-300">
-                        Masuk Aplikasi <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition-transform duration-300"></i>
+                    <div class="inline-flex items-center text-brand-blue font-bold text-xs sm:text-sm bg-blue-50 px-3.5 py-2 rounded-lg w-fit group-hover:bg-brand-blue group-hover:text-white transition-all duration-300">
+                        Masuk Aplikasi <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1.5 transition-transform duration-300"></i>
                     </div>
                 </a>
 
-                <!-- TOMBOL 2: SBK -->
-                <a href="https://kpwi.wadahdigital.my.id/sbk/kegiatan/" class="group relative overflow-hidden bg-white border-2 border-gray-100 rounded-3xl p-6 sm:p-8 cursor-pointer text-left transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(4,120,87,0.2)] hover:border-emerald-200 flex flex-col h-full">
+                <!-- TOMBOL 2: SBK (Padding dan jarak dalam dikurangi) -->
+                <a href="https://kpwi.wadahdigital.my.id/sbk/kegiatan/" class="group relative overflow-hidden bg-white border-2 border-gray-100 rounded-2xl p-5 sm:p-6 cursor-pointer text-left transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_15px_30px_-10px_rgba(4,120,87,0.2)] hover:border-emerald-200 flex flex-col h-full">
                     <!-- Efek latar belakang hover -->
-                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
                     
-                    <div class="w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg shadow-emerald-900/20 mb-6 group-hover:scale-110 transition-transform duration-300 ring-4 ring-emerald-50">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-emerald-600 to-teal-500 rounded-xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg shadow-emerald-900/20 mb-4 group-hover:scale-110 transition-transform duration-300 ring-4 ring-emerald-50">
                         <i class="fa-solid fa-users"></i>
                     </div>
                     
-                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3 group-hover:text-emerald-700 transition-colors leading-tight">Staf Bidang Kerja <br> (SBK)</h3>
-                    <p class="text-sm text-gray-500 mb-8 flex-grow leading-relaxed">Masuk untuk melihat tugas yang diberikan, menginput laporan harian, dan mencatat aktivitas operasional staf.</p>
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-2 group-hover:text-emerald-700 transition-colors leading-tight">Staf Bidang Kerja <br> (SBK)</h3>
+                    <p class="text-xs sm:text-sm text-gray-500 mb-4 flex-grow leading-relaxed">Lihat tugas, input laporan harian, dan catat aktivitas operasional.</p>
                     
-                    <div class="inline-flex items-center text-emerald-700 font-bold text-sm bg-emerald-50 px-4 py-2.5 rounded-xl w-fit group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
-                        Masuk Aplikasi <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-2 transition-transform duration-300"></i>
+                    <div class="inline-flex items-center text-emerald-700 font-bold text-xs sm:text-sm bg-emerald-50 px-3.5 py-2 rounded-lg w-fit group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                        Masuk Aplikasi <i class="fa-solid fa-arrow-right ml-2 transform group-hover:translate-x-1.5 transition-transform duration-300"></i>
                     </div>
                 </a>
 
             </div>
         </div>
 
-        <!-- FOOTER -->
-        <div class="text-center mt-12 mb-8 fade-in-delayed w-full">
-            <p class="text-sm text-gray-400 font-medium tracking-wide">
+        <!-- FOOTER: Margin dikurangi agar hemat ruang vertikal -->
+        <div class="text-center mt-6 mb-4 fade-in-delayed w-full">
+            <p class="text-xs text-gray-400 font-medium tracking-wide">
                 &copy; <script>document.write(new Date().getFullYear())</script> Kantor Pusat Wahdah Islamiyah. <br class="sm:hidden">Hak Cipta Dilindungi.
             </p>
         </div>
