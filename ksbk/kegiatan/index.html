@@ -40,20 +40,22 @@
 </head>
 <body class="antialiased selection:bg-brand-gold selection:text-brand-blue" onload="initSystem()">
 
-    <!-- LOADING OVERLAY (DIPERCEPAT & TEKS UMUM) -->
+    <!-- LOADING OVERLAY (DIPERCEPAT & BUG NULL TERATASI) -->
     <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-opacity duration-200">
         <i class="fa-solid fa-circle-notch fa-spin text-5xl text-brand-gold mb-6"></i>
         <div class="w-64 h-2 bg-blue-900 rounded-full overflow-hidden shadow-inner">
             <div class="h-full bg-brand-gold w-full animate-[pulse_0.6s_ease-in-out_infinite]"></div>
         </div>
-        <p class="mt-4 text-sm font-medium text-blue-100">Memuat data... <span id="loadingPercent">0%</span></p>
+        <!-- ID loadingText dikembalikan agar tidak terjadi null error di Javascript -->
+        <p id="loadingText" class="mt-4 text-sm font-medium text-blue-100">Memuat data... <span id="loadingPercent">0%</span></p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <!-- HEADER -->
         <div class="text-center mb-6 fade-in hidden" id="headerLogo">
-            <img src="https://i.ibb.co/3sXjzHh/logo-wahdah.png" alt="Logo" class="h-16 mx-auto mb-3 drop-shadow-xl" onerror="this.style.display='none'">
+            <!-- URL Logo dikembalikan ke path lokal untuk mencegah ERR_SSL_VERSION_OR_CIPHER_MISMATCH -->
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo" class="h-16 mx-auto mb-3 drop-shadow-xl" onerror="this.style.display='none'">
             <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kinerja Pegawai</h1>
             <p class="text-gray-500 mt-1 text-sm font-medium">Kantor Pusat Wahdah Islamiyah</p>
         </div>
@@ -235,7 +237,7 @@
                     throw new Error(result.message || "Gagal memproses permintaan.");
                 }
             } catch (error) {
-                console.error("API Fetch Error:", error); // Memunculkan error di console
+                console.error("API Fetch Error:", error); 
                 if (window.location.hostname === '' || window.location.hostname.includes('googleusercontent')) {
                     console.warn("Berjalan di Mode Simulasi (Fallback)");
                     return getSimulationData();
@@ -258,13 +260,20 @@
         let loadProgress = 0;
 
         function startLoading(text = "Memuat data...") {
-            document.getElementById('loadingText').innerHTML = `${text} <span id="loadingPercent">0%</span>`;
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            setTimeout(() => { document.getElementById('loadingOverlay').style.opacity = '1'; }, 10);
+            // Defensive programming: pastikan elemen ada sebelum diubah
+            const textEl = document.getElementById('loadingText');
+            if (textEl) {
+                textEl.innerHTML = `${text} <span id="loadingPercent">0%</span>`;
+            }
+            
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+            }
             
             loadProgress = 0;
             clearInterval(loadInterval);
-            // Loading sangat cepat
             loadInterval = setInterval(() => {
                 loadProgress += Math.floor(Math.random() * 30) + 20;
                 if (loadProgress > 95) loadProgress = 95;
@@ -278,8 +287,9 @@
             if(pct) pct.innerText = '100%';
             clearInterval(loadInterval);
             setTimeout(() => {
-                document.getElementById('loadingOverlay').style.opacity = '0';
-                setTimeout(() => { document.getElementById('loadingOverlay').style.display = 'none'; }, 200);
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) overlay.style.opacity = '0';
+                setTimeout(() => { if(overlay) overlay.style.display = 'none'; }, 200);
             }, 100);
         }
 
@@ -317,14 +327,10 @@
             input.value = val;
         }
 
-        // Mengatasi format aneh seperti 30T16:00:00.000Z Oktober 2026
         function parseDateRobust(dateStr) {
             if (!dateStr) return { d: "", m: "", y: "" };
             let val = String(dateStr).trim();
-            
-            // Hapus kata bulan bahasa indonesia jika tidak sengaja tercetak
             val = val.replace(/[a-zA-Z]+/g, match => match === 'T' || match === 'Z' ? match : '').trim();
-            
             if (val.includes('T')) val = val.split('T')[0];
             
             let d = "", m = "", y = "";
@@ -353,7 +359,6 @@
         function formatToDisplayDate(dateStr) {
             let { d, m, y } = parseDateRobust(dateStr);
             if (!d || !m || !y) return "-";
-            
             const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             const monthName = months[parseInt(m) - 1] || m;
             return `${parseInt(d)} ${monthName} ${y}`;
@@ -468,7 +473,7 @@
                 bidang_kerja_id: currentBidangId,
                 skuo_id: document.getElementById('skuoSelect').value,
                 nama_kegiatan: document.getElementById('namaKegiatan').value.toUpperCase(),
-                tanggal: formatToDBDate(document.getElementById('tanggalInput').value), // diseragamkan ke dd/mm/yyyy
+                tanggal: formatToDBDate(document.getElementById('tanggalInput').value), 
                 mode: document.getElementById('modeInput').value,
                 keterangan: document.getElementById('keteranganInput').value
             };
@@ -476,7 +481,7 @@
             const isEdit = document.getElementById('formMode').value === 'edit';
             const action = isEdit ? 'updateKegiatan' : 'saveKegiatan';
             
-            startLoading("Menyimpan...");
+            startLoading(isEdit ? "Menyimpan Perubahan..." : "Mengirim Data...");
 
             try {
                 db = await fetchAPI({ action: action, data: payload });
@@ -494,7 +499,7 @@
             const data = db.kegiatan.find(k => k.id === id);
             if (!data) return;
             if (data.bidang_kerja_id !== currentBidangId) {
-                Swal.fire('Akses Ditolak', 'Bukan kegiatan bidang Anda.', 'warning');
+                Swal.fire('Akses Ditolak', 'Anda tidak dapat mengedit kegiatan bidang lain.', 'warning');
                 return;
             }
 
@@ -516,12 +521,13 @@
         function deleteData(id) {
             const data = db.kegiatan.find(k => k.id === id);
             if (data && data.bidang_kerja_id !== currentBidangId) {
-                Swal.fire('Akses Ditolak', 'Bukan kegiatan bidang Anda.', 'warning');
+                Swal.fire('Akses Ditolak', 'Anda tidak dapat menghapus kegiatan bidang lain.', 'warning');
                 return;
             }
 
             Swal.fire({
-                title: 'Hapus Kegiatan?', text: "Data akan dihapus permanen.",
+                title: 'Hapus Kegiatan?',
+                text: "Data akan dihapus permanen.",
                 icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Ya, Hapus!'
             }).then(async (result) => {
                 if (result.isConfirmed) {
@@ -573,7 +579,7 @@
                 myData = myData.filter(k => k.bidang_kerja_id === filterValue);
             }
 
-            // 2. SEARCH (Mencari di semua kolom teks)
+            // 2. SEARCH
             if (searchValue) {
                 myData = myData.filter(k => {
                     const bObj = db.bidang.find(b => b.id === k.bidang_kerja_id);
@@ -590,7 +596,6 @@
                 let valA = a[tableState.sortBy];
                 let valB = b[tableState.sortBy];
                 
-                // Resolving ID ke Nama untuk Sort agar akurat (SKUO Sort = Nama Skuo Sort)
                 if(tableState.sortBy === 'skuo_id') {
                     const sa = db.skuo.find(s => s.id === a.skuo_id);
                     const sb = db.skuo.find(s => s.id === b.skuo_id);
