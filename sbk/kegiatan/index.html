@@ -5,15 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Meta Tags untuk Preview WhatsApp (Open Graph) -->
-    <!-- PENTING: Ganti atribut content pada og:image dengan URL Publik gambar logo Anda -->
     <meta property="og:title" content="Aplikasi Kinerja Staf Bidang Kerja">
     <meta property="og:description" content="Sistem Pengontrolan & Pelaporan Kinerja Staf Bidang Kerja (SKUO)">
-    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Google_Docs_logo_%282014-2020%29.svg/1200px-Google_Docs_logo_%282014-2020%29.svg.png">
+    <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
     <meta property="og:type" content="website">
     
     <!-- Favicon (Icon Tab Browser) -->
-    <!-- PENTING: Ganti atribut href dengan URL Publik logo/icon Anda -->
-    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Google_Docs_logo_%282014-2020%29.svg/120px-Google_Docs_logo.png">
+    <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <title>Kontrol Kegiatan Staf Bidang Kerja</title>
     
@@ -50,8 +48,7 @@
 
     <!-- LOADING OVERLAY -->
     <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-all duration-300">
-        <!-- PENTING: Ganti src gambar ini dengan logo publik Anda -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Google_Docs_logo_%282014-2020%29.svg/120px-Google_Docs_logo.png" alt="Logo Aplikasi" class="h-16 mb-6 drop-shadow-lg">
+        <img src="../../logo_wahdah_islamiyah.png" alt="Logo Aplikasi" class="h-16 mb-6 drop-shadow-lg" onerror="this.src='https://placehold.co/150x150/1e3a8a/ffffff?text=Logo'">
         
         <div class="w-64 max-w-[80vw] h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner border border-blue-800">
             <div id="progressBarFill" class="h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-0 transition-all duration-150 ease-out shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
@@ -67,8 +64,7 @@
         
         <!-- HEADER AUTH -->
         <div class="text-center mb-8 fade-in hidden w-full" id="headerLogo">
-            <!-- PENTING: Ganti src gambar ini dengan logo publik Anda -->
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Google_Docs_logo_%282014-2020%29.svg/120px-Google_Docs_logo.png" alt="Logo Aplikasi" class="h-16 mx-auto mb-3 drop-shadow-lg">
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo Aplikasi" class="h-16 mx-auto mb-3 drop-shadow-lg" onerror="this.src='https://placehold.co/150x150/ffffff/1e3a8a?text=Logo'">
             <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kinerja Pegawai</h1>
             <p class="text-gray-500 mt-1 text-xs md:text-sm font-medium">Sistem Pelaporan Staf Bidang Kerja</p>
         </div>
@@ -105,8 +101,7 @@
     <div id="mainAppView" class="hidden fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         
         <div class="text-center mb-6 fade-in flex flex-col md:flex-row items-center justify-center gap-3">
-            <!-- PENTING: Ganti src gambar ini dengan logo publik Anda -->
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Google_Docs_logo_%282014-2020%29.svg/120px-Google_Docs_logo.png" alt="Logo Aplikasi" class="h-10 md:h-12 drop-shadow-md">
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo Aplikasi" class="h-10 md:h-12 drop-shadow-md" onerror="this.src='https://placehold.co/150x150/ffffff/1e3a8a?text=Logo'">
             <div class="text-center md:text-left">
                 <h1 class="text-xl font-extrabold text-brand-blue tracking-tight leading-tight">Kinerja Pegawai</h1>
                 <p class="text-gray-500 text-xs font-medium">Staf Bidang Kerja</p>
@@ -579,7 +574,7 @@
                 }
 
                 tbody.innerHTML += `
-                    <tr class="hover:bg-blue-50/40 transition-colors" data-status="${statusRaw}">
+                    <tr class="odd:bg-white even:bg-slate-50 hover:bg-blue-100/50 transition-colors" data-status="${statusRaw}">
                         <td class="px-3 md:px-4 py-3 text-center text-gray-500 text-xs">${index + 1}</td>
                         <td class="px-3 md:px-4 py-3 font-bold text-brand-blue text-xs md:text-sm">
                             ${keg.nama_kegiatan}
