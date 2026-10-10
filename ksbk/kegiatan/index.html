@@ -3,770 +3,641 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Kegiatan KSBK</title>
+    <!-- Meta tag untuk link preview WA -->
+    <meta property="og:title" content="Input Kegiatan KSBK - Wahdah Islamiyah">
+    <meta property="og:description" content="Aplikasi pengontrolan kinerja pegawai Kantor Pusat Wahdah Islamiyah.">
+    <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
     
-    <!-- Meta Tags WA Preview -->
-    <meta property="og:title" content="Monitoring Kinerja Pegawai KSBK">
-    <meta property="og:description" content="Aplikasi Input Kegiatan dan Monitoring Kinerja Pegawai Pusat.">
-    <!-- Wajib absolute URL untuk image WhatsApp Preview -->
-    <meta property="og:image" content="https://kpwi.github.io/monitoring_kinerja_pegawai.png">
-    <meta property="og:url" content="https://kpwi.github.io/presensi/">
-    <meta property="og:type" content="website">
+    <title>Input Kegiatan KSBK</title>
+    <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
-    <!-- Favicon (Memastikan logo GitHub) -->
-    <link rel="icon" type="image/png" href="../logo_wahdah_islamiyah.png">
-
-    <!-- Fonts & Dependencies -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
-    <!-- Script Deteksi Tema (Mencegah flicker layar) -->
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        const getPreferredTheme = () => {
-            if (localStorage.getItem('ksbk-theme')) return localStorage.getItem('ksbk-theme');
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        };
-        document.documentElement.setAttribute('data-bs-theme', getPreferredTheme());
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: { blue: '#1e3a8a', gold: '#eab308' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
     </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
     <style>
-        :root {
-            /* Tema Biru Terang (Light Mode) */
-            --bg-body: #F4F7FA;
-            --bg-card: #ffffff;
-            --text-main: #0D223A;
-            --text-muted: #5a6b82;
-            --border-color: #C8E6EB;
-            --input-bg: #ffffff;
-            --table-hover: #f1f8fa;
-            --table-odd: #ffffff;
-            --table-even: #f8fbff;
-            --table-header-bg: #e5eff5;
-            
-            /* Warna Identitas Brand KSBK */
-            --brand-dark: #1B365D;    /* Navy Blue - Logo */
-            --brand-deep: #0D223A;    /* Very Dark Blue */
-            --brand-light: #C8E6EB;   /* Ice Blue */
-            --theme-color: #1B365D;   /* Main button color */
-            --theme-hover: #264a7f;
-            
-            /* Aksen */
-            --brand-accent: #FFD700;  /* Gold */
-            --brand-aqua: #85C1B3;    /* Tosca Green */
-            --brand-orange: #C67D17;
-            --brand-red: #E52B2A;
-            
-            --glass-bg: rgba(255, 255, 255, 0.95);
-            --shadow-color: rgba(13, 34, 58, 0.08);
-        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #ffffff 100%); min-height: 100vh; color: #1e293b; }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 10px 40px rgba(30, 58, 138, 0.08); }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .ts-control { border-radius: 0.75rem; padding: 0.65rem 1rem; border: 1px solid #cbd5e1; background-color: #f8fafc; font-size: 1rem; }
+        .ts-control.focus { border-color: #1e3a8a; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15); background-color: #ffffff; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        .keep-multiline { white-space: pre-wrap; line-height: 1.5; }
         
-        [data-bs-theme="dark"] {
-            /* Tema Gelap dengan Kontras Tinggi (Dark Mode) */
-            --bg-body: #050f1a;       /* Background sangat gelap agar card terlihat */
-            --bg-card: #0D223A;       /* Brand Deep Blue untuk wadah form/card */
-            --text-main: #F4F7FA;     /* Teks sangat putih/cerah */
-            --text-muted: #85C1B3;    /* Aksen tosca lembut untuk subteks */
-            --border-color: #1a3250;  
-            --input-bg: #091829;
-            --table-hover: #122c4a;
-            --table-odd: #0D223A;
-            --table-even: #0a1b2e;
-            --table-header-bg: #132a45;
-            
-            --theme-color: #3b82f6;   /* Terangkan tombol menjadi biru cerah di dark mode */
-            --theme-hover: #60a5fa;
-            
-            --glass-bg: rgba(13, 34, 58, 0.90);
-            --shadow-color: rgba(0, 0, 0, 0.6);
-        }
-
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.3s, color 0.3s; margin: 0; padding: 0; }
-        
-        /* Layout Login Box 100% Center (Perbaikan letak form) */
-        .login-wrapper { 
-            width: 100vw; 
-            min-height: 100vh; 
-            display: flex; align-items: center; justify-content: center; 
-            background: linear-gradient(135deg, var(--brand-dark), var(--brand-deep), var(--brand-aqua));
-            background-size: 200% 200%;
-            animation: gradientMove 12s ease infinite;
-            padding: 20px;
-            margin: 0;
-            position: absolute; top: 0; left: 0;
-        }
-        @keyframes gradientMove { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        
-        /* Elemen Form & UI modern */
-        .card-custom { background: var(--bg-card); border-radius: 20px; box-shadow: 0 10px 30px var(--shadow-color); border: 1px solid var(--border-color); transition: background-color 0.3s, border-color 0.3s; }
-        .glass-effect { backdrop-filter: blur(16px); background: var(--glass-bg); }
-        
-        .input-elegant { border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 16px; width: 100%; transition: all 0.3s; background-color: var(--input-bg); color: var(--text-main); }
-        .input-elegant:focus { outline: none; box-shadow: 0 0 0 3px rgba(27, 54, 93, 0.15); border-color: var(--theme-color); }
-        .input-elegant.val-success { border-color: #28a745 !important; }
-        .input-elegant.val-error { border-color: var(--brand-red) !important; }
-        
-        .btn-theme { background-color: var(--theme-color); color: white; border: none; transition: all 0.3s ease; }
-        .btn-theme:hover { background-color: var(--theme-hover); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(27, 54, 93, 0.3); }
-        
-        /* Navbar */
-        .navbar-custom { background: var(--brand-dark); border-bottom: 2px solid var(--brand-accent); }
-        
-        /* Dashboard Stat Cards */
-        .stat-card { border-radius: 16px; padding: 24px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 20px var(--shadow-color); border: none; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.3); }
-        .stat-card::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0; background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%); pointer-events: none; }
-        .stat-card h3 { margin: 0; font-weight: 800; font-size: 2.2rem; position: relative; z-index: 1;}
-        .stat-card p { margin: 0; font-size: 0.95rem; opacity: 0.9; font-weight: 500; position: relative; z-index: 1;}
-        .stat-icon { font-size: 3.5rem; position: absolute; right: -10px; bottom: -15px; opacity: 0.25; transform: rotate(-10deg); transition: transform 0.3s; }
-        .stat-card:hover .stat-icon { transform: rotate(0deg) scale(1.1); }
-        
-        /* Gradients Stat (Menyesuaikan dengan biru & warna sekunder) */
-        .bg-grad-total { background: linear-gradient(135deg, var(--brand-dark), #102340); }
-        .bg-grad-online { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
-        .bg-grad-offline { background: linear-gradient(135deg, var(--brand-orange), #d97706); }
-        .bg-grad-hybrid { background: linear-gradient(135deg, var(--brand-aqua), #059669); }
-
-        /* Tables & Tabs (Fixing contrast and zebra style) */
-        .table { color: var(--text-main); border-color: var(--border-color); }
-        .table-striped-custom > tbody > tr:nth-of-type(odd) > td { background-color: var(--table-odd); border-bottom-color: var(--border-color); }
-        .table-striped-custom > tbody > tr:nth-of-type(even) > td { background-color: var(--table-even); border-bottom-color: var(--border-color); }
-        .table-striped-custom > tbody > tr:hover > td { background-color: var(--table-hover); transition: background-color 0.2s;}
-        .table-custom-header > th { background-color: var(--table-header-bg) !important; color: var(--text-main) !important; border-bottom: 2px solid var(--theme-color) !important; font-weight: 600; cursor: pointer; user-select: none; }
-        .table-custom-header > th:hover { color: var(--theme-color) !important; }
-        
-        .nav-tabs .nav-link { color: var(--text-muted); border: none; border-bottom: 3px solid transparent; font-weight: 600; padding: 12px 20px; transition: all 0.3s; }
-        .nav-tabs .nav-link:hover { border-bottom: 3px solid var(--border-color); }
-        .nav-tabs .nav-link.active { color: var(--theme-color); background-color: transparent; border-bottom: 3px solid var(--theme-color); }
-        .nav-tabs { border-bottom: 1px solid var(--border-color); }
-
-        /* Loading Overlay Simple & Cepat */
-        #loadingOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--glass-bg); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center;
-            z-index: 9999; visibility: hidden; opacity: 0; transition: opacity 0.2s; flex-direction: column;
-        }
-        #loadingOverlay.show { visibility: visible; opacity: 1; }
-        .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top: 4px solid var(--theme-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .app-section { display: none; }
-        .app-section.active { display: block; animation: fadeIn 0.4s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        @media print {
-            body { background: white !important; color: black !important; }
-            .no-print { display: none !important; }
-            .card-custom { box-shadow: none; border: 1px solid #ddd; }
-            .stat-card { background: white; color: black; border: 1px solid #ccc; box-shadow: none; }
-            .stat-card h3, .stat-card p { color: black !important; }
-            .table-striped-custom > tbody > tr > td { background-color: white !important; color: black !important; border-bottom: 1px solid #ddd;}
-            .table-custom-header > th { background-color: #f1f1f1 !important; color: black !important;}
-        }
+        /* Tab Styles */
+        .tab-btn { transition: all 0.3s; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: #1e3a8a; border-bottom: 2px solid #eab308; font-weight: 700; background: rgba(30,58,138,0.05); }
     </style>
 </head>
-<body>
+<body class="antialiased selection:bg-brand-gold selection:text-brand-blue" onload="loadData()">
 
-    <div id="loadingOverlay">
-        <div class="spinner mb-2"></div>
-        <h6 id="loaderText" class="fw-bold" style="color: var(--theme-color);">Memproses...</h6>
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-all duration-300">
+        <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-28 mb-8 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] animate-pulse" onerror="this.src='https://via.placeholder.com/150x150?text=Logo'">
+        <div class="w-72 max-w-[80vw] h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner border border-blue-800">
+            <div class="h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_1s_ease-in-out_infinite] shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
+        </div>
+        <p class="mt-4 text-sm font-medium text-blue-200" id="loadingText">Memuat Sistem...</p>
     </div>
 
-    <div id="sec-login" class="app-section active login-wrapper">
-        <div class="col-11 col-md-5 col-lg-4">
-            <div class="card-custom glass-effect p-4 p-md-5 text-center border-0 shadow-lg">
-                <div class="mb-4">
-                    <div style="background: var(--bg-card); padding: 15px; border-radius: 24px; display: inline-block; box-shadow: 0 4px 15px var(--shadow-color); margin-bottom: 20px;">
-                        <!-- Logo menggunakan path standar github, dengan fallback jika gambar gagal dimuat -->
-                        <img src="../logo_wahdah_islamiyah.png" alt="Logo KSBK" class="img-fluid mx-auto" style="max-height: 110px; object-fit: contain;" onerror="this.onerror=null; this.src='https://placehold.co/110x110/1B365D/FFF?text=Logo';">
-                    </div>
-                    <h4 class="fw-bold mb-1" style="color: var(--brand-dark); text-shadow: 0px 1px 2px rgba(255,255,255,0.5);">PORTAL KSBK</h4>
-                    <p class="small mb-0 fw-medium" style="color: var(--text-muted);">Sistem Monitoring Kinerja Pegawai</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- HEADER (GLOBAL) -->
+        <div class="text-center mb-6 fade-in hidden" id="headerLogo">
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-16 mx-auto mb-3 drop-shadow-xl" onerror="this.style.display='none'">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Kinerja Pegawai</h1>
+            <p class="text-gray-500 mt-1 text-sm font-medium">Kantor Pusat Wahdah Islamiyah</p>
+        </div>
+
+        <!-- 1. VIEW LOGIN -->
+        <div id="loginView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 fade-in border-t-4 border-t-brand-blue hidden mt-10">
+            <h2 class="text-xl font-bold text-center text-brand-blue mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-brand-gold"></i>Login KSBK</h2>
+            <p class="text-sm text-center text-gray-500 mb-6">Masukkan nomor WhatsApp Anda yang terdaftar.</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-5">
+                    <label class="block text-sm font-bold text-brand-blue mb-1.5"><i class="fa-brands fa-whatsapp text-green-500 text-base mr-1"></i> Nomor WhatsApp</label>
+                    <input type="text" id="loginWa" required class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-3 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700 font-medium" placeholder="Contoh: 08123456789" oninput="formatWA(this)">
                 </div>
-                
-                <!-- Hanya Form WA -->
-                <form id="formLogin" onsubmit="handleLogin(event)">
-                    <div class="mb-4 text-start">
-                        <label class="form-label small fw-semibold">Nomor WhatsApp Anda</label>
-                        <div class="input-group shadow-sm rounded-3 overflow-hidden">
-                            <span class="input-group-text border-0" style="background-color: var(--brand-light); color: var(--brand-dark);"><i class="bi bi-whatsapp"></i></span>
-                            <input type="tel" id="loginWA" class="input-elegant border-0 rounded-0 fs-5 fw-bold" placeholder="Contoh: 628..." required oninput="formatWA(this)" autocomplete="off">
-                        </div>
-                        <div class="form-text small opacity-75 mt-2">Awalan 08 akan otomatis menjadi 628</div>
+                <button type="submit" class="w-full bg-brand-blue hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all flex justify-center items-center gap-2">
+                    Masuk <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- 2. VIEW PILIH BIDANG -->
+        <div id="pilihBidangView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 fade-in border-t-4 border-t-brand-gold hidden mt-10">
+            <h2 class="text-xl font-bold text-center text-brand-blue mb-2">Pilih Bidang Kerja</h2>
+            <p class="text-sm text-center text-gray-500 mb-6" id="welcomePilihBidang">Selamat datang,</p>
+            <div id="listBidang" class="space-y-3">
+                <!-- Buttons injected here -->
+            </div>
+            <button onclick="logout()" class="mt-6 w-full text-red-500 hover:text-red-700 text-sm font-medium transition-colors">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Batal & Kembali
+            </button>
+        </div>
+
+        <!-- 3. MAIN APP VIEW -->
+        <div id="mainAppView" class="hidden fade-in">
+            
+            <!-- User Info Card -->
+            <div class="max-w-4xl mx-auto bg-gradient-to-r from-brand-blue to-blue-800 rounded-2xl p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30">
+                        <i class="fa-solid fa-user-tie text-2xl text-brand-gold"></i>
                     </div>
-                    <button type="submit" class="btn btn-theme w-100 py-3 fw-bold rounded-pill shadow fs-6">Masuk <i class="bi bi-box-arrow-in-right ms-2"></i></button>
+                    <div>
+                        <p class="text-xs text-blue-200 font-medium uppercase tracking-wider">KSBK Aktif</p>
+                        <h2 class="text-lg font-bold" id="infoNama">Nama User</h2>
+                        <p class="text-sm text-blue-100"><i class="fa-solid fa-layer-group text-brand-gold mr-1"></i> <span id="infoBidang">Bidang Kerja</span></p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-red-400">
+                    <i class="fa-solid fa-power-off"></i> Keluar
+                </button>
+            </div>
+
+            <!-- TABS -->
+            <div class="max-w-4xl mx-auto mb-6 flex bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+                <button onclick="switchTab('form')" id="tabFormBtn" class="flex-1 py-3.5 text-sm font-medium tab-btn active flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> Form Input Kegiatan
+                </button>
+                <button onclick="switchTab('data')" id="tabDataBtn" class="flex-1 py-3.5 text-sm font-medium tab-btn flex items-center justify-center gap-2 border-l border-gray-200">
+                    <i class="fa-solid fa-table-list"></i> Daftar Kegiatan
+                </button>
+            </div>
+
+            <!-- TAB CONTENT: FORM -->
+            <div id="tabForm" class="max-w-4xl mx-auto glass-panel rounded-2xl p-6 md:p-8 border-t-4 border-t-brand-gold">
+                <h3 class="text-lg font-bold text-brand-blue border-b pb-3 mb-5" id="formTitle"><i class="fa-solid fa-plus-circle text-brand-gold mr-2"></i> Input Kegiatan Baru</h3>
+                
+                <form id="kegiatanForm" onsubmit="submitForm(event)">
+                    <input type="hidden" id="formMode" value="add">
+                    <input type="hidden" id="formId" value="">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <!-- SKUO -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-brand-blue mb-1.5">SKUO <span class="text-red-500">*</span></label>
+                            <select id="skuoSelect" required class="w-full">
+                                <option value="">Pilih SKUO...</option>
+                            </select>
+                        </div>
+
+                        <!-- Nama Kegiatan -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-brand-blue mb-1.5">Nama Kegiatan <span class="text-red-500">*</span></label>
+                            <input type="text" id="namaKegiatan" required class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700 uppercase placeholder-gray-400" placeholder="Ketik nama kegiatan..." oninput="this.value = this.value.toUpperCase()">
+                        </div>
+
+                        <!-- Tanggal -->
+                        <div>
+                            <label class="block text-sm font-bold text-brand-blue mb-1.5">Tanggal <span class="text-red-500">*</span></label>
+                            <!-- Input HTML default formatnya YYYY-MM-DD -->
+                            <input type="date" id="tanggalInput" required class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700">
+                        </div>
+
+                        <!-- Mode Kegiatan -->
+                        <div>
+                            <label class="block text-sm font-bold text-brand-blue mb-1.5">Mode Kegiatan <span class="text-red-500">*</span></label>
+                            <select id="modeInput" required class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700">
+                                <option value="">Pilih Mode...</option>
+                                <option value="Offline">Offline</option>
+                                <option value="Online">Online</option>
+                                <option value="Hybrid">Hybrid</option>
+                            </select>
+                        </div>
+
+                        <!-- Keterangan -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-brand-blue mb-1.5">Keterangan (Opsional)</label>
+                            <textarea id="keteranganInput" rows="3" class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none resize-none text-gray-700" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 pt-4 border-t border-gray-100">
+                        <button type="submit" id="btnSave" class="flex-1 bg-brand-blue hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-all flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-save"></i> Simpan Kegiatan
+                        </button>
+                        <button type="button" id="btnCancel" onclick="resetForm()" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-xl transition-all">
+                            Batal
+                        </button>
+                    </div>
                 </form>
             </div>
-        </div>
-    </div>
 
-    <div id="sec-bidang" class="app-section container mt-5 pt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card-custom p-5 text-center shadow-lg">
-                    <h4 class="fw-bold mb-3" style="color: var(--theme-color);"><i class="bi bi-diagram-3-fill me-2"></i>Pilih Bidang Kerja</h4>
-                    <p class="text-muted mb-4">Akun Anda terkait dengan beberapa ruang kerja.</p>
-                    <div id="bidangButtons" class="d-grid gap-3"></div>
-                    <button class="btn btn-outline-danger mt-4 w-100 rounded-pill" onclick="logout()"><i class="bi bi-arrow-left"></i> Batal / Keluar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="sec-dashboard" class="app-section">
-        <!-- Navbar Premium -->
-        <nav class="navbar navbar-custom shadow mb-4 py-2 no-print">
-            <div class="container-fluid px-md-4">
-                <span class="navbar-brand mb-0 h5 fw-bold text-white d-flex align-items-center">
-                    <img src="../logo_wahdah_islamiyah.png" alt="Logo" class="me-2 bg-white rounded-circle shadow-sm" style="height: 42px; width: 42px; padding: 4px; object-fit: contain;" onerror="this.onerror=null; this.src='https://placehold.co/42x42/FFF/1B365D?text=Logo';">
-                    <span class="d-none d-sm-inline tracking-tight">DASHBOARD KSBK</span>
-                </span>
-                
-                <div class="d-flex align-items-center gap-3">
-                    <!-- Info Pengguna -->
-                    <div class="d-none d-lg-flex flex-column align-items-end text-white" style="line-height:1.2">
-                        <span class="small fw-bold text-uppercase" id="lblUser">User</span>
-                        <span class="small" style="font-size:11px; color: var(--brand-accent);" id="lblBidang">Bidang</span>
-                    </div>
-
-                    <!-- Tombol Ganti Bidang & Tema (Toolbar Kanan) -->
-                    <button class="btn btn-sm btn-outline-light rounded-pill px-3 shadow-sm" onclick="showSection('sec-bidang')" id="btnGantiBidang" style="display:none;" title="Ganti Bidang Kerja">
-                        <i class="bi bi-arrow-left-right me-1"></i> <span class="d-none d-md-inline">Ganti Bidang</span>
-                    </button>
+            <!-- TAB CONTENT: DATA TABLE -->
+            <div id="tabData" class="max-w-6xl mx-auto glass-panel rounded-2xl p-6 hidden">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 border-b pb-4">
+                    <h3 class="text-lg font-bold text-brand-blue"><i class="fa-solid fa-list-check text-brand-gold mr-2"></i> Daftar Kegiatan</h3>
                     
-                    <button class="btn btn-sm btn-light rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; color: var(--brand-dark);" onclick="toggleTheme()" title="Ganti Tema">
-                        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
-                    </button>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-64">
+                            <input type="text" id="searchTable" onkeyup="filterTable()" placeholder="Cari kegiatan..." class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-blue outline-none text-sm bg-white">
+                            <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                        </div>
+                    </div>
+                </div>
 
-                    <button class="btn btn-sm btn-danger fw-bold rounded-pill px-3 shadow-sm" onclick="logout()"><i class="bi bi-power"></i> <span class="d-none d-md-inline ms-1">Keluar</span></button>
-                </div>
-            </div>
-        </nav>
-
-        <div class="container-fluid px-md-4 pb-5">
-            
-            <!-- Dashboard Stats Summary -->
-            <div class="row mb-4 g-3 no-print">
-                <div class="col-6 col-md-3">
-                    <div class="stat-card bg-grad-total h-100">
-                        <div><p>Total Kegiatan</p><h3 id="stat-total">0</h3></div>
-                        <i class="bi bi-journal-check stat-icon"></i>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card bg-grad-online h-100">
-                        <div><p>Mode Online</p><h3 id="stat-online">0</h3></div>
-                        <i class="bi bi-laptop stat-icon"></i>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card bg-grad-offline h-100 text-dark">
-                        <div><p>Mode Offline</p><h3 id="stat-offline">0</h3></div>
-                        <i class="bi bi-buildings stat-icon"></i>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="stat-card bg-grad-hybrid h-100">
-                        <div><p>Mode Hybrid</p><h3 id="stat-hybrid">0</h3></div>
-                        <i class="bi bi-bezier2 stat-icon"></i>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm" id="dataTable">
+                        <thead class="bg-brand-blue text-white">
+                            <tr>
+                                <th class="px-3 py-3 font-semibold w-12 text-center">No</th>
+                                <th class="px-3 py-3 font-semibold cursor-pointer hover:bg-blue-800 transition" onclick="sortTable(1)">Nama Kegiatan <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-3 py-3 font-semibold cursor-pointer hover:bg-blue-800 transition" onclick="sortTable(2)">SKUO <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-3 py-3 font-semibold cursor-pointer hover:bg-blue-800 transition w-32" onclick="sortTable(3)">Tanggal <i class="fa-solid fa-sort text-[10px] ml-1"></i></th>
+                                <th class="px-3 py-3 font-semibold w-24">Mode</th>
+                                <th class="px-3 py-3 font-semibold">Keterangan</th>
+                                <th class="px-3 py-3 font-semibold w-24 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-gray-200 bg-white/60">
+                            <!-- Data Injected Here -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Main Tabs Container -->
-            <div class="card-custom p-3 p-md-4 mb-4 shadow-sm">
-                <!-- Tab Headers -->
-                <ul class="nav nav-tabs no-print mb-4" id="appTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tab-data" data-bs-toggle="tab" data-bs-target="#content-data" type="button"><i class="bi bi-table me-2"></i> Rekap Kegiatan</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-input" data-bs-toggle="tab" data-bs-target="#content-input" type="button"><i class="bi bi-pencil-square me-2"></i> Form Input</button>
-                    </li>
-                </ul>
-
-                <div class="tab-content" id="appTabsContent">
-                    
-                    <div class="tab-pane fade show active" id="content-data" role="tabpanel">
-                        <!-- Toolbar Controls: Dirombak agar fleksibel & responsif -->
-                        <div class="row align-items-center mb-3 g-2 no-print">
-                            <div class="col-12 col-md-3">
-                                <h5 class="fw-bold mb-0" style="color: var(--brand-dark);"><i class="bi bi-card-list"></i> Daftar Kinerja</h5>
-                            </div>
-                            
-                            <!-- Area Filter & Search (Mencegah elemen keluar batas di layar kecil) -->
-                            <div class="col-12 col-md-9">
-                                <div class="d-flex flex-wrap justify-content-md-end gap-2 align-items-center">
-                                    
-                                    <select id="filterBulan" class="form-select shadow-sm w-auto" style="min-width: 130px; background-color: var(--input-bg); color: var(--text-main); border-color: var(--border-color);" onchange="applyFilter()">
-                                        <option value="">Semua Bulan</option>
-                                        <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
-                                        <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
-                                        <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
-                                        <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
-                                    </select>
-
-                                    <div class="input-group shadow-sm" style="max-width: 250px;">
-                                        <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-search text-muted"></i></span>
-                                        <input type="text" id="searchBox" class="form-control border-start-0 ps-0" placeholder="Cari nama, skuo..." onkeyup="applyFilter()">
-                                    </div>
-                                    
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-outline-secondary shadow-sm" onclick="window.print()" title="Cetak PDF"><i class="bi bi-printer"></i></button>
-                                        <button class="btn btn-theme shadow-sm" onclick="loadTableData()" title="Segarkan Data"><i class="bi bi-arrow-clockwise"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Area Tabel Data -->
-                        <div class="table-responsive rounded border mb-3" style="min-height: 350px; border-color: var(--border-color) !important;">
-                            <table class="table align-middle border-0 table-striped-custom mb-0 text-center text-nowrap">
-                                <thead>
-                                    <tr class="table-custom-header">
-                                        <th class="py-3" style="width:5%">No</th>
-                                        <th class="py-3" style="width:15%" onclick="setSort('Tanggal')">Tanggal <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
-                                        <th class="py-3 text-start" style="width:25%" onclick="setSort('Nama_Kegiatan')">Nama Kegiatan <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
-                                        <th class="py-3" style="width:20%" onclick="setSort('SKUO')">SKUO <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
-                                        <th class="py-3" style="width:10%" onclick="setSort('Mode')">Mode <i class="bi bi-arrow-down-up small ms-1 opacity-50"></i></th>
-                                        <th class="py-3 text-start" style="width:15%">Keterangan</th>
-                                        <th class="py-3 no-print" style="width:10%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableBody" class="border-top-0">
-                                    <!-- Rendered by JS -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Pagination Section -->
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 no-print mt-2">
-                            <span class="small fw-semibold text-muted" id="pageInfo">Menampilkan 0 data</span>
-                            <div class="btn-group shadow-sm">
-                                <button class="btn btn-sm btn-outline-secondary px-3" onclick="prevPage()"><i class="bi bi-chevron-left"></i> Prev</button>
-                                <button class="btn btn-sm btn-outline-secondary px-3" onclick="nextPage()">Next <i class="bi bi-chevron-right"></i></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane fade" id="content-input" role="tabpanel">
-                        <div class="row">
-                            <div class="col-lg-8 mx-auto">
-                                <form id="formKegiatan" class="p-2 p-md-4" onsubmit="handleSaveKegiatan(event)">
-                                    <input type="hidden" id="editId">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 mb-3 mb-md-0">
-                                            <label class="form-label small fw-bold" style="color: var(--brand-orange);">SKUO Bidang *</label>
-                                            <select id="inpSkuo" class="input-elegant shadow-sm" required onchange="validateField(this)">
-                                                <option value="">-- Pilih SKUO --</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label small fw-bold">Tanggal Pelaksanaan *</label>
-                                            <!-- Menggunakan type date murni bawaan browser -->
-                                            <input type="date" id="inpTanggal" class="input-elegant shadow-sm" required onchange="validateField(this)">
-                                        </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold">Nama Kegiatan *</label>
-                                        <input type="text" id="inpNama" class="input-elegant shadow-sm" required placeholder="KETIK NAMA KEGIATAN" oninput="this.value = this.value.toUpperCase(); validateField(this)">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label small fw-bold">Mode Kegiatan *</label>
-                                        <select id="inpMode" class="input-elegant shadow-sm" required onchange="validateField(this)">
-                                            <option value="">-- Pilih Mode --</option>
-                                            <option value="Online">Online</option>
-                                            <option value="Offline">Offline</option>
-                                            <option value="Hybrid">Hybrid</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="form-label small fw-bold">Keterangan / Hasil (Opsional)</label>
-                                        <textarea id="inpKeterangan" class="input-elegant shadow-sm" rows="3" placeholder="Catatan tambahan hasil kegiatan..."></textarea>
-                                    </div>
-                                    <div class="text-end pt-3 border-top mt-4">
-                                        <button type="button" class="btn btn-light border px-4 me-2 shadow-sm fw-bold text-muted" onclick="resetForm()">Batal</button>
-                                        <button type="submit" class="btn btn-theme px-5 fw-bold shadow-sm rounded-pill" id="btnSimpan"><i class="bi bi-save me-1"></i> SIMPAN</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxzxJXHGLfdza0Jgq0XzvlPgJC2zy0crRxNtGYL_DsbhURuRd9tMXOF-Y_gfrD8PrnA/exec";
+        // GLOBAL STATE
+        let db = { akun: [], skuo: [], kegiatan: [] };
+        let currentUser = { wa: "", nama: "" };
+        let currentBidang = "";
+        let tomSelectInstance = null;
 
-        let AppState = {
-            noWA: null, nama: null, allBidang: [], bidang: null, 
-            skuoList: [], kegiatanList: [], filteredData: [],
-            currentPage: 1, rowsPerPage: 10, sortCol: 'Tanggal', sortAsc: false
+        // DUMMY DATA UNTUK SIMULATION MODE (Gemini Canvas / Local HTML)
+        const DUMMY_DATA = {
+            akun: [
+                { WA: "628111222333", Nama: "Ahmad Fulan", BidangKerja: "Biro IT" },
+                { WA: "628111222333", Nama: "Ahmad Fulan", BidangKerja: "Biro Humas" },
+                { WA: "628999888777", Nama: "Budi Santoso", BidangKerja: "Biro Keuangan" }
+            ],
+            skuo: [
+                { BidangKerja: "Biro IT", NamaSKUO: "Pemeliharaan Server & Hosting" },
+                { BidangKerja: "Biro IT", NamaSKUO: "Pengembangan Website Utama" },
+                { BidangKerja: "Biro Humas", NamaSKUO: "Publikasi Media Sosial" },
+                { BidangKerja: "Biro Keuangan", NamaSKUO: "Penyusunan Laporan Bulanan" }
+            ],
+            kegiatan: [
+                { ID: "KGT-1", Timestamp: "9/10/2026 09:00:00", WA: "628111222333", Nama: "Ahmad Fulan", BidangKerja: "Biro IT", SKUO: "Pemeliharaan Server & Hosting", NamaKegiatan: "BACKUP DATABASE", Tanggal: "9/10/2026", Mode: "Online", Keterangan: "Rutin mingguan" }
+            ]
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateThemeIcon(document.documentElement.getAttribute('data-bs-theme'));
-            hideLoading();
-            showSection('sec-login');
+        // --- CORE SYSTEM & LOADING ---
+        function startLoading(text = "Memuat...") {
+            document.getElementById('loadingText').innerText = text;
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            setTimeout(() => { document.getElementById('loadingOverlay').style.opacity = '1'; }, 10);
+        }
+
+        function endLoading() {
+            document.getElementById('loadingOverlay').style.opacity = '0';
+            setTimeout(() => { document.getElementById('loadingOverlay').style.display = 'none'; }, 300);
+        }
+
+        function loadData() {
+            if (typeof google === 'undefined') {
+                // SIMULATION MODE
+                console.log("Running in Simulation Mode");
+                db = JSON.parse(JSON.stringify(DUMMY_DATA)); // Clone data
+                setTimeout(() => {
+                    initApp();
+                    endLoading();
+                }, 800);
+            } else {
+                // GAS PRODUCTION MODE
+                google.script.run
+                    .withSuccessHandler(res => {
+                        db = res;
+                        initApp();
+                        endLoading();
+                    })
+                    .withFailureHandler(err => {
+                        Swal.fire('Error', 'Gagal memuat database.', 'error');
+                        endLoading();
+                    })
+                    .getAllData();
+            }
+        }
+
+        function initApp() {
+            document.getElementById('headerLogo').classList.remove('hidden');
             
-            document.getElementById('tab-data').addEventListener('shown.bs.tab', () => { if(AppState.bidang) applyFilter(); });
-        });
-
-        // --- THEME LOGIC ---
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-bs-theme', newTheme);
-            localStorage.setItem('ksbk-theme', newTheme);
-            updateThemeIcon(newTheme);
-        }
-
-        function updateThemeIcon(theme) {
-            const icon = document.getElementById('themeIcon');
-            if (theme === 'dark') { icon.className = 'bi bi-brightness-high-fill text-warning'; } 
-            else { icon.className = 'bi bi-moon-stars-fill'; }
-        }
-
-        // --- UX / LOADING HELPERS ---
-        function showLoading(text = 'Memproses...') {
-            document.getElementById('loaderText').innerText = text;
-            document.getElementById('loadingOverlay').classList.add('show');
-        }
-        function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-        
-        function showSection(id) {
-            document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            // Cek Session (Sederhana menggunakan localStorage jika diinginkan, tapi untuk ini kita reset ke login view)
+            document.getElementById('loginView').classList.remove('hidden');
+            
+            // Inisialisasi TomSelect untuk SKUO
+            tomSelectInstance = new TomSelect('#skuoSelect', {
+                create: false,
+                sortField: { field: "text", direction: "asc" },
+                placeholder: "Ketik untuk mencari SKUO..."
+            });
         }
 
         // --- FORMATTING HELPERS ---
-        function formatWA(el) {
-            let val = el.value.replace(/\D/g, ''); // Hapus semua karakter selain angka
-            if (val.startsWith('08')) val = '628' + val.substring(2);
-            el.value = val;
+        function formatWA(input) {
+            let val = input.value.replace(/\D/g, ''); 
+            if (val.startsWith('08')) val = '628' + val.substring(2); 
+            input.value = val;
         }
 
-        function validateField(el) {
-            if (el.value.trim() !== '') { el.classList.add('val-success'); el.classList.remove('val-error'); } 
-            else { el.classList.remove('val-success'); el.classList.add('val-error'); }
+        // Convert YYYY-MM-DD to D/M/YYYY (Format Simpan)
+        function formatTanggalToSimpan(dateStr) {
+            if(!dateStr) return "";
+            const parts = dateStr.split('-');
+            if(parts.length !== 3) return dateStr;
+            return `${parseInt(parts[2])}/${parseInt(parts[1])}/${parts[0]}`;
         }
 
-        /* 
-           DATE PARSER KHUSUS:
-           Input HTML: yyyy-mm-dd (Misal: 2026-10-20)
-           Google Sheet: dd/mm/yyyy (Misal: 20/10/2026)
-           Tampilan UI UI: 20 Oktober 2026
-        */
-        function toSheetDate(htmlDate) {
-            if(!htmlDate) return '';
-            const parts = htmlDate.split('-'); // ex: 2026-10-20
-            if(parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            return htmlDate;
+        // Convert D/M/YYYY to YYYY-MM-DD (Format Input Type Date)
+        function formatTanggalToInput(dateStr) {
+            if(!dateStr) return "";
+            const parts = dateStr.split('/');
+            if(parts.length !== 3) return dateStr;
+            const d = parts[0].padStart(2, '0');
+            const m = parts[1].padStart(2, '0');
+            return `${parts[2]}-${m}-${d}`;
         }
 
-        function toUIDate(sheetDate) {
-            if(!sheetDate) return '-';
-            let d, m, y;
-            // Jika format dari sheet sudah DD/MM/YYYY
-            if(sheetDate.includes('/')) {
-                [d, m, y] = sheetDate.split('/');
-            } 
-            // Jika dikembalikan sebagai ISO Date string
-            else if(sheetDate.includes('-') || sheetDate.includes('T')) {
-                const dateObj = new Date(sheetDate);
-                if(!isNaN(dateObj)) {
-                    d = dateObj.getDate(); m = dateObj.getMonth() + 1; y = dateObj.getFullYear();
-                } else return sheetDate;
-            } else return sheetDate;
-
-            const months = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            return `${parseInt(d)} ${months[parseInt(m)]} ${y}`;
+        // Convert D/M/YYYY to DD Bulan YYYY (Format Display UI)
+        function formatTanggalToDisplay(dateStr) {
+            if(!dateStr) return "-";
+            const parts = dateStr.split('/');
+            if(parts.length !== 3) return dateStr;
+            const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            const d = parts[0].padStart(2, '0');
+            const m = months[parseInt(parts[1]) - 1];
+            return `${d} ${m} ${parts[2]}`;
         }
 
-        // Parse HTML Date untuk Edit Modal. html <input type="date"> butuh format YYYY-MM-DD
-        function toInputDate(sheetDate) {
-            if(!sheetDate) return '';
-            if(sheetDate.includes('/')) {
-                const [d, m, y] = sheetDate.split('/');
-                return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        // --- AUTH & NAVIGATION ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const wa = document.getElementById('loginWa').value;
+            
+            // Cari Akun
+            const userAccounts = db.akun.filter(a => a.WA == wa);
+            
+            if (userAccounts.length === 0) {
+                Swal.fire('Akses Ditolak', 'Nomor WhatsApp tidak terdaftar dalam sistem.', 'error');
+                return;
             }
-            if(sheetDate.includes('T')) return sheetDate.split('T')[0];
-            return sheetDate;
-        }
 
-        // --- API CALLER ---
-        async function apiCall(actionName, payloadData = {}) {
-            try {
-                const response = await fetch(GAS_API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action: actionName, payload: payloadData })
+            currentUser.wa = wa;
+            currentUser.nama = userAccounts[0].Nama;
+
+            if (userAccounts.length === 1) {
+                // Langsung masuk jika hanya 1 bidang
+                enterApp(userAccounts[0].BidangKerja);
+            } else {
+                // Pilih bidang jika > 1
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('pilihBidangView').classList.remove('hidden');
+                document.getElementById('welcomePilihBidang').innerText = `Selamat datang, ${currentUser.nama}. Pilih akses Anda:`;
+                
+                const listDiv = document.getElementById('listBidang');
+                listDiv.innerHTML = '';
+                userAccounts.forEach(acc => {
+                    listDiv.innerHTML += `
+                        <button onclick="enterApp('${acc.BidangKerja}')" class="w-full text-left bg-white border border-gray-200 hover:border-brand-blue hover:shadow-md p-4 rounded-xl transition-all flex items-center justify-between group">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-0.5">Akses sebagai</p>
+                                <p class="font-bold text-brand-blue">${acc.BidangKerja}</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-gold"></i>
+                        </button>
+                    `;
                 });
-                if(!response.ok) throw new Error("Gagal terhubung API");
-                return await response.json();
-            } catch (error) {
-                return { status: 'error', message: error.message };
             }
         }
 
-        // --- STREAMING_CHUNK:Core Aplikasi (Login, Data, Simpan) ---
-        async function handleLogin(e) {
-            e.preventDefault();
-            const wa = document.getElementById('loginWA').value;
-            if(wa.length < 10) { Swal.fire('Peringatan', 'Nomor WA tidak valid', 'warning'); return; }
-
-            showLoading("Masuk...");
-            const res = await apiCall('login', { noWA: wa });
-            hideLoading();
-
-            if(res.status === 'success') {
-                AppState.noWA = res.noWA; AppState.nama = res.nama; AppState.allBidang = res.bidang;
-                document.getElementById('btnGantiBidang').style.display = AppState.allBidang.length > 1 ? 'inline-block' : 'none';
-                
-                if(AppState.allBidang.length > 1) { renderBidangSelector(AppState.allBidang); showSection('sec-bidang'); } 
-                else { setBidangAktif(AppState.allBidang[0]); }
-            } else { Swal.fire('Gagal', res.message, 'error'); }
-        }
-
-        function renderBidangSelector(bidangArr) {
-            const container = document.getElementById('bidangButtons');
-            container.innerHTML = '';
-            bidangArr.forEach(b => {
-                const btn = document.createElement('button');
-                btn.className = 'btn btn-outline-primary py-3 fw-bold rounded-pill shadow-sm border-2';
-                btn.innerHTML = `<i class="bi bi-briefcase-fill me-2"></i> Ruang ${b}`;
-                btn.onclick = () => setBidangAktif(b);
-                container.appendChild(btn);
-            });
-        }
-
-        async function setBidangAktif(bidang) {
-            AppState.bidang = bidang;
-            document.getElementById('lblUser').innerText = AppState.nama.toUpperCase();
-            document.getElementById('lblBidang').innerText = `Bidang ${AppState.bidang.toUpperCase()}`;
-            showSection('sec-dashboard');
+        function enterApp(bidang) {
+            currentBidang = bidang;
             
-            // Background pre-fetch
-            loadSKUO();
-            loadTableData(); 
-        }
-
-        function logout() {
-            AppState = { noWA: null, nama: null, allBidang: [], bidang: null, skuoList: [], kegiatanList: [], filteredData: [], currentPage: 1, rowsPerPage: 10, sortCol: 'Tanggal', sortAsc: false };
-            document.getElementById('formLogin').reset();
-            resetForm();
-            showSection('sec-login');
-        }
-
-        async function loadSKUO() {
-            const res = await apiCall('getSKUO', { bidang: AppState.bidang });
-            if(res.status === 'success') {
-                AppState.skuoList = res.data;
-                const select = document.getElementById('inpSkuo');
-                select.innerHTML = '<option value="">-- Pilih SKUO --</option>';
-                AppState.skuoList.forEach(s => select.add(new Option(s.Nama_SKUO, s.Nama_SKUO)));
-            }
-        }
-
-        function resetForm() {
-            document.getElementById('formKegiatan').reset();
-            document.getElementById('editId').value = '';
-            document.querySelectorAll('.input-elegant').forEach(el => { el.classList.remove('val-success', 'val-error'); });
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('pilihBidangView').classList.add('hidden');
+            document.getElementById('mainAppView').classList.remove('hidden');
             
-            const btn = document.getElementById('btnSimpan');
-            btn.innerHTML = '<i class="bi bi-save me-1"></i> SIMPAN';
-            btn.className = 'btn btn-theme px-5 fw-bold shadow-sm rounded-pill';
-        }
-
-        async function handleSaveKegiatan(e) {
-            e.preventDefault();
+            document.getElementById('infoNama').innerText = currentUser.nama;
+            document.getElementById('infoBidang').innerText = currentBidang;
             
-            const btn = document.getElementById('btnSimpan');
-            const originalBtnText = document.getElementById('editId').value ? '<i class="bi bi-pencil-square me-1"></i> PERBARUI' : '<i class="bi bi-save me-1"></i> SIMPAN';
-            
-            // Inline Loading indicator
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Menyimpan...';
-            btn.disabled = true;
-
-            const payload = {
-                id: document.getElementById('editId').value,
-                noWA: AppState.noWA, nama: AppState.nama, bidang: AppState.bidang,
-                skuo: document.getElementById('inpSkuo').value,
-                tanggal: toSheetDate(document.getElementById('inpTanggal').value), // Format ke dd/mm/yyyy
-                namaKegiatan: document.getElementById('inpNama').value,
-                mode: document.getElementById('inpMode').value,
-                keterangan: document.getElementById('inpKeterangan').value
-            };
-
-            const endpoint = payload.id ? 'updateKegiatan' : 'saveKegiatan';
-            const res = await apiCall(endpoint, payload);
-            
-            btn.disabled = false;
-            btn.innerHTML = originalBtnText;
-
-            if(res.status === 'success') {
-                Swal.fire({title: 'Sukses', text: 'Data tersimpan', icon: 'success', timer: 1500, showConfirmButton: false});
-                resetForm();
-                new bootstrap.Tab(document.getElementById('tab-data')).show();
-                loadTableData(); // re-fetch data quietly di latar belakang
-            } else { 
-                Swal.fire('Gagal', res.message, 'error'); 
-            }
-        }
-
-        // --- STREAMING_CHUNK:Render Tabel, Filter, dan Paginasi ---
-        async function loadTableData() {
-            showLoading('Memuat...');
-            const res = await apiCall('getKegiatan', { bidang: AppState.bidang });
-            hideLoading();
-            
-            if(res.status === 'success') {
-                AppState.kegiatanList = res.data;
-                applyFilter();
-            } else { Swal.fire('Error', 'Gagal mengambil data', 'error'); }
-        }
-
-        function updateStats(dataArr) {
-            let tOnline = 0, tOffline = 0, tHybrid = 0;
-            dataArr.forEach(r => {
-                if(r.Mode === 'Online') tOnline++;
-                else if(r.Mode === 'Offline') tOffline++;
-                else if(r.Mode === 'Hybrid') tHybrid++;
-            });
-            document.getElementById('stat-total').innerText = dataArr.length;
-            document.getElementById('stat-online').innerText = tOnline;
-            document.getElementById('stat-offline').innerText = tOffline;
-            document.getElementById('stat-hybrid').innerText = tHybrid;
-        }
-
-        function applyFilter() {
-            const term = document.getElementById('searchBox').value.toLowerCase();
-            const fBulan = document.getElementById('filterBulan').value;
-            
-            AppState.filteredData = AppState.kegiatanList.filter(row => {
-                const matchSearch = (row.Nama_Kegiatan||'').toLowerCase().includes(term) || (row.SKUO||'').toLowerCase().includes(term);
-                
-                let matchBulan = true;
-                if(fBulan && row.Tanggal) {
-                    // Extract month dari string DD/MM/YYYY
-                    const strTgl = row.Tanggal.toString();
-                    let m = '';
-                    if(strTgl.includes('/')) m = strTgl.split('/')[1];
-                    else if(strTgl.includes('-')) m = strTgl.split('-')[1]; 
-                    
-                    if(m !== fBulan) matchBulan = false;
-                }
-                return matchSearch && matchBulan;
-            });
-
-            // Logika Sorting
-            AppState.filteredData.sort((a, b) => {
-                let valA = a[AppState.sortCol] || '';
-                let valB = b[AppState.sortCol] || '';
-                
-                // Khusus sorting tanggal DD/MM/YYYY rubah ke YYYYMMDD untuk komparasi matematika
-                if(AppState.sortCol === 'Tanggal') {
-                   const fA = valA.toString().includes('/') ? valA.split('/').reverse().join('') : valA;
-                   const fB = valB.toString().includes('/') ? valB.split('/').reverse().join('') : valB;
-                   valA = fA; valB = fB;
-                } else {
-                   valA = valA.toString().toLowerCase(); valB = valB.toString().toLowerCase();
-                }
-
-                if(valA < valB) return AppState.sortAsc ? -1 : 1;
-                if(valA > valB) return AppState.sortAsc ? 1 : -1;
-                return 0;
-            });
-
-            AppState.currentPage = 1;
-            updateStats(AppState.filteredData);
+            setupForm();
             renderTable();
         }
 
-        function setSort(col) {
-            if(AppState.sortCol === col) { AppState.sortAsc = !AppState.sortAsc; } 
-            else { AppState.sortCol = col; AppState.sortAsc = true; }
-            applyFilter();
+        function logout() {
+            currentUser = { wa: "", nama: "" };
+            currentBidang = "";
+            document.getElementById('loginWa').value = "";
+            
+            document.getElementById('mainAppView').classList.add('hidden');
+            document.getElementById('pilihBidangView').classList.add('hidden');
+            document.getElementById('loginView').classList.remove('hidden');
+            switchTab('form');
         }
 
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            
-            const start = (AppState.currentPage - 1) * AppState.rowsPerPage;
-            const end = start + AppState.rowsPerPage;
-            const paginatedData = AppState.filteredData.slice(start, end);
-
-            if(paginatedData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted"><i class="bi bi-folder-x fs-1 d-block mb-2"></i>Tidak ada data</td></tr>`;
+        function switchTab(tab) {
+            if (tab === 'form') {
+                document.getElementById('tabForm').classList.remove('hidden');
+                document.getElementById('tabData').classList.add('hidden');
+                document.getElementById('tabFormBtn').classList.add('active');
+                document.getElementById('tabDataBtn').classList.remove('active');
             } else {
-                paginatedData.forEach((row, index) => {
-                    let badgeClass = 'bg-secondary';
-                    if(row.Mode === 'Online') badgeClass = 'bg-primary';
-                    if(row.Mode === 'Hybrid') badgeClass = 'bg-info text-dark';
-                    if(row.Mode === 'Offline') badgeClass = 'bg-warning text-dark';
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="fw-medium text-muted">${start + index + 1}</td>
-                        <td class="fw-bold" style="color: var(--brand-dark);">${toUIDate(row.Tanggal)}</td>
-                        <td class="text-start fw-bold" style="color: var(--brand-orange);">${row.Nama_Kegiatan}</td>
-                        <td class="text-wrap" style="max-width: 200px;">${row.SKUO}</td>
-                        <td><span class="badge ${badgeClass} rounded-pill px-3 py-2 shadow-sm">${row.Mode}</span></td>
-                        <td class="text-start small text-muted text-wrap" style="max-width: 250px;">${row.Keterangan || '-'}</td>
-                        <td class="no-print">
-                            <button class="btn btn-sm btn-outline-primary rounded-circle shadow-sm me-1" style="width:32px; height:32px;" onclick="editData('${row.ID}')" title="Edit"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger rounded-circle shadow-sm" style="width:32px; height:32px;" onclick="deleteData('${row.ID}')" title="Hapus"><i class="bi bi-trash"></i></button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                document.getElementById('tabForm').classList.add('hidden');
+                document.getElementById('tabData').classList.remove('hidden');
+                document.getElementById('tabFormBtn').classList.remove('active');
+                document.getElementById('tabDataBtn').classList.add('active');
             }
-            document.getElementById('pageInfo').innerText = `Menampilkan ${start + (paginatedData.length > 0 ? 1 : 0)} - ${start + paginatedData.length} dari ${AppState.filteredData.length} data`;
         }
 
-        function prevPage() { if (AppState.currentPage > 1) { AppState.currentPage--; renderTable(); } }
-        function nextPage() { if ((AppState.currentPage * AppState.rowsPerPage) < AppState.filteredData.length) { AppState.currentPage++; renderTable(); } }
+        // --- FORM & CRUD LOGIC ---
+        function setupForm() {
+            // Filter SKUO berdasarkan bidang
+            const mySkuo = db.skuo.filter(s => s.BidangKerja === currentBidang);
+            tomSelectInstance.clear();
+            tomSelectInstance.clearOptions();
+            
+            mySkuo.forEach(s => {
+                tomSelectInstance.addOption({value: s.NamaSKUO, text: s.NamaSKUO});
+            });
+            resetForm();
+        }
 
-        // --- STREAMING_CHUNK:Edit & Hapus ---
+        function submitForm(e) {
+            e.preventDefault();
+            
+            const rawDate = document.getElementById('tanggalInput').value; // YYYY-MM-DD
+            
+            const payload = {
+                id: document.getElementById('formId').value,
+                wa: currentUser.wa,
+                nama: currentUser.nama,
+                bidang: currentBidang,
+                skuo: document.getElementById('skuoSelect').value,
+                namaKegiatan: document.getElementById('namaKegiatan').value.toUpperCase(),
+                tanggal: formatTanggalToSimpan(rawDate), // D/M/YYYY
+                mode: document.getElementById('modeInput').value,
+                keterangan: document.getElementById('keteranganInput').value
+            };
+
+            const isEdit = document.getElementById('formMode').value === 'edit';
+            startLoading(isEdit ? "Menyimpan Perubahan..." : "Menyimpan Kegiatan...");
+
+            if (typeof google === 'undefined') {
+                // SIMULATION MODE
+                setTimeout(() => {
+                    if (isEdit) {
+                        const idx = db.kegiatan.findIndex(k => k.ID === payload.id);
+                        if(idx > -1) {
+                            db.kegiatan[idx] = { ...db.kegiatan[idx], ...payload, Timestamp: "Just Now" };
+                        }
+                    } else {
+                        payload.ID = "KGT-SIM-" + Date.now();
+                        payload.Timestamp = "Just Now";
+                        db.kegiatan.push(payload);
+                    }
+                    postSubmitAction(isEdit);
+                }, 800);
+            } else {
+                // GAS MODE
+                const action = isEdit ? 'updateKegiatan' : 'saveKegiatan';
+                google.script.run
+                    .withSuccessHandler(res => {
+                        db = res;
+                        postSubmitAction(isEdit);
+                    })
+                    .withFailureHandler(err => {
+                        Swal.fire('Error', 'Gagal menyimpan data.', 'error');
+                        endLoading();
+                    })[action](payload);
+            }
+        }
+
+        function postSubmitAction(isEdit) {
+            endLoading();
+            Swal.fire({
+                icon: 'success',
+                title: 'Alhamdulillah',
+                text: isEdit ? 'Kegiatan berhasil diperbarui.' : 'Kegiatan berhasil ditambahkan.',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            resetForm();
+            renderTable();
+            switchTab('data');
+        }
+
         function editData(id) {
-            const data = AppState.kegiatanList.find(k => k.ID === id);
-            if(!data) return;
-            
-            document.getElementById('editId').value = data.ID;
-            document.getElementById('inpSkuo').value = data.SKUO;
-            document.getElementById('inpTanggal').value = toInputDate(data.Tanggal); // Ubah ke html date value
-            document.getElementById('inpNama').value = data.Nama_Kegiatan;
-            document.getElementById('inpMode').value = data.Mode;
-            document.getElementById('inpKeterangan').value = data.Keterangan;
+            const data = db.kegiatan.find(k => k.ID === id);
+            if (!data) return;
 
-            document.querySelectorAll('.input-elegant').forEach(el => validateField(el));
-
-            const btn = document.getElementById('btnSimpan');
-            btn.innerHTML = '<i class="bi bi-pencil-square me-1"></i> PERBARUI';
-            btn.className = 'btn btn-warning text-dark px-5 fw-bold shadow-sm rounded-pill';
+            document.getElementById('formMode').value = "edit";
+            document.getElementById('formId').value = data.ID;
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-pen text-brand-gold mr-2"></i> Edit Kegiatan';
             
-            new bootstrap.Tab(document.getElementById('tab-input')).show();
+            tomSelectInstance.setValue(data.SKUO);
+            document.getElementById('namaKegiatan').value = data.NamaKegiatan;
+            document.getElementById('tanggalInput').value = formatTanggalToInput(data.Tanggal);
+            document.getElementById('modeInput').value = data.Mode;
+            document.getElementById('keteranganInput').value = data.Keterangan || "";
+            
+            document.getElementById('btnSave').innerHTML = '<i class="fa-solid fa-save"></i> Update Kegiatan';
+            document.getElementById('btnCancel').classList.remove('hidden');
+            
+            switchTab('form');
         }
 
         function deleteData(id) {
             Swal.fire({
-                title: 'Hapus Permanen?', text: "Data tidak dapat dikembalikan!", icon: 'warning',
-                showCancelButton: true, confirmButtonColor: '#E52B2A', confirmButtonText: 'Ya, Hapus!'
-            }).then(async (result) => {
+                title: 'Hapus Kegiatan?',
+                text: "Data yang dihapus akan tercatat di riwayat.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Ya, Hapus!'
+            }).then((result) => {
                 if (result.isConfirmed) {
-                    showLoading('Menghapus...');
-                    const res = await apiCall('deleteKegiatan', { id: id, nama: AppState.nama });
-                    if(res.status === 'success') { loadTableData(); Swal.fire('Dihapus!', '', 'success'); } 
-                    else { hideLoading(); Swal.fire('Gagal', res.message, 'error'); }
+                    startLoading("Menghapus...");
+                    
+                    if (typeof google === 'undefined') {
+                        setTimeout(() => {
+                            db.kegiatan = db.kegiatan.filter(k => k.ID !== id);
+                            endLoading();
+                            Swal.fire('Terhapus!', 'Data berhasil dihapus.', 'success');
+                            renderTable();
+                        }, 800);
+                    } else {
+                        google.script.run
+                            .withSuccessHandler(res => {
+                                db = res;
+                                endLoading();
+                                Swal.fire('Terhapus!', 'Data berhasil dihapus.', 'success');
+                                renderTable();
+                            })
+                            .withFailureHandler(err => {
+                                Swal.fire('Error', 'Gagal menghapus data.', 'error');
+                                endLoading();
+                            })
+                            .deleteKegiatan(id, currentUser.wa, currentUser.nama, currentBidang);
+                    }
                 }
             });
+        }
+
+        function resetForm() {
+            document.getElementById('kegiatanForm').reset();
+            tomSelectInstance.clear();
+            document.getElementById('formMode').value = "add";
+            document.getElementById('formId').value = "";
+            document.getElementById('formTitle').innerHTML = '<i class="fa-solid fa-plus-circle text-brand-gold mr-2"></i> Input Kegiatan Baru';
+            document.getElementById('btnSave').innerHTML = '<i class="fa-solid fa-save"></i> Simpan Kegiatan';
+            document.getElementById('btnCancel').classList.add('hidden');
+        }
+
+        // --- TABLE LOGIC ---
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            // Filter kegiatan sesuai bidang yang aktif
+            const myData = db.kegiatan.filter(k => k.BidangKerja === currentBidang);
+            
+            if (myData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-gray-500 italic">Belum ada kegiatan yang diinput.</td></tr>`;
+                return;
+            }
+
+            // Urutkan dari yang terbaru (asumsi ID mengandung timestamp / teratas)
+            myData.reverse().forEach((k, index) => {
+                // Label warna untuk mode
+                let modeClass = "bg-gray-100 text-gray-700";
+                if(k.Mode === "Online") modeClass = "bg-blue-100 text-blue-700";
+                if(k.Mode === "Offline") modeClass = "bg-green-100 text-green-700";
+                if(k.Mode === "Hybrid") modeClass = "bg-purple-100 text-purple-700";
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-blue-50/50 transition-colors">
+                        <td class="px-3 py-3 text-center text-gray-500 text-xs">${index + 1}</td>
+                        <td class="px-3 py-3 font-bold text-brand-blue text-sm keep-multiline">${k.NamaKegiatan}</td>
+                        <td class="px-3 py-3 text-gray-700 text-xs keep-multiline">${k.SKUO}</td>
+                        <td class="px-3 py-3 text-gray-700 text-xs font-medium">${formatTanggalToDisplay(k.Tanggal)}</td>
+                        <td class="px-3 py-3"><span class="${modeClass} px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">${k.Mode}</span></td>
+                        <td class="px-3 py-3 text-gray-600 text-xs keep-multiline">${k.Keterangan || '-'}</td>
+                        <td class="px-3 py-3 text-center">
+                            <div class="flex justify-center gap-2">
+                                <button onclick="editData('${k.ID}')" class="text-brand-gold hover:text-yellow-600 bg-yellow-50 p-1.5 rounded" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deleteData('${k.ID}')" class="text-red-500 hover:text-red-700 bg-red-50 p-1.5 rounded" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterTable() {
+            const input = document.getElementById("searchTable").value.toLowerCase();
+            const rows = document.getElementById("tableBody").getElementsByTagName("tr");
+            
+            for (let i = 0; i < rows.length; i++) {
+                if (rows[i].cells.length > 1) { // abaikan baris kosong
+                    const text = rows[i].textContent.toLowerCase();
+                    rows[i].style.display = text.includes(input) ? "" : "none";
+                }
+            }
+        }
+
+        let sortAsc = false;
+        function sortTable(colIndex) {
+            const table = document.getElementById("dataTable");
+            let rows, switching, i, x, y, shouldSwitch;
+            switching = true; 
+            sortAsc = !sortAsc;
+            
+            while (switching) {
+                switching = false; 
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[colIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[colIndex];
+                    
+                    if (x && y) {
+                        let valX = x.textContent.toLowerCase();
+                        let valY = y.textContent.toLowerCase();
+                        
+                        if (sortAsc ? valX > valY : valX < valY) {
+                            shouldSwitch = true; 
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
         }
     </script>
 </body>
