@@ -169,7 +169,8 @@
                     <!-- SUBJEK -->
                     <div id="subjectContainer" class="mb-6">
                         <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Subjek/Judul Broadcast <span class="text-red-500">*</span></label>
-                        <input type="text" id="subjekInput" required class="w-full rounded-xl border-gray-200 border bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-300 focus:border-transparent outline-none text-gray-700 text-sm font-medium transition-all" placeholder="Tuliskan subjek / judul...">
+                        <!-- Penambahan oninput untuk Auto-Capslock -->
+                        <input type="text" id="subjekInput" required class="w-full rounded-xl border-gray-200 border bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-300 focus:border-transparent outline-none text-gray-700 text-sm font-medium transition-all" placeholder="Tuliskan subjek / judul..." oninput="this.value = this.value.toUpperCase()">
                     </div>
 
                     <!-- JEDA WA -->
@@ -188,11 +189,22 @@
 
                     <!-- LAMPIRAN FILE (Dinamis Aktif/Tidak) -->
                     <div id="fileContainer" class="hidden mb-6">
-                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Lampiran File (Opsional)</label>
+                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Lampiran File (Opsional - Bisa Lebih Dari 1)</label>
                         <div class="file-dropzone bg-gray-50 rounded-xl p-4 flex items-center gap-4 cursor-pointer relative" onclick="document.getElementById('fileInput').click()">
-                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-500">
-                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-gray-500 flex-shrink-0">
+                                <i class="fa-solid fa-file-circle-plus"></i>
                             </div>
+                            <div class="flex-1 overflow-hidden">
+                                <p class="text-sm font-semibold text-gray-700 truncate" id="fileNameText">Klik untuk memilih file (Otomatis Kompresi)...</p>
+                                <p class="text-xs text-gray-400">Terima semua format. Gambar otomatis diperkecil.</p>
+                            </div>
+                            <button type="button" class="hidden text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors z-10 flex-shrink-0" id="btnRemoveFile" onclick="event.stopPropagation(); removeFile();">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                        <!-- Penambahan atribut multiple dan semua format -->
+                        <input type="file" id="fileInput" class="hidden" multiple accept="*/*" onchange="handleFileSelect(this)">
+                    </div>
                             <div class="flex-1">
                                 <p class="text-sm font-semibold text-gray-700" id="fileNameText">Klik untuk memilih file...</p>
                                 <p class="text-xs text-gray-400">PDF, JPG, PNG (Maks 3 MB)</p>
@@ -259,7 +271,8 @@
         // GLOBAL STATE
         let db = { pegawai: [], users: [], pengaturan: [] };
         let currentUser = { wa: "", nama: "" };
-        let selectedFile = null;
+        let selectedFilesData = []; // Diubah menjadi Array untuk banyak file
+
 
         async function fetchAPI(payload) {
             const response = await fetch(API_URL, {
@@ -322,119 +335,119 @@
             const rWa = document.getElementById('m_wa');
             const rEmail = document.getElementById('m_email');
             
-            if (config['WA_AKTIF'] !== 'YA') rWa.disabled = true;
-            if (config['EMAIL_AKTIF'] !== 'YA') rEmail.disabled = true;
-        }
+            let waAktif = config['WA_AKTIF'] === 'YA';
+            let emailAktif = config['EMAIL_AKTIF'] === 'YA';
 
-        function getMappedConfig() {
-            let config = {};
-            if(!db.pengaturan) return config;
-            db.pengaturan.forEach(p => { if(p.Kunci) config[p.Kunci.trim().toUpperCase()] = p.Nilai ? p.Nilai.trim().toUpperCase() : 'TIDAK'; });
-            return config;
-        }
+            if (!waAktif) rWa.disabled = true;
+            if (!emailAktif) rEmail.disabled = true;
 
-        // FUNGSI NORMALISASI FORMAT WA (08 = 628)
-        function normalizeWA(waRaw) {
-            if (!waRaw) return "";
-            let val = String(waRaw).replace(/\D/g, ''); 
-            if (val.startsWith('0')) {
-                val = '62' + val.substring(1);
-            } else if (val.startsWith('8')) {
-                val = '62' + val; // Antisipasi jika angka 0 di depan terpotong otomatis di Spreadsheet
+            // OTOMATIS PILIH METODE JIKA HANYA 1 YANG AKTIF
+            if (waAktif && !emailAktif) {
+                rWa.checked = true;
+                toggleFormMode();
+            } else if (!waAktif && emailAktif) {
+                rEmail.checked = true;
+                toggleFormMode();
             }
-            return val;
         }
+        // --- FILE HANDLING (MULTIPLE & AUTO-COMPRESSION) ---
+        async function handleFileSelect(input) {
+            const files = input.files;
+            if (!files || files.length === 0) return;
 
-        function formatWAInput(input) {
-            input.value = normalizeWA(input.value);
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const waInput = normalizeWA(document.getElementById('loginWa').value);
+            let totalSize = 0;
+            for (let f of files) totalSize += f.size;
             
-            // Pencocokan nomor WA dilakukan setelah dinormalisasi keduanya agar akurat
-            const user = db.users.find(u => normalizeWA(u.wa) === waInput);
-            
-            if (user) {
-                currentUser.wa = normalizeWA(user.wa); // Simpan standar 628
-                currentUser.nama = user.nama || "Admin";
-                
-                document.getElementById('loginView').classList.add('hidden');
-                document.getElementById('mainAppView').classList.remove('hidden');
-                
-                document.getElementById('infoNama').innerText = currentUser.nama;
-                document.getElementById('infoWa').innerText = currentUser.wa;
-                
-                setupDropdown();
-            } else {
-                Swal.fire('Ditolak', 'Afwan, anda tidak memiliki akses untuk fitur ini.', 'error');
-            }
-        }
-
-        function setupDropdown() {
-            const selectEl = document.getElementById('tujuanSelect');
-            selectEl.innerHTML = '<option value="">Pilih Target...</option><option value="Semua Pegawai" class="font-bold text-brand-blue">Semua Pegawai (All)</option>';
-            const unikJenis = [...new Set(db.pegawai.map(p => p.jenis).filter(Boolean))];
-            unikJenis.forEach(jenis => { selectEl.innerHTML += `<option value="${jenis}">Hanya Staf ${jenis}</option>`; });
-        }
-
-        // --- FORM LOGIC (DINAMIS WA/EMAIL) ---
-        function toggleFormMode() {
-            const isWA = document.getElementById('m_wa').checked;
-            const isEmail = document.getElementById('m_email').checked;
-            const config = getMappedConfig();
-
-            const cDelay = document.getElementById('delayContainer');
-            const cFile = document.getElementById('fileContainer');
-            const inDelay = document.getElementById('delayInput');
-
-            if (isWA) {
-                cDelay.classList.remove('hidden');
-                inDelay.required = true;
-
-                if (config['WA_FILE_AKTIF'] === 'YA') cFile.classList.remove('hidden');
-                else cFile.classList.add('hidden');
-            } 
-            else if (isEmail) {
-                cDelay.classList.add('hidden');
-                inDelay.required = false;
-
-                if (config['EMAIL_FILE_AKTIF'] === 'YA') cFile.classList.remove('hidden');
-                else cFile.classList.add('hidden');
-            }
-            removeFile(); 
-        }
-
-        // --- FILE HANDLING ---
-        function handleFileSelect(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            if (file.size > 3 * 1024 * 1024) {
-                Swal.fire('Ukuran Berlebih', 'Maksimal file yang diizinkan adalah 3 MB.', 'warning');
-                removeFile();
+            // Batas aman pengiriman API Google Script adalah ~40MB (Setelah jadi base64)
+            if (totalSize > 40 * 1024 * 1024) {
+                Swal.fire('Terlalu Besar', 'Total ukuran seluruh file melebihi batas aman sistem (40MB). Mohon kurangi ukuran atau jumlah file.', 'warning');
+                input.value = "";
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                selectedFile = {
-                    filename: file.name,
-                    mimeType: file.type,
-                    base64: e.target.result.split(',')[1] 
+            document.getElementById('fileNameText').innerText = "Memproses & mengkompresi file...";
+            selectedFilesData = [];
+
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                
+                // JIKA FILE ADALAH GAMBAR -> LAKUKAN KOMPRESI SISI KLIEN
+                if (file.type.startsWith('image/')) {
+                    try {
+                        let compressedBase64 = await compressImage(file);
+                        selectedFilesData.push({
+                            filename: file.name,
+                            mimeType: 'image/jpeg', // hasil kompresi biasanya jpeg
+                            base64: compressedBase64
+                        });
+                    } catch (e) {
+                        await readFileAsBase64(file); // Fallback jika gagal kompres
+                    }
+                } else {
+                    // JIKA FILE BUKAN GAMBAR (PDF, DOCX, DLL) -> BACA NORMAL
+                    await readFileAsBase64(file);
+                }
+            }
+
+            document.getElementById('fileNameText').innerText = `${selectedFilesData.length} File Terpilih (Siap Dikirim)`;
+            document.getElementById('fileNameText').classList.add('text-brand-blue', 'font-bold');
+            document.getElementById('btnRemoveFile').classList.remove('hidden');
+        }
+
+        // FUNGSI KOMPRESI GAMBAR (CANVAS)
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = event => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Maksimal resolusi 1600px untuk kompresi ekstrem namun tetap terbaca
+                        const MAX_DIMENSION = 1600;
+                        if (width > height && width > MAX_DIMENSION) {
+                            height *= MAX_DIMENSION / width; width = MAX_DIMENSION;
+                        } else if (height > MAX_DIMENSION) {
+                            width *= MAX_DIMENSION / height; height = MAX_DIMENSION;
+                        }
+
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Kualitas 0.6 (60%) sangat mengecilkan ukuran file hingga 50-80%
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                        resolve(dataUrl.split(',')[1]);
+                    };
+                    img.onerror = reject;
+                    img.src = event.target.result;
                 };
-                document.getElementById('fileNameText').innerText = file.name;
-                document.getElementById('fileNameText').classList.add('text-brand-blue', 'font-bold');
-                document.getElementById('btnRemoveFile').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // FUNGSI BACA FILE NORMAL (UNTUK PDF DLL)
+        function readFileAsBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedFilesData.push({
+                        filename: file.name,
+                        mimeType: file.type,
+                        base64: e.target.result.split(',')[1]
+                    });
+                    resolve();
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
         function removeFile() {
-            selectedFile = null;
+            selectedFilesData = [];
             document.getElementById('fileInput').value = "";
-            document.getElementById('fileNameText').innerText = "Klik untuk memilih file...";
+            document.getElementById('fileNameText').innerText = "Klik untuk memilih file (Otomatis Kompresi)...";
             document.getElementById('fileNameText').classList.remove('text-brand-blue', 'font-bold');
             document.getElementById('btnRemoveFile').classList.add('hidden');
         }
@@ -453,7 +466,6 @@
         async function submitBroadcast(e) {
             e.preventDefault();
             
-            // Pengecekan Form Wajib Diisi (Otomatis Highlight Tanda Merah Browser)
             const form = document.getElementById('broadcastForm');
             if (!form.checkValidity()) {
                 form.reportValidity();
@@ -475,7 +487,7 @@
                 pesan: document.getElementById('pesanInput').value,
                 delay_detik: document.getElementById('delayInput').value,
                 subjek: document.getElementById('subjekInput').value,
-                fileData: selectedFile 
+                filesArray: selectedFilesData // Mengirim array of files
             };
 
             startSaving();
