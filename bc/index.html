@@ -294,26 +294,13 @@
         async function loadData() {
             startLoading();
             try {
-                if (typeof google === 'undefined') {
-                    // MODE SIMULASI CANVAS
-                    setTimeout(() => {
-                        db.pegawai = [{id_pegawai:"PEG-1", nama:"Dummy", wa:"6281", email:"dummy@mail.com", jenis:"Staf IT"}];
-                        db.users = [{id_user:"USR-1", nama:"Admin Canvas", wa:"6281234"}];
-                        db.pengaturan = [
-                            {Kunci:"WA_AKTIF", Nilai:"YA"}, {Kunci:"EMAIL_AKTIF", Nilai:"YA"}, 
-                            {Kunci:"WA_FILE_AKTIF", Nilai:"YA"}, {Kunci:"EMAIL_FILE_AKTIF", Nilai:"YA"}
-                        ];
-                        setupInitialUI();
-                        endLoading();
-                    }, 1000);
-                } else {
-                    db = await fetchAPI({ action: 'getAllData' });
-                    setupInitialUI();
-                    endLoading();
-                }
+                // KARENA APLIKASI DI HOSTING DI GITHUB/EXTERNAL, KITA WAJIB LANGSUNG HIT API
+                db = await fetchAPI({ action: 'getAllData' });
+                setupInitialUI();
+                endLoading();
             } catch (err) {
                 endLoading();
-                Swal.fire('Error', 'Gagal memuat data.', 'error');
+                Swal.fire('Error', 'Gagal memuat database dari Spreadsheet: ' + err.message, 'error');
             }
         }
 
@@ -480,21 +467,14 @@
             startSaving();
             
             try {
-                if (typeof google === 'undefined') {
-                    // SIMULASI CANVAS
-                    setTimeout(() => {
-                        document.getElementById('resTarget').innerText = "15";
-                        document.getElementById('resWa').innerText = payload.metode_kirim === 'WA' ? "15" : "0";
-                        document.getElementById('resEmail').innerText = payload.metode_kirim === 'EMAIL' ? "15" : "0";
-                        endSaving(); showSuccess();
-                    }, 2000);
-                } else {
-                    const result = await fetchAPI({ action: 'saveBroadcast', data: payload });
-                    document.getElementById('resTarget').innerText = result.total_target;
-                    document.getElementById('resWa').innerText = result.total_wa;
-                    document.getElementById('resEmail').innerText = result.total_email;
-                    endSaving(); showSuccess();
-                }
+                // LANGSUNG HIT API TANPA CEK DUMMY CANVAS
+                const result = await fetchAPI({ action: 'saveBroadcast', data: payload });
+                
+                document.getElementById('resTarget').innerText = result.total_target;
+                document.getElementById('resWa').innerText = result.total_wa;
+                document.getElementById('resEmail').innerText = result.total_email;
+                endSaving(); 
+                showSuccess();
             } catch (error) {
                 endSaving();
                 Swal.fire('Error Sistem', error.message, 'error');
