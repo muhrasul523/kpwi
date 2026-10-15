@@ -411,6 +411,7 @@
             const m = document.querySelector('input[name="metode"]:checked')?.value;
             const containerDelay = document.getElementById('delayContainer');
             const containerFile = document.getElementById('fileContainer');
+            const fileInput = document.getElementById('fileInput'); // Tambahkan referensi input file
             
             if (!m) return;
             
@@ -419,6 +420,13 @@
 
             const config = getMappedConfig();
             
+            // ATURAN MULTIPLE FILE (WA: 1 File, Email: Banyak File)
+            if (m === 'WA') {
+                fileInput.removeAttribute('multiple');
+            } else if (m === 'EMAIL') {
+                fileInput.setAttribute('multiple', 'multiple');
+            }
+
             // Tampilkan kotak file berdasarkan pengaturan
             if (m === 'WA' && config['WA_FILE_AKTIF'] === 'YA') {
                 containerFile.classList.remove('hidden');
@@ -429,16 +437,21 @@
             }
         }
 
-        // --- FILE HANDLING (1 FILE, OTOMATIS KOMPRESI GAMBAR) ---
+        // --- FILE HANDLING (OTOMATIS KOMPRESI GAMBAR) ---
         async function handleFileSelect(input) {
             const files = input.files;
             if (!files || files.length === 0) return;
 
-            // Ambil maksimal 1 file saja
-            let file = files[0];
+            const m = document.querySelector('input[name="metode"]:checked')?.value;
             
-            if (file.size > 100 * 1024 * 1024) {
-                Swal.fire('Terlalu Besar', 'Batas maksimal file adalah 100MB.', 'warning');
+            // Keamanan tambahan: Jika WA, paksa hanya proses file index ke-0
+            const filesToProcess = (m === 'WA') ? [files[0]] : Array.from(files);
+
+            let totalSize = 0;
+            for (let f of filesToProcess) totalSize += f.size;
+            
+            if (totalSize > 100 * 1024 * 1024) {
+                Swal.fire('Terlalu Besar', 'Batas maksimal total file adalah 100MB.', 'warning');
                 input.value = "";
                 return;
             }
@@ -446,24 +459,31 @@
             document.getElementById('fileNameText').innerText = "Memproses file...";
             selectedFilesData = [];
 
-            // JIKA FILE ADALAH GAMBAR -> KOMPRESI EKSTREM DI BROWSER
-            if (file.type.startsWith('image/')) {
-                try {
-                    let compressedBase64 = await compressImage(file);
-                    selectedFilesData.push({
-                        filename: file.name,
-                        mimeType: 'image/jpeg', 
-                        base64: compressedBase64
-                    });
-                } catch (e) {
-                    await readFileAsBase64(file); 
+            // Proses semua file yang dipilih
+            for (let i = 0; i < filesToProcess.length; i++) {
+                let file = filesToProcess[i];
+                if (file.type.startsWith('image/')) {
+                    try {
+                        let compressedBase64 = await compressImage(file);
+                        selectedFilesData.push({
+                            filename: file.name,
+                            mimeType: 'image/jpeg', 
+                            base64: compressedBase64
+                        });
+                    } catch (e) {
+                        await readFileAsBase64(file); 
+                    }
+                } else {
+                    await readFileAsBase64(file);
                 }
-            } else {
-                // FILE BUKAN GAMBAR (PDF, DOCX) DIBACA NORMAL (Asal ukuran masuk akal Google)
-                await readFileAsBase64(file);
             }
 
-            document.getElementById('fileNameText').innerText = file.name;
+            if (selectedFilesData.length === 1) {
+                document.getElementById('fileNameText').innerText = selectedFilesData[0].filename;
+            } else {
+                document.getElementById('fileNameText').innerText = `${selectedFilesData.length} File Siap Dikirim`;
+            }
+            
             document.getElementById('fileNameText').classList.add('text-brand-blue', 'font-bold');
             document.getElementById('btnRemoveFile').classList.remove('hidden');
         }
