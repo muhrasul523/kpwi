@@ -9,6 +9,8 @@
     
     <title>KSBK - Perilaku Kerja</title>
     
+    <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -65,11 +67,11 @@
 
     <!-- 2. SAVING OVERLAY (Saat Klik Simpan - Blur Background saja) -->
     <div id="savingOverlay" class="fixed inset-0 bg-white/60 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center transition-opacity duration-300 hidden opacity-0">
-        <div class="relative flex justify-center items-center mb-4">
-            <div class="absolute w-16 h-16 border-4 border-brand-blue border-t-transparent border-b-transparent rounded-full animate-spin"></div>
-            <div class="absolute w-12 h-12 border-4 border-brand-gold border-l-transparent border-r-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+        <div class="relative w-16 h-16 flex justify-center items-center mb-6">
+            <div class="absolute inset-0 border-4 border-brand-blue border-t-transparent border-b-transparent rounded-full animate-spin"></div>
+            <div class="absolute inset-2 border-4 border-brand-gold border-l-transparent border-r-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
         </div>
-        <p class="text-sm font-bold text-brand-blue tracking-wide bg-white/80 px-4 py-1.5 rounded-full shadow-sm">Menyimpan Penilaian...</p>
+        <p class="text-sm font-bold text-brand-blue tracking-wide bg-white/95 px-6 py-2.5 rounded-full shadow-sm border border-blue-100">Menyimpan Penilaian...</p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -490,25 +492,29 @@
             const btnSave = document.getElementById('btnSave');
 
             if (existing) {
-                badge.className = "mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-green-50 border-green-200 text-green-700 transition-all";
+                badge.className = "mt-5 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-green-50 border-green-200 text-green-700 transition-all";
                 badge.innerHTML = `<i class="fa-solid fa-check-circle text-lg"></i> Staf ini sudah dinilai pada bulan ini. Anda dapat melakukan update nilainya.`;
                 
                 // Ubah gaya tombol menjadi hijau (Mode Update)
                 btnSave.innerHTML = '<i class="fa-solid fa-edit"></i> Update Penilaian';
                 btnSave.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-base md:text-lg";
 
-                // Isi ulang nilai radio dan input ket dari database
+                // Isi ulang nilai radio dan input ket dari database secara presisi
                 indicatorsList.forEach(ind => {
-                    const val = existing[ind.id];
+                    // Cari berdasarkan ID (lowercase/uppercase/standar)
+                    const val = existing[ind.id] || existing[ind.id.toLowerCase()] || existing[ind.id.toUpperCase()];
                     if (val) {
                         const radio = document.getElementById(`${ind.id}_${String(val).trim()}`);
                         if(radio) radio.checked = true;
                     }
-                    const inputKet = document.getElementById(`${ind.id}_ket`);
-                    if(inputKet) inputKet.value = existing[`${ind.id}_ket`] || "";
+                    
+                    const ketKey = `${ind.id}_ket`;
+                    const ketVal = existing[ketKey] || existing[ketKey.toLowerCase()] || existing[ketKey.toUpperCase()];
+                    const inputKet = document.getElementById(ketKey);
+                    if(inputKet) inputKet.value = ketVal || "";
                 });
             } else {
-                badge.className = "mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-blue-50 border-blue-200 text-brand-blue transition-all";
+                badge.className = "mt-5 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-blue-50 border-blue-200 text-brand-blue transition-all";
                 badge.innerHTML = `<i class="fa-solid fa-info-circle text-lg"></i> Belum ada penilaian untuk staf ini di bulan terpilih.`;
                 
                 // Ubah gaya tombol menjadi biru (Mode Baru)
