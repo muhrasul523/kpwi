@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Input Penilaian Perilaku Kerja - KSBK">
+    <meta property="og:description" content="Aplikasi penilaian kinerja pegawai Kantor Pusat Wahdah Islamiyah.">
+    <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
+    
+    <title>Input Penilaian KSBK</title>
+    <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { brand: { blue: '#1e3a8a', gold: '#eab308' } },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #ffffff 100%); min-height: 100vh; color: #1e293b; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 10px 40px rgba(30, 58, 138, 0.08); }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .ts-control { border-radius: 0.75rem; padding: 0.65rem 1rem; border: 1px solid #cbd5e1; background-color: #f8fafc; font-size: 0.875rem; }
+        .ts-control.focus { border-color: #1e3a8a; box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15); background-color: #ffffff; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        
+        /* CSS Khusus untuk Radio Button Skala 1-5 */
+        .scale-radio:checked + label { 
+            background-color: #1e3a8a; 
+            color: white; 
+            border-color: #1e3a8a;
+            box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-gold selection:text-brand-blue" onload="loadData()">
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-opacity duration-300">
+        <div class="relative flex justify-center items-center mb-8">
+            <div class="absolute w-24 h-24 border-4 border-brand-gold border-t-transparent border-b-transparent rounded-full animate-spin"></div>
+            <div class="absolute w-20 h-20 border-4 border-blue-400 border-l-transparent border-r-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+            <!-- Menggunakan placeholder logo default (bisa diganti URL asli jika ada error) -->
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo" class="h-12 w-12 drop-shadow-md z-10" onerror="this.style.display='none'">
+        </div>
+        <div class="w-64 h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner relative">
+            <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_0.8s_ease-in-out_infinite] rounded-full"></div>
+        </div>
+        <p id="loadingText" class="mt-5 text-sm font-semibold text-blue-100 tracking-wide">Memuat data... <span id="loadingPercent" class="text-brand-gold font-bold"></span></p>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- HEADER -->
+        <div class="text-center mb-6 fade-in hidden" id="headerLogo">
+            <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-16 mx-auto mb-3 drop-shadow-xl" onerror="this.style.display='none'">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Penilaian Perilaku Kerja</h1>
+            <p class="text-gray-500 mt-1 text-sm font-medium">Kantor Pusat Wahdah Islamiyah</p>
+        </div>
+
+        <!-- 1. VIEW LOGIN -->
+        <div id="loginView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 fade-in border-t-4 border-t-brand-blue hidden mt-10">
+            <h2 class="text-xl font-bold text-center text-brand-blue mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-brand-gold"></i>Masuk Aplikasi</h2>
+            <p class="text-sm text-center text-gray-500 mb-6">Masukkan nomor WhatsApp Anda yang terdaftar.</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="mb-5">
+                    <label class="block text-sm font-bold text-brand-blue mb-1.5"><i class="fa-brands fa-whatsapp text-green-500 text-base mr-1"></i> Nomor WhatsApp</label>
+                    <input type="text" id="loginWa" required class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-3 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700 font-medium" placeholder="Contoh: 08123456789" oninput="formatWA(this)">
+                </div>
+                <button type="submit" class="w-full bg-brand-blue hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all flex justify-center items-center gap-2">
+                    Masuk <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- 2. VIEW PILIH BIDANG -->
+        <div id="pilihBidangView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 fade-in border-t-4 border-t-brand-gold hidden mt-10">
+            <h2 class="text-xl font-bold text-center text-brand-blue mb-2">Pilih Bidang Kerja</h2>
+            <p class="text-sm text-center text-gray-500 mb-6" id="welcomePilihBidang">Selamat datang,</p>
+            <div id="listBidang" class="space-y-3"></div>
+            <button onclick="logout()" class="mt-6 w-full text-red-500 hover:text-red-700 text-sm font-medium transition-colors">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Batal & Kembali
+            </button>
+        </div>
+
+        <!-- 3. MAIN APP VIEW -->
+        <div id="mainAppView" class="hidden fade-in">
+            
+            <!-- User Info Card -->
+            <div class="max-w-4xl mx-auto bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-5 mb-6 text-white shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4 w-full">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-white/30 flex-shrink-0">
+                        <i class="fa-solid fa-user-tie text-2xl text-white"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-[10px] sm:text-xs text-green-100 font-bold uppercase tracking-wider">KSBK (Penilai)</p>
+                        <h2 class="text-lg font-bold truncate" id="infoNama">Nama User</h2>
+                        <p class="text-sm text-green-50 truncate" title="Bidang Kerja"><i class="fa-solid fa-layer-group text-yellow-300 mr-1"></i> <span id="infoBidang">Bidang Kerja</span></p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 border border-red-400 flex-shrink-0">
+                    <i class="fa-solid fa-power-off"></i> Keluar
+                </button>
+            </div>
+
+            <!-- TAB CONTENT: FORM PENILAIAN -->
+            <div id="appFormContainer" class="max-w-4xl mx-auto glass-panel rounded-2xl p-6 md:p-8 border-t-4 border-t-brand-gold">
+                <h3 class="text-lg font-bold text-brand-blue border-b pb-3 mb-5"><i class="fa-solid fa-clipboard-check text-brand-gold mr-2"></i> Form Penilaian</h3>
+                
+                <!-- SELEKSI BULAN & SBK -->
+                <div class="bg-blue-50/50 p-5 rounded-xl border border-blue-100 mb-6">
+                    <h3 class="text-sm font-bold text-brand-blue mb-4 uppercase"><i class="fa-solid fa-filter mr-2"></i> Pilih Target Penilaian</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1.5">Bulan Penilaian <span class="text-red-500">*</span></label>
+                            <select id="bulanSelect" required class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700 font-medium" onchange="checkExistingData()">
+                                <option value="">Pilih Bulan...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1.5">Staf Bidang Kerja (SBK) <span class="text-red-500">*</span></label>
+                            <select id="skuoSelect" required class="w-full" onchange="checkExistingData()">
+                                <option value="">Pilih SBK...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- BADGE STATUS -->
+                    <div id="statusBadge" class="mt-4 hidden p-3 rounded-lg border flex items-center gap-2 text-sm font-bold transition-all">
+                        <!-- Diisi via JS (Telah dinilai / Belum dinilai) -->
+                    </div>
+                </div>
+
+                <!-- FORM INDIKATOR -->
+                <form id="penilaianForm" onsubmit="submitForm(event)" class="hidden fade-in">
+                    <div class="mb-6 bg-yellow-50 border border-yellow-200 p-4 rounded-xl flex items-start gap-3">
+                        <i class="fa-solid fa-info-circle text-brand-gold text-lg mt-0.5"></i>
+                        <div>
+                            <p class="text-sm text-gray-700 font-semibold mb-1">Panduan Pengisian Skala:</p>
+                            <p class="text-xs text-gray-600"><strong>1</strong> = Sangat Kurang | <strong>2</strong> = Kurang | <strong>3</strong> = Cukup | <strong>4</strong> = Baik | <strong>5</strong> = Sangat Baik</p>
+                            <p class="text-xs text-gray-600 mt-1"><em>Contoh perilaku kerja bersifat opsional namun sangat dianjurkan untuk memberikan feedback.</em></p>
+                        </div>
+                    </div>
+
+                    <div id="indicatorsWrapper" class="space-y-5">
+                        <!-- Indikator di-generate via Javascript agar rapi -->
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <button type="submit" id="btnSave" class="w-full bg-brand-blue hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-base md:text-lg">
+                            <i class="fa-solid fa-paper-plane"></i> Simpan Penilaian
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SUCCESS VIEW (HALAMAN SUKSES) -->
+            <div id="successView" class="max-w-4xl mx-auto glass-panel rounded-2xl p-10 text-center border-t-4 border-t-green-500 hidden mt-4">
+                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5 shadow-sm">
+                    <i class="fa-solid fa-check text-5xl text-green-500"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-3">Penilaian Berhasil Disimpan!</h2>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">Data penilaian perilaku kerja untuk SBK tersebut telah berhasil tercatat ke dalam database sistem.</p>
+                <button onclick="resetApp()" class="bg-brand-blue hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all inline-flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Form Penilaian
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // KONFIGURASI API
+        // ==========================================
+        // URL yang diberikan oleh user
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwumBqbcXbQokYfgtqjCK4qXDlh5S9GlwO4qcLnlW6naawoLuZInm_od-PRDHcQ4jca/exec';
+
+        // GLOBAL STATE
+        let db = { bidang: [], akun: [], skuo: [], bulan: [], perilaku_kerja: [] };
+        let currentUser = { wa: "", nama: "", listBidangId: [] };
+        let currentBidangId = "";
+        let tomSelectInstance = null;
+        let loadInterval;
+        let loadProgress = 0;
+
+        const indicatorsList = [
+            { id: 'akhlak', label: 'AKHLAK' },
+            { id: 'profesional', label: 'PROFESIONAL' },
+            { id: 'inovatif', label: 'INOVATIF' },
+            { id: 'kolaboratif', label: 'KOLABORATIF' },
+            { id: 'rasa_memiliki', label: 'RASA MEMILIKI' },
+            { id: 'pengembangan_diri', label: 'PENGEMBANGAN DIRI' }
+        ];
+
+        // --- FETCH WRAPPER (MENDUKUNG SIMULASI CANVAS & GOOGLE APPS SCRIPT) ---
+        async function fetchAPI(payload) {
+            // Mode Apps Script Native
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                return new Promise((resolve, reject) => {
+                    if (payload.action === 'getAllData') {
+                        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getAllData();
+                    } else if (payload.action === 'savePenilaian') {
+                        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).savePenilaian(payload.data);
+                    }
+                });
+            } 
+            // Mode Lokal / Pengujian URL WebApp
+            else {
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') return result.data;
+                    throw new Error(result.message);
+                } catch (error) {
+                    // Fallback Dummy Data jika diblokir CORS Canvas
+                    if (window.location.hostname === '' || window.location.hostname.includes('googleusercontent') || window.location.hostname.includes('sandbox')) {
+                        console.warn("Berjalan di Mode Simulasi (Dummy Data)");
+                        return getSimulationData(payload);
+                    }
+                    throw error;
+                }
+            }
+        }
+
+        // --- DUMMY DATA UNTUK SIMULATION MODE ---
+        function getSimulationData(payload) {
+            if (payload.action === 'savePenilaian') {
+                // Simulasi menyimpan ke memori lokal
+                const index = db.perilaku_kerja.findIndex(p => p.bulan === payload.data.bulan && p.skuo_id === payload.data.skuo_id);
+                if (index > -1) db.perilaku_kerja[index] = payload.data;
+                else db.perilaku_kerja.push(payload.data);
+                return db;
+            }
+
+            return {
+                bidang: [{ id: "BDG01", nama_bidang: "BIDANG PENDIDIKAN" }, { id: "BDG02", nama_bidang: "BIDANG DAKWAH" }],
+                akun: [{ id: "KSBK01", no_wa: "6281234567890", nama: "Ust. Fulan", bidang_kerja_id: "BDG01,BDG02" }],
+                skuo: [{ id: "SKUO01", bidang_kerja_id: "BDG01", nama_skuo: "DEPARTEMEN PENDIDIKAN", nama: "Ust. Ahmad" }, { id: "SKUO02", bidang_kerja_id: "BDG02", nama_skuo: "LEMBAGA DAKWAH", nama: "Ust. Zaid" }],
+                bulan: [{ bulan: "2026 Oktober", status: "Aktif" }, { bulan: "2026 November", status: "Aktif" }],
+                perilaku_kerja: [
+                    { id: "PK-1", bulan: "2026 Oktober", skuo_id: "SKUO01", akhlak: 5, akhlak_ket: "Sangat baik dalam bertutur sapa", profesional: 4, inovatif: 3, kolaboratif: 5, rasa_memiliki: 4, pengembangan_diri: 4 }
+                ]
+            };
+        }
+
+        // --- LOADING SYSTEM ---
+        function startLoading(text = "Memuat data...") {
+            const textEl = document.getElementById('loadingText');
+            if (textEl) textEl.innerHTML = `${text} <span id="loadingPercent" class="text-brand-gold font-bold"></span>`;
+            
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+            }
+            
+            loadProgress = 0;
+            clearInterval(loadInterval);
+            loadInterval = setInterval(() => {
+                loadProgress += Math.floor(Math.random() * 20) + 10;
+                if (loadProgress > 95) loadProgress = 95;
+                const pct = document.getElementById('loadingPercent');
+                if(pct) pct.innerText = loadProgress + '%';
+            }, 50);
+        }
+
+        function endLoading() {
+            const pct = document.getElementById('loadingPercent');
+            if(pct) pct.innerText = '100%';
+            clearInterval(loadInterval);
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) overlay.style.opacity = '0';
+                setTimeout(() => { if(overlay) overlay.style.display = 'none'; }, 300);
+            }, 300);
+        }
+
+        // --- CORE INIT ---
+        async function loadData() {
+            startLoading();
+            try {
+                db = await fetchAPI({ action: 'getAllData' });
+                generateIndicatorsUI();
+                
+                document.getElementById('headerLogo').classList.remove('hidden');
+                document.getElementById('loginView').classList.remove('hidden');
+                
+                tomSelectInstance = new TomSelect('#skuoSelect', {
+                    create: false,
+                    sortField: { field: "text", direction: "asc" },
+                    placeholder: "Pilih / Ketik Nama SBK..."
+                });
+                endLoading();
+            } catch (error) {
+                console.error(error);
+                endLoading();
+                Swal.fire({
+                    icon: 'error', title: 'Gagal Memuat', 
+                    html: 'Sistem tidak dapat terhubung. Muat ulang halaman.',
+                    confirmButtonText: 'Muat Ulang'
+                }).then(() => location.reload());
+            }
+        }
+
+        // --- AUTH & NAVIGATION ---
+        function formatWA(input) {
+            let val = input.value.replace(/\D/g, ''); 
+            if (val.startsWith('08')) val = '628' + val.substring(2); 
+            input.value = val;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const wa = document.getElementById('loginWa').value;
+            const userAccount = db.akun.find(a => String(a.no_wa) === String(wa));
+            
+            if (!userAccount) {
+                Swal.fire('Akses Ditolak', 'Nomor WhatsApp Anda tidak terdaftar.', 'error');
+                return;
+            }
+
+            currentUser.wa = wa;
+            currentUser.nama = userAccount.nama;
+            currentUser.listBidangId = String(userAccount.bidang_kerja_id).split(',').map(b => b.trim());
+
+            if (currentUser.listBidangId.length === 1) {
+                enterApp(currentUser.listBidangId[0]);
+            } else {
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('pilihBidangView').classList.remove('hidden');
+                
+                const listDiv = document.getElementById('listBidang');
+                listDiv.innerHTML = '';
+                document.getElementById('welcomePilihBidang').innerText = `Selamat datang, ${currentUser.nama}`;
+
+                currentUser.listBidangId.forEach(bId => {
+                    const bObj = db.bidang.find(b => String(b.id).trim() === String(bId).trim());
+                    listDiv.innerHTML += `
+                        <button onclick="enterApp('${bId}')" class="w-full text-left bg-white border border-gray-200 hover:border-brand-blue hover:shadow-md p-4 rounded-xl transition-all flex items-center justify-between group">
+                            <div class="pr-4">
+                                <p class="text-xs text-gray-500 mb-0.5">Akses Bidang</p>
+                                <p class="font-bold text-brand-blue text-sm">${bObj ? bObj.nama_bidang : bId}</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-gray-300 group-hover:text-brand-gold flex-shrink-0"></i>
+                        </button>
+                    `;
+                });
+            }
+        }
+
+        function enterApp(bidangId) {
+            currentBidangId = String(bidangId).trim();
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('pilihBidangView').classList.add('hidden');
+            document.getElementById('mainAppView').classList.remove('hidden');
+            
+            document.getElementById('infoNama').innerText = currentUser.nama;
+            const bObj = db.bidang.find(b => String(b.id).trim() === currentBidangId);
+            document.getElementById('infoBidang').innerText = bObj ? bObj.nama_bidang : currentBidangId;
+            
+            setupForm();
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        // --- FORM LOGIC ---
+        function setupForm() {
+            // Setup Dropdown Bulan (Hanya yang berstatus Aktif)
+            const selectBulan = document.getElementById('bulanSelect');
+            selectBulan.innerHTML = '<option value="">Pilih Bulan...</option>';
+            const activeBulan = db.bulan.filter(b => b.status === "Aktif");
+            activeBulan.forEach(b => {
+                selectBulan.innerHTML += `<option value="${b.bulan}">${b.bulan}</option>`;
+            });
+            // Jika hanya 1 bulan aktif, pilih otomatis
+            if (activeBulan.length === 1) {
+                selectBulan.value = activeBulan[0].bulan;
+            }
+
+            // Setup Dropdown SBK (TomSelect)
+            const mySkuo = db.skuo.filter(s => String(s.bidang_kerja_id).trim() === currentBidangId);
+            tomSelectInstance.clear();
+            tomSelectInstance.clearOptions();
+            mySkuo.forEach(s => {
+                // Tampilkan Nama Orang dan Nama Jabatan/SKUO-nya
+                tomSelectInstance.addOption({value: s.id, text: `${s.nama} - ${s.nama_skuo}`});
+            });
+            
+            resetFormInputs();
+            checkExistingData();
+        }
+
+        function generateIndicatorsUI() {
+            const wrapper = document.getElementById('indicatorsWrapper');
+            wrapper.innerHTML = '';
+            
+            indicatorsList.forEach((ind, index) => {
+                let radioHTML = '';
+                for(let i=1; i<=5; i++) {
+                    radioHTML += `
+                        <div class="flex-1">
+                            <input type="radio" id="${ind.id}_${i}" name="${ind.id}" value="${i}" class="scale-radio hidden" required>
+                            <label for="${ind.id}_${i}" class="block text-center py-2.5 px-1 border border-gray-300 rounded-lg cursor-pointer text-sm font-bold text-gray-600 transition-colors hover:bg-gray-100">${i}</label>
+                        </div>
+                    `;
+                }
+
+                wrapper.innerHTML += `
+                    <div class="p-5 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+                            <h4 class="font-bold text-brand-blue text-base">${index+1}. ${ind.label} <span class="text-red-500">*</span></h4>
+                            <div class="flex w-full md:w-64 gap-2">
+                                ${radioHTML}
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1.5">Contoh Perilaku Kerja (Opsional)</label>
+                            <input type="text" id="${ind.id}_ket" name="${ind.id}_ket" placeholder="Tuliskan alasan / contoh spesifik..." class="w-full text-sm rounded-lg border-gray-300 border bg-gray-50 px-3.5 py-2.5 focus:ring-2 focus:ring-blue-100 focus:bg-white outline-none">
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkExistingData() {
+            const bulan = document.getElementById('bulanSelect').value;
+            const skuo = document.getElementById('skuoSelect').value;
+            const form = document.getElementById('penilaianForm');
+            const badge = document.getElementById('statusBadge');
+            
+            resetFormInputs();
+
+            if (!bulan || !skuo) {
+                form.classList.add('hidden');
+                badge.classList.add('hidden');
+                return;
+            }
+
+            form.classList.remove('hidden');
+            badge.classList.remove('hidden');
+
+            // Cek apakah data sudah ada
+            const existing = db.perilaku_kerja.find(p => p.bulan === bulan && p.skuo_id === skuo);
+
+            if (existing) {
+                badge.className = "mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-green-50 border-green-200 text-green-700 transition-all";
+                badge.innerHTML = `<i class="fa-solid fa-check-circle text-lg"></i> SBK ini sudah dinilai pada bulan ini. Anda dapat mengubah (update) nilainya.`;
+                document.getElementById('btnSave').innerHTML = '<i class="fa-solid fa-edit"></i> Update Penilaian';
+                document.getElementById('btnSave').classList.replace('bg-brand-blue', 'bg-green-600');
+                document.getElementById('btnSave').classList.replace('hover:bg-blue-800', 'hover:bg-green-700');
+
+                // Isi nilai existing
+                indicatorsList.forEach(ind => {
+                    const val = existing[ind.id];
+                    if (val) {
+                        const radio = document.getElementById(`${ind.id}_${val}`);
+                        if(radio) radio.checked = true;
+                    }
+                    document.getElementById(`${ind.id}_ket`).value = existing[`${ind.id}_ket`] || "";
+                });
+            } else {
+                badge.className = "mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-blue-50 border-blue-200 text-brand-blue transition-all";
+                badge.innerHTML = `<i class="fa-solid fa-info-circle text-lg"></i> Belum ada penilaian untuk SBK ini di bulan terpilih.`;
+                document.getElementById('btnSave').innerHTML = '<i class="fa-solid fa-paper-plane"></i> Simpan Penilaian';
+                document.getElementById('btnSave').classList.replace('bg-green-600', 'bg-brand-blue');
+                document.getElementById('btnSave').classList.replace('hover:bg-green-700', 'hover:bg-blue-800');
+            }
+        }
+
+        function resetFormInputs() {
+            indicatorsList.forEach(ind => {
+                for(let i=1; i<=5; i++) { 
+                    const radio = document.getElementById(`${ind.id}_${i}`);
+                    if(radio) radio.checked = false; 
+                }
+                const ket = document.getElementById(`${ind.id}_ket`);
+                if(ket) ket.value = "";
+            });
+        }
+
+        async function submitForm(e) {
+            e.preventDefault();
+            
+            const payload = {
+                bulan: document.getElementById('bulanSelect').value,
+                bidang_kerja_id: currentBidangId,
+                skuo_id: document.getElementById('skuoSelect').value,
+                no_wa_ksbk: currentUser.wa,
+                nama_ksbk: currentUser.nama
+            };
+
+            // Ambil semua nilai skala dan keterangan dari form
+            indicatorsList.forEach(ind => {
+                const checkedRadio = document.querySelector(`input[name="${ind.id}"]:checked`);
+                payload[ind.id] = checkedRadio ? checkedRadio.value : 0;
+                payload[`${ind.id}_ket`] = document.getElementById(`${ind.id}_ket`).value;
+            });
+
+            startLoading("Menyimpan Penilaian...");
+
+            try {
+                // Memanggil API via logic Wrapper
+                db = await fetchAPI({ action: 'savePenilaian', data: payload });
+                endLoading();
+                
+                // Pindah ke halaman sukses
+                document.getElementById('appFormContainer').classList.add('hidden');
+                document.getElementById('successView').classList.remove('hidden');
+            } catch (error) {
+                endLoading();
+                Swal.fire('Error', 'Gagal menyimpan penilaian. ' + error.message, 'error');
+            }
+        }
+
+        function resetApp() {
+            // Kembali ke halaman Form
+            document.getElementById('successView').classList.add('hidden');
+            document.getElementById('appFormContainer').classList.remove('hidden');
+            
+            // Hapus pilihan SBK sebelumnya agar form tertutup/bersih
+            tomSelectInstance.clear();
+            
+            // Trigger checkExistingData kembali untuk menyegarkan tampilan
+            document.getElementById('bulanSelect').dispatchEvent(new Event('change'));
+        }
+    </script>
+</body>
+</html>
