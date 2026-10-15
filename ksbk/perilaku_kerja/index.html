@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Input Penilaian Perilaku Kerja - KSBK">
+    <meta property="og:title" content="KSBK - Perilaku Kerja">
     <meta property="og:description" content="Aplikasi penilaian kinerja pegawai Kantor Pusat Wahdah Islamiyah.">
     <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
     
-    <title>Input Penilaian KSBK</title>
+    <title>KSBK - Perilaku Kerja</title>
     <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -55,13 +55,9 @@
         <div class="relative flex justify-center items-center mb-8">
             <div class="absolute w-24 h-24 border-4 border-brand-gold border-t-transparent border-b-transparent rounded-full animate-spin"></div>
             <div class="absolute w-20 h-20 border-4 border-blue-400 border-l-transparent border-r-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
-            <!-- Menggunakan placeholder logo default (bisa diganti URL asli jika ada error) -->
             <img src="../../logo_wahdah_islamiyah.png" alt="Logo" class="h-12 w-12 drop-shadow-md z-10" onerror="this.style.display='none'">
         </div>
-        <div class="w-64 h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner relative">
-            <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_0.8s_ease-in-out_infinite] rounded-full"></div>
-        </div>
-        <p id="loadingText" class="mt-5 text-sm font-semibold text-blue-100 tracking-wide">Memuat data... <span id="loadingPercent" class="text-brand-gold font-bold"></span></p>
+        <p id="loadingText" class="mt-5 text-sm font-semibold text-blue-100 tracking-wide">Memuat data...</p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -108,7 +104,7 @@
                         <i class="fa-solid fa-user-tie text-2xl text-white"></i>
                     </div>
                     <div class="overflow-hidden">
-                        <p class="text-[10px] sm:text-xs text-green-100 font-bold uppercase tracking-wider">KSBK (Penilai)</p>
+                        <p class="text-[10px] sm:text-xs text-green-100 font-bold uppercase tracking-wider">KOORDINATOR STAF BIDANG KERJA</p>
                         <h2 class="text-lg font-bold truncate" id="infoNama">Nama User</h2>
                         <p class="text-sm text-green-50 truncate" title="Bidang Kerja"><i class="fa-solid fa-layer-group text-yellow-300 mr-1"></i> <span id="infoBidang">Bidang Kerja</span></p>
                     </div>
@@ -120,30 +116,36 @@
 
             <!-- TAB CONTENT: FORM PENILAIAN -->
             <div id="appFormContainer" class="max-w-4xl mx-auto glass-panel rounded-2xl p-6 md:p-8 border-t-4 border-t-brand-gold">
-                <h3 class="text-lg font-bold text-brand-blue border-b pb-3 mb-5"><i class="fa-solid fa-clipboard-check text-brand-gold mr-2"></i> Form Penilaian</h3>
                 
                 <!-- SELEKSI BULAN & SBK -->
                 <div class="bg-blue-50/50 p-5 rounded-xl border border-blue-100 mb-6">
                     <h3 class="text-sm font-bold text-brand-blue mb-4 uppercase"><i class="fa-solid fa-filter mr-2"></i> Pilih Target Penilaian</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    
+                    <div class="flex flex-col gap-4">
+                        <!-- BULAN -->
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1.5">Bulan Penilaian <span class="text-red-500">*</span></label>
-                            <select id="bulanSelect" required class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700 font-medium" onchange="checkExistingData()">
+                            <select id="bulanSelect" required class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700 font-medium" onchange="updateSkuoOptions()">
                                 <option value="">Pilih Bulan...</option>
                             </select>
                         </div>
+                        
+                        <!-- NAMA STAF -->
                         <div>
-                            <label class="block text-xs font-bold text-gray-700 mb-1.5">Staf Bidang Kerja (SBK) <span class="text-red-500">*</span></label>
-                            <select id="skuoSelect" required class="w-full" onchange="checkExistingData()">
-                                <option value="">Pilih SBK...</option>
+                            <label class="block text-xs font-bold text-gray-700 mb-1.5">Nama Staf (SBK) <span class="text-red-500">*</span></label>
+                            <select id="skuoSelect" required class="w-full" onchange="hideForm()">
+                                <option value="">Pilih Staf...</option>
                             </select>
                         </div>
+                        
+                        <!-- TOMBOL LANJUT -->
+                        <button type="button" onclick="checkExistingData()" class="mt-2 w-full bg-blue-100 text-brand-blue hover:bg-blue-200 font-bold py-3.5 px-4 rounded-xl transition-all flex justify-center items-center gap-2 border border-blue-200 shadow-sm">
+                            Lanjut Input Penilaian <i class="fa-solid fa-arrow-down"></i>
+                        </button>
                     </div>
                     
                     <!-- BADGE STATUS -->
-                    <div id="statusBadge" class="mt-4 hidden p-3 rounded-lg border flex items-center gap-2 text-sm font-bold transition-all">
-                        <!-- Diisi via JS (Telah dinilai / Belum dinilai) -->
-                    </div>
+                    <div id="statusBadge" class="mt-5 hidden p-3 rounded-lg border flex items-center gap-2 text-sm font-bold transition-all"></div>
                 </div>
 
                 <!-- FORM INDIKATOR -->
@@ -153,12 +155,11 @@
                         <div>
                             <p class="text-sm text-gray-700 font-semibold mb-1">Panduan Pengisian Skala:</p>
                             <p class="text-xs text-gray-600"><strong>1</strong> = Sangat Kurang | <strong>2</strong> = Kurang | <strong>3</strong> = Cukup | <strong>4</strong> = Baik | <strong>5</strong> = Sangat Baik</p>
-                            <p class="text-xs text-gray-600 mt-1"><em>Contoh perilaku kerja bersifat opsional namun sangat dianjurkan untuk memberikan feedback.</em></p>
                         </div>
                     </div>
 
                     <div id="indicatorsWrapper" class="space-y-5">
-                        <!-- Indikator di-generate via Javascript agar rapi -->
+                        <!-- Indikator di-generate via Javascript -->
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-gray-200">
@@ -175,9 +176,9 @@
                     <i class="fa-solid fa-check text-5xl text-green-500"></i>
                 </div>
                 <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-3">Penilaian Berhasil Disimpan!</h2>
-                <p class="text-gray-600 mb-8 max-w-md mx-auto">Data penilaian perilaku kerja untuk SBK tersebut telah berhasil tercatat ke dalam database sistem.</p>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">Data penilaian perilaku kerja untuk SBK tersebut telah berhasil tercatat ke dalam sistem.</p>
                 <button onclick="resetApp()" class="bg-brand-blue hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all inline-flex items-center gap-2">
-                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Form Penilaian
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Halaman Utama
                 </button>
             </div>
 
@@ -188,7 +189,6 @@
         // ==========================================
         // KONFIGURASI API
         // ==========================================
-        // URL yang diberikan oleh user
         const API_URL = 'https://script.google.com/macros/s/AKfycbwumBqbcXbQokYfgtqjCK4qXDlh5S9GlwO4qcLnlW6naawoLuZInm_od-PRDHcQ4jca/exec';
 
         // GLOBAL STATE
@@ -196,8 +196,6 @@
         let currentUser = { wa: "", nama: "", listBidangId: [] };
         let currentBidangId = "";
         let tomSelectInstance = null;
-        let loadInterval;
-        let loadProgress = 0;
 
         const indicatorsList = [
             { id: 'akhlak', label: 'AKHLAK' },
@@ -208,91 +206,38 @@
             { id: 'pengembangan_diri', label: 'PENGEMBANGAN DIRI' }
         ];
 
-        // --- FETCH WRAPPER (MENDUKUNG SIMULASI CANVAS & GOOGLE APPS SCRIPT) ---
         async function fetchAPI(payload) {
-            // Mode Apps Script Native
-            if (typeof google !== 'undefined' && google.script && google.script.run) {
-                return new Promise((resolve, reject) => {
-                    if (payload.action === 'getAllData') {
-                        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getAllData();
-                    } else if (payload.action === 'savePenilaian') {
-                        google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).savePenilaian(payload.data);
-                    }
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
                 });
-            } 
-            // Mode Lokal / Pengujian URL WebApp
-            else {
-                try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-                    if (result.status === 'success') return result.data;
-                    throw new Error(result.message);
-                } catch (error) {
-                    // Fallback Dummy Data jika diblokir CORS Canvas
-                    if (window.location.hostname === '' || window.location.hostname.includes('googleusercontent') || window.location.hostname.includes('sandbox')) {
-                        console.warn("Berjalan di Mode Simulasi (Dummy Data)");
-                        return getSimulationData(payload);
-                    }
-                    throw error;
-                }
+                const result = await response.json();
+                if (result.status === 'success') return result.data;
+                throw new Error(result.message);
+            } catch (error) {
+                console.error(error);
+                throw error;
             }
-        }
-
-        // --- DUMMY DATA UNTUK SIMULATION MODE ---
-        function getSimulationData(payload) {
-            if (payload.action === 'savePenilaian') {
-                // Simulasi menyimpan ke memori lokal
-                const index = db.perilaku_kerja.findIndex(p => p.bulan === payload.data.bulan && p.skuo_id === payload.data.skuo_id);
-                if (index > -1) db.perilaku_kerja[index] = payload.data;
-                else db.perilaku_kerja.push(payload.data);
-                return db;
-            }
-
-            return {
-                bidang: [{ id: "BDG01", nama_bidang: "BIDANG PENDIDIKAN" }, { id: "BDG02", nama_bidang: "BIDANG DAKWAH" }],
-                akun: [{ id: "KSBK01", no_wa: "6281234567890", nama: "Ust. Fulan", bidang_kerja_id: "BDG01,BDG02" }],
-                skuo: [{ id: "SKUO01", bidang_kerja_id: "BDG01", nama_skuo: "DEPARTEMEN PENDIDIKAN", nama: "Ust. Ahmad" }, { id: "SKUO02", bidang_kerja_id: "BDG02", nama_skuo: "LEMBAGA DAKWAH", nama: "Ust. Zaid" }],
-                bulan: [{ bulan: "2026 Oktober", status: "Aktif" }, { bulan: "2026 November", status: "Aktif" }],
-                perilaku_kerja: [
-                    { id: "PK-1", bulan: "2026 Oktober", skuo_id: "SKUO01", akhlak: 5, akhlak_ket: "Sangat baik dalam bertutur sapa", profesional: 4, inovatif: 3, kolaboratif: 5, rasa_memiliki: 4, pengembangan_diri: 4 }
-                ]
-            };
         }
 
         // --- LOADING SYSTEM ---
         function startLoading(text = "Memuat data...") {
             const textEl = document.getElementById('loadingText');
-            if (textEl) textEl.innerHTML = `${text} <span id="loadingPercent" class="text-brand-gold font-bold"></span>`;
+            if (textEl) textEl.innerHTML = text;
             
             const overlay = document.getElementById('loadingOverlay');
             if (overlay) {
                 overlay.style.display = 'flex';
                 setTimeout(() => { overlay.style.opacity = '1'; }, 10);
             }
-            
-            loadProgress = 0;
-            clearInterval(loadInterval);
-            loadInterval = setInterval(() => {
-                loadProgress += Math.floor(Math.random() * 20) + 10;
-                if (loadProgress > 95) loadProgress = 95;
-                const pct = document.getElementById('loadingPercent');
-                if(pct) pct.innerText = loadProgress + '%';
-            }, 50);
         }
 
         function endLoading() {
-            const pct = document.getElementById('loadingPercent');
-            if(pct) pct.innerText = '100%';
-            clearInterval(loadInterval);
-            setTimeout(() => {
-                const overlay = document.getElementById('loadingOverlay');
-                if (overlay) overlay.style.opacity = '0';
-                setTimeout(() => { if(overlay) overlay.style.display = 'none'; }, 300);
-            }, 300);
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.opacity = '0';
+            setTimeout(() => { if(overlay) overlay.style.display = 'none'; }, 300);
         }
 
         // --- CORE INIT ---
@@ -308,11 +253,10 @@
                 tomSelectInstance = new TomSelect('#skuoSelect', {
                     create: false,
                     sortField: { field: "text", direction: "asc" },
-                    placeholder: "Pilih / Ketik Nama SBK..."
+                    placeholder: "Pilih / Ketik Nama Staf..."
                 });
                 endLoading();
             } catch (error) {
-                console.error(error);
                 endLoading();
                 Swal.fire({
                     icon: 'error', title: 'Gagal Memuat', 
@@ -387,29 +331,50 @@
 
         // --- FORM LOGIC ---
         function setupForm() {
-            // Setup Dropdown Bulan (Hanya yang berstatus Aktif)
+            // Setup Dropdown Bulan
             const selectBulan = document.getElementById('bulanSelect');
             selectBulan.innerHTML = '<option value="">Pilih Bulan...</option>';
-            const activeBulan = db.bulan.filter(b => b.status === "Aktif");
+            const activeBulan = db.bulan.filter(b => String(b.status).trim().toLowerCase() === "aktif");
             activeBulan.forEach(b => {
                 selectBulan.innerHTML += `<option value="${b.bulan}">${b.bulan}</option>`;
             });
-            // Jika hanya 1 bulan aktif, pilih otomatis
+            
             if (activeBulan.length === 1) {
                 selectBulan.value = activeBulan[0].bulan;
             }
 
-            // Setup Dropdown SBK (TomSelect)
+            // Memanggil update dropdown staf sekaligus check mark (✅)
+            updateSkuoOptions();
+            resetFormInputs();
+            hideForm();
+        }
+
+        // Fungsi khusus untuk me-render ulang opsi staf & memberi centang
+        function updateSkuoOptions() {
+            hideForm();
+            const bulan = document.getElementById('bulanSelect').value;
             const mySkuo = db.skuo.filter(s => String(s.bidang_kerja_id).trim() === currentBidangId);
+            
+            const currentSelected = tomSelectInstance.getValue();
             tomSelectInstance.clear();
             tomSelectInstance.clearOptions();
+            
             mySkuo.forEach(s => {
-                // Tampilkan Nama Orang dan Nama Jabatan/SKUO-nya
-                tomSelectInstance.addOption({value: s.id, text: `${s.nama} - ${s.nama_skuo}`});
+                let checkMark = "";
+                // Jika bulan sudah dipilih, cek apakah data sudah dinilai sebelumnya
+                if (bulan) {
+                    const isExist = db.perilaku_kerja.find(p => String(p.bulan).trim() === String(bulan).trim() && String(p.skuo_id).trim() === String(s.id).trim());
+                    if (isExist) checkMark = " ✅";
+                }
+                tomSelectInstance.addOption({value: s.id, text: s.nama + checkMark});
             });
             
-            resetFormInputs();
-            checkExistingData();
+            if (currentSelected) tomSelectInstance.setValue(currentSelected);
+        }
+
+        function hideForm() {
+            document.getElementById('penilaianForm').classList.add('hidden');
+            document.getElementById('statusBadge').classList.add('hidden');
         }
 
         function generateIndicatorsUI() {
@@ -429,7 +394,7 @@
 
                 wrapper.innerHTML += `
                     <div class="p-5 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-3 md:mb-1 gap-3">
                             <h4 class="font-bold text-brand-blue text-base">${index+1}. ${ind.label} <span class="text-red-500">*</span></h4>
                             <div class="flex w-full md:w-64 gap-2">
                                 ${radioHTML}
@@ -453,6 +418,7 @@
             resetFormInputs();
 
             if (!bulan || !skuo) {
+                Swal.fire('Perhatian', 'Silakan pilih Bulan dan Nama Staf terlebih dahulu.', 'warning');
                 form.classList.add('hidden');
                 badge.classList.add('hidden');
                 return;
@@ -462,27 +428,28 @@
             badge.classList.remove('hidden');
 
             // Cek apakah data sudah ada
-            const existing = db.perilaku_kerja.find(p => p.bulan === bulan && p.skuo_id === skuo);
+            const existing = db.perilaku_kerja.find(p => String(p.bulan).trim() === String(bulan).trim() && String(p.skuo_id).trim() === String(skuo).trim());
 
             if (existing) {
                 badge.className = "mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-green-50 border-green-200 text-green-700 transition-all";
-                badge.innerHTML = `<i class="fa-solid fa-check-circle text-lg"></i> SBK ini sudah dinilai pada bulan ini. Anda dapat mengubah (update) nilainya.`;
+                badge.innerHTML = `<i class="fa-solid fa-check-circle text-lg"></i> Staf ini sudah dinilai pada bulan ini. Anda dapat melakukan update nilainya.`;
                 document.getElementById('btnSave').innerHTML = '<i class="fa-solid fa-edit"></i> Update Penilaian';
                 document.getElementById('btnSave').classList.replace('bg-brand-blue', 'bg-green-600');
                 document.getElementById('btnSave').classList.replace('hover:bg-blue-800', 'hover:bg-green-700');
 
-                // Isi nilai existing
+                // Isi nilai existing yang diload dari Spreadsheet
                 indicatorsList.forEach(ind => {
                     const val = existing[ind.id];
                     if (val) {
-                        const radio = document.getElementById(`${ind.id}_${val}`);
+                        const radio = document.getElementById(`${ind.id}_${String(val)}`);
                         if(radio) radio.checked = true;
                     }
-                    document.getElementById(`${ind.id}_ket`).value = existing[`${ind.id}_ket`] || "";
+                    const inputKet = document.getElementById(`${ind.id}_ket`);
+                    if(inputKet) inputKet.value = existing[`${ind.id}_ket`] || "";
                 });
             } else {
                 badge.className = "mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-blue-50 border-blue-200 text-brand-blue transition-all";
-                badge.innerHTML = `<i class="fa-solid fa-info-circle text-lg"></i> Belum ada penilaian untuk SBK ini di bulan terpilih.`;
+                badge.innerHTML = `<i class="fa-solid fa-info-circle text-lg"></i> Belum ada penilaian untuk staf ini di bulan terpilih.`;
                 document.getElementById('btnSave').innerHTML = '<i class="fa-solid fa-paper-plane"></i> Simpan Penilaian';
                 document.getElementById('btnSave').classList.replace('bg-green-600', 'bg-brand-blue');
                 document.getElementById('btnSave').classList.replace('hover:bg-green-700', 'hover:bg-blue-800');
@@ -503,10 +470,14 @@
         async function submitForm(e) {
             e.preventDefault();
             
+            const skuoId = document.getElementById('skuoSelect').value;
+            const skuoObj = db.skuo.find(s => s.id === skuoId);
+            
             const payload = {
                 bulan: document.getElementById('bulanSelect').value,
                 bidang_kerja_id: currentBidangId,
-                skuo_id: document.getElementById('skuoSelect').value,
+                skuo_id: skuoId,
+                nama_sbk: skuoObj ? skuoObj.nama : "",
                 no_wa_ksbk: currentUser.wa,
                 nama_ksbk: currentUser.nama
             };
@@ -514,14 +485,14 @@
             // Ambil semua nilai skala dan keterangan dari form
             indicatorsList.forEach(ind => {
                 const checkedRadio = document.querySelector(`input[name="${ind.id}"]:checked`);
-                payload[ind.id] = checkedRadio ? checkedRadio.value : 0;
+                payload[ind.id] = checkedRadio ? parseInt(checkedRadio.value) : 0;
                 payload[`${ind.id}_ket`] = document.getElementById(`${ind.id}_ket`).value;
             });
 
             startLoading("Menyimpan Penilaian...");
 
             try {
-                // Memanggil API via logic Wrapper
+                // Memanggil API 
                 db = await fetchAPI({ action: 'savePenilaian', data: payload });
                 endLoading();
                 
@@ -530,20 +501,19 @@
                 document.getElementById('successView').classList.remove('hidden');
             } catch (error) {
                 endLoading();
-                Swal.fire('Error', 'Gagal menyimpan penilaian. ' + error.message, 'error');
+                Swal.fire('Error', 'Gagal menyimpan penilaian. Pastikan koneksi internet stabil.', 'error');
             }
         }
 
         function resetApp() {
-            // Kembali ke halaman Form
+            // Kembali ke halaman Form Utama
             document.getElementById('successView').classList.add('hidden');
             document.getElementById('appFormContainer').classList.remove('hidden');
             
-            // Hapus pilihan SBK sebelumnya agar form tertutup/bersih
+            // Hapus form tertutup & refresh centang (✅) data
             tomSelectInstance.clear();
-            
-            // Trigger checkExistingData kembali untuk menyegarkan tampilan
-            document.getElementById('bulanSelect').dispatchEvent(new Event('change'));
+            updateSkuoOptions();
+            hideForm();
         }
     </script>
 </body>
