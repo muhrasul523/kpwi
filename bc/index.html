@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="Sistem Broadcast Pegawai">
     <title>Sistem Broadcast Pegawai WI</title>
     
-    <!-- Path Logo disesuaikan -->
     <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -34,7 +32,6 @@
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
         .radio-method:checked + label { background-color: #eff6ff; border-color: #3b82f6; box-shadow: 0 0 0 2px #3b82f6; color: #1e3a8a; }
         .radio-method:checked + label .icon-container { transform: scale(1.15); }
@@ -67,12 +64,14 @@
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         
+        <!-- HEADER -->
         <div class="text-center mb-8 fade-in hidden" id="headerLogo">
             <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-14 mx-auto mb-4 drop-shadow-sm" onerror="this.style.display='none'">
             <h1 class="text-2xl md:text-3xl font-extrabold text-gray-800 tracking-tight">Sistem Broadcast Pegawai</h1>
             <p class="text-gray-500 mt-1 text-sm font-medium">Kantor Pusat Wahdah Islamiyah</p>
         </div>
 
+        <!-- LOGIN VIEW -->
         <div id="loginView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 shadow-soft fade-in border border-gray-200 hidden mt-10">
             <div class="w-12 h-12 bg-blue-50 text-brand-blue rounded-xl flex items-center justify-center mx-auto mb-4">
                 <i class="fa-solid fa-shield-halved text-xl"></i>
@@ -95,6 +94,7 @@
             </form>
         </div>
 
+        <!-- MAIN APP VIEW -->
         <div id="mainAppView" class="hidden fade-in">
             <!-- User Info Card -->
             <div class="bg-gradient-to-r from-sky-400 to-blue-500 rounded-2xl p-5 mb-8 text-white shadow-floating flex flex-col sm:flex-row justify-between items-center gap-4 relative overflow-hidden">
@@ -166,10 +166,9 @@
                         </div>
                     </div>
                     
-                    <!-- SUBJEK -->
+                    <!-- SUBJEK AUTO CAPSLOCK -->
                     <div id="subjectContainer" class="mb-6">
                         <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Subjek/Judul Broadcast <span class="text-red-500">*</span></label>
-                        <!-- Penambahan oninput untuk Auto-Capslock -->
                         <input type="text" id="subjekInput" required class="w-full rounded-xl border-gray-200 border bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-300 focus:border-transparent outline-none text-gray-700 text-sm font-medium transition-all" placeholder="Tuliskan subjek / judul..." oninput="this.value = this.value.toUpperCase()">
                     </div>
 
@@ -187,7 +186,7 @@
                         </div>
                     </div>
 
-                    <!-- LAMPIRAN FILE (Dinamis Aktif/Tidak) -->
+                    <!-- LAMPIRAN FILE BEBAS UKURAN MULTIPLE -->
                     <div id="fileContainer" class="hidden mb-6">
                         <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Lampiran File (Opsional - Bisa Lebih Dari 1)</label>
                         <div class="file-dropzone bg-gray-50 rounded-xl p-4 flex items-center gap-4 cursor-pointer relative" onclick="document.getElementById('fileInput').click()">
@@ -196,24 +195,13 @@
                             </div>
                             <div class="flex-1 overflow-hidden">
                                 <p class="text-sm font-semibold text-gray-700 truncate" id="fileNameText">Klik untuk memilih file (Otomatis Kompresi)...</p>
-                                <p class="text-xs text-gray-400">Terima semua format. Gambar otomatis diperkecil.</p>
+                                <p class="text-xs text-gray-400">Terima semua format. Ukuran besar otomatis dikompresi.</p>
                             </div>
                             <button type="button" class="hidden text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors z-10 flex-shrink-0" id="btnRemoveFile" onclick="event.stopPropagation(); removeFile();">
                                 <i class="fa-solid fa-times"></i>
                             </button>
                         </div>
-                        <!-- Penambahan atribut multiple dan semua format -->
                         <input type="file" id="fileInput" class="hidden" multiple accept="*/*" onchange="handleFileSelect(this)">
-                    </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-semibold text-gray-700" id="fileNameText">Klik untuk memilih file...</p>
-                                <p class="text-xs text-gray-400">PDF, JPG, PNG (Maks 3 MB)</p>
-                            </div>
-                            <button type="button" class="hidden text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors z-10" id="btnRemoveFile" onclick="event.stopPropagation(); removeFile();">
-                                <i class="fa-solid fa-times"></i>
-                            </button>
-                        </div>
-                        <input type="file" id="fileInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.xlsx,.docx" onchange="handleFileSelect(this)">
                     </div>
 
                     <!-- INPUT PESAN + VARIABEL -->
@@ -235,6 +223,7 @@
                 </form>
             </div>
 
+            <!-- SUCCESS VIEW -->
             <div id="successView" class="glass-panel rounded-2xl p-8 md:p-12 text-center shadow-floating border-t-4 border-t-green-500 hidden">
                 <div class="w-20 h-20 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm rotate-3">
                     <i class="fa-solid fa-envelope-circle-check text-4xl -rotate-3"></i>
@@ -268,11 +257,9 @@
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbzkPenv9_uUpBjlKpBqU5rWkeFkPRF4Ym3mpnJfwFGatXPmDrheMMCz5fvqUNKPM4vjZA/exec';
 
-        // GLOBAL STATE
         let db = { pegawai: [], users: [], pengaturan: [] };
         let currentUser = { wa: "", nama: "" };
-        let selectedFilesData = []; // Diubah menjadi Array untuk banyak file
-
+        let selectedFilesData = []; 
 
         async function fetchAPI(payload) {
             const response = await fetch(API_URL, {
@@ -285,11 +272,8 @@
                 if (result.status === 'success') return result.data;
                 throw new Error(result.message);
             } catch (err) {
-                console.error("Raw Response:", text);
-                if (text.includes("API Broadcast Aktif")) {
-                    throw new Error("Koneksi ditolak server. Pastikan WebApp Google Script telah ter-deploy dengan hak akses 'Anyone/Siapa Saja'.");
-                }
-                throw new Error("Format respon tidak valid, kemungkinan karena ukuran Lampiran File terlalu besar.");
+                if (text.includes("API Broadcast Aktif")) throw new Error("Pastikan Deploy di Google Apps Script diset pada akses 'Anyone/Siapa Saja'.");
+                throw new Error("Format respon tidak valid, kemungkinan ukuran file terlalu masif dan terpotong oleh server.");
             }
         }
 
@@ -314,34 +298,83 @@
         async function loadData() {
             startLoading();
             try {
-                // KARENA APLIKASI DI HOSTING DI GITHUB/EXTERNAL, KITA WAJIB LANGSUNG HIT API
                 db = await fetchAPI({ action: 'getAllData' });
                 setupInitialUI();
                 endLoading();
             } catch (err) {
                 endLoading();
-                Swal.fire('Error', 'Gagal memuat database dari Spreadsheet: ' + err.message, 'error');
+                Swal.fire('Error', 'Gagal terhubung ke database: ' + err.message, 'error');
             }
         }
 
         function setupInitialUI() {
             document.getElementById('headerLogo').classList.remove('hidden');
             document.getElementById('loginView').classList.remove('hidden');
-            applyConfigRules();
         }
 
+        // --- LOGIN & NORMALISASI WA ---
+        function formatWAInput(input) {
+            let val = input.value.replace(/\D/g, ''); 
+            if (val.startsWith('0')) val = '628' + val.substring(1);
+            input.value = val;
+        }
+
+        function normalizeWA(waStr) {
+            if (!waStr) return "";
+            let val = String(waStr).replace(/\D/g, '');
+            if (val.startsWith('0')) return '628' + val.substring(1);
+            if (!val.startsWith('62')) return '62' + val;
+            return val;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const inputWa = normalizeWA(document.getElementById('loginWa').value);
+            
+            const user = db.users.find(u => normalizeWA(u.wa) === inputWa);
+            
+            if (user) {
+                currentUser.wa = inputWa;
+                currentUser.nama = user.nama;
+                
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('mainAppView').classList.remove('hidden');
+                
+                document.getElementById('infoNama').innerText = currentUser.nama;
+                document.getElementById('infoWa').innerText = currentUser.wa;
+                
+                setupFormOptions();
+                applyConfigRules();
+            } else {
+                Swal.fire('Ditolak', 'Afwan, anda tidak memiliki akses untuk fitur ini.', 'error');
+            }
+        }
+
+        function setupFormOptions() {
+            const selectEl = document.getElementById('tujuanSelect');
+            selectEl.innerHTML = '<option value="">Pilih Target...</option>';
+            selectEl.innerHTML += '<option value="Semua Pegawai" class="font-bold text-brand-blue">Semua Pegawai (All)</option>';
+            
+            const unikJenis = [...new Set(db.pegawai.map(p => p.jenis).filter(Boolean))];
+            unikJenis.forEach(jenis => { selectEl.innerHTML += `<option value="${jenis}">Hanya ${jenis}</option>`; });
+        }
+
+        // --- OTOMATISASI METODE DARI PENGATURAN ---
         function applyConfigRules() {
-            const config = getMappedConfig();
+            const getConfig = (key) => {
+                const item = db.pengaturan.find(p => p.Kunci === key);
+                return item ? item.Nilai.toUpperCase().trim() : 'YA';
+            };
+
             const rWa = document.getElementById('m_wa');
             const rEmail = document.getElementById('m_email');
             
-            let waAktif = config['WA_AKTIF'] === 'YA';
-            let emailAktif = config['EMAIL_AKTIF'] === 'YA';
+            let waAktif = getConfig('WA_AKTIF') === 'YA';
+            let emailAktif = getConfig('EMAIL_AKTIF') === 'YA';
 
-            if (!waAktif) rWa.disabled = true;
-            if (!emailAktif) rEmail.disabled = true;
+            rWa.disabled = !waAktif;
+            rEmail.disabled = !emailAktif;
 
-            // OTOMATIS PILIH METODE JIKA HANYA 1 YANG AKTIF
             if (waAktif && !emailAktif) {
                 rWa.checked = true;
                 toggleFormMode();
@@ -350,7 +383,31 @@
                 toggleFormMode();
             }
         }
-        // --- FILE HANDLING (MULTIPLE & AUTO-COMPRESSION) ---
+
+        function toggleFormMode() {
+            const m = document.querySelector('input[name="metode"]:checked')?.value;
+            const containerDelay = document.getElementById('delayContainer');
+            const containerFile = document.getElementById('fileContainer');
+            
+            if (!m) return;
+            
+            containerDelay.classList.toggle('hidden', m !== 'WA');
+
+            const getConfig = (key) => {
+                const item = db.pengaturan.find(p => p.Kunci === key);
+                return item ? item.Nilai.toUpperCase().trim() : 'YA';
+            };
+
+            if (m === 'WA' && getConfig('WA_FILE_AKTIF') === 'YA') {
+                containerFile.classList.remove('hidden');
+            } else if (m === 'EMAIL' && getConfig('EMAIL_FILE_AKTIF') === 'YA') {
+                containerFile.classList.remove('hidden');
+            } else {
+                containerFile.classList.add('hidden');
+            }
+        }
+
+        // --- FILE HANDLING (MULTIPLE & KOMPRESI OTOMATIS) ---
         async function handleFileSelect(input) {
             const files = input.files;
             if (!files || files.length === 0) return;
@@ -358,11 +415,9 @@
             let totalSize = 0;
             for (let f of files) totalSize += f.size;
             
-            // Batas aman pengiriman API Google Script adalah ~40MB (Setelah jadi base64)
-            if (totalSize > 40 * 1024 * 1024) {
-                Swal.fire('Terlalu Besar', 'Total ukuran seluruh file melebihi batas aman sistem (40MB). Mohon kurangi ukuran atau jumlah file.', 'warning');
-                input.value = "";
-                return;
+            if (totalSize > 50 * 1024 * 1024) {
+                Swal.fire('Terlalu Besar', 'Batas wajar WebApp Google adalah ~50MB secara bersamaan. Mohon kurangi ukuran/jumlah.', 'warning');
+                input.value = ""; return;
             }
 
             document.getElementById('fileNameText').innerText = "Memproses & mengkompresi file...";
@@ -370,31 +425,23 @@
 
             for (let i = 0; i < files.length; i++) {
                 let file = files[i];
-                
-                // JIKA FILE ADALAH GAMBAR -> LAKUKAN KOMPRESI SISI KLIEN
                 if (file.type.startsWith('image/')) {
                     try {
                         let compressedBase64 = await compressImage(file);
-                        selectedFilesData.push({
-                            filename: file.name,
-                            mimeType: 'image/jpeg', // hasil kompresi biasanya jpeg
-                            base64: compressedBase64
-                        });
+                        selectedFilesData.push({ filename: file.name, mimeType: 'image/jpeg', base64: compressedBase64 });
                     } catch (e) {
-                        await readFileAsBase64(file); // Fallback jika gagal kompres
+                        await readFileAsBase64(file); 
                     }
                 } else {
-                    // JIKA FILE BUKAN GAMBAR (PDF, DOCX, DLL) -> BACA NORMAL
                     await readFileAsBase64(file);
                 }
             }
 
-            document.getElementById('fileNameText').innerText = `${selectedFilesData.length} File Terpilih (Siap Dikirim)`;
+            document.getElementById('fileNameText').innerText = `${selectedFilesData.length} File Siap Dikirim`;
             document.getElementById('fileNameText').classList.add('text-brand-blue', 'font-bold');
             document.getElementById('btnRemoveFile').classList.remove('hidden');
         }
 
-        // FUNGSI KOMPRESI GAMBAR (CANVAS)
         function compressImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -402,23 +449,17 @@
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        
-                        // Maksimal resolusi 1600px untuk kompresi ekstrem namun tetap terbaca
+                        let width = img.width; let height = img.height;
                         const MAX_DIMENSION = 1600;
                         if (width > height && width > MAX_DIMENSION) {
                             height *= MAX_DIMENSION / width; width = MAX_DIMENSION;
                         } else if (height > MAX_DIMENSION) {
                             width *= MAX_DIMENSION / height; height = MAX_DIMENSION;
                         }
-
                         canvas.width = width; canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-                        
-                        // Kualitas 0.6 (60%) sangat mengecilkan ukuran file hingga 50-80%
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // Kualitas 60% (Kompresi Ekstrem)
                         resolve(dataUrl.split(',')[1]);
                     };
                     img.onerror = reject;
@@ -428,16 +469,11 @@
             });
         }
 
-        // FUNGSI BACA FILE NORMAL (UNTUK PDF DLL)
         function readFileAsBase64(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    selectedFilesData.push({
-                        filename: file.name,
-                        mimeType: file.type,
-                        base64: e.target.result.split(',')[1]
-                    });
+                    selectedFilesData.push({ filename: file.name, mimeType: file.type, base64: e.target.result.split(',')[1] });
                     resolve();
                 };
                 reader.readAsDataURL(file);
@@ -452,10 +488,10 @@
             document.getElementById('btnRemoveFile').classList.add('hidden');
         }
 
+        // --- TEKS EDITOR ---
         function insertVar(variable) {
             const textarea = document.getElementById('pesanInput');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
+            const start = textarea.selectionStart; const end = textarea.selectionEnd;
             const text = textarea.value;
             textarea.value = text.substring(0, start) + variable + text.substring(end);
             textarea.focus();
@@ -465,8 +501,8 @@
         // --- SUBMIT ---
         async function submitBroadcast(e) {
             e.preventDefault();
-            
             const form = document.getElementById('broadcastForm');
+            
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
@@ -474,8 +510,9 @@
             
             const tujuan = document.getElementById('tujuanSelect').value;
             const metode = document.querySelector('input[name="metode"]:checked');
+            
             if (!tujuan || !metode) {
-                Swal.fire('Perhatian', 'Lengkapi Tujuan & Metode Pengiriman!', 'warning');
+                Swal.fire('Perhatian', 'Lengkapi Target & Metode Pengiriman!', 'warning');
                 return;
             }
 
@@ -487,13 +524,12 @@
                 pesan: document.getElementById('pesanInput').value,
                 delay_detik: document.getElementById('delayInput').value,
                 subjek: document.getElementById('subjekInput').value,
-                filesArray: selectedFilesData // Mengirim array of files
+                filesArray: selectedFilesData 
             };
 
             startSaving();
             
             try {
-                // LANGSUNG HIT API TANPA CEK DUMMY CANVAS
                 const result = await fetchAPI({ action: 'saveBroadcast', data: payload });
                 
                 document.getElementById('resTarget').innerText = result.total_target;
@@ -517,9 +553,9 @@
             document.getElementById('appFormContainer').classList.remove('hidden');
             document.getElementById('broadcastForm').reset();
             removeFile();
-            
             document.getElementById('delayContainer').classList.add('hidden');
             document.getElementById('fileContainer').classList.add('hidden');
+            applyConfigRules();
         }
 
         function logout() { location.reload(); }
