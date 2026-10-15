@@ -374,8 +374,12 @@
             const configMap = {};
             if (db.pengaturan) {
                 db.pengaturan.forEach(item => {
-                    if (item.kunci) {
-                        configMap[item.kunci.toUpperCase().trim()] = String(item.nilai || '').toUpperCase().trim();
+                    // Deteksi otomatis huruf besar atau huruf kecil dari header Sheet
+                    const key = item.Kunci || item.kunci || "";
+                    const val = item.Nilai || item.nilai || "";
+                    
+                    if (key) {
+                        configMap[String(key).toUpperCase().trim()] = String(val).toUpperCase().trim();
                     }
                 });
             }
