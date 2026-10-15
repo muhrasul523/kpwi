@@ -6,6 +6,7 @@
     <meta property="og:title" content="Sistem Broadcast Pegawai">
     <title>Sistem Broadcast Pegawai WI</title>
     
+    <!-- Path Logo disesuaikan -->
     <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -35,19 +36,17 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        /* Modern Clickable Radio UI */
         .radio-method:checked + label { background-color: #eff6ff; border-color: #3b82f6; box-shadow: 0 0 0 2px #3b82f6; color: #1e3a8a; }
         .radio-method:checked + label .icon-container { transform: scale(1.15); }
         .radio-method:disabled + label { opacity: 0.5; cursor: not-allowed; background-color: #f1f5f9; }
         
-        /* Dropzone Upload */
         .file-dropzone { border: 2px dashed #cbd5e1; transition: all 0.2s ease; }
         .file-dropzone:hover { border-color: #3b82f6; background-color: #f8fafc; }
     </style>
 </head>
 <body class="antialiased selection:bg-blue-100 selection:text-brand-blue" onload="loadData()">
 
-    <!-- 1. LOADING OVERLAY (Bersih & Elegan) -->
+    <!-- 1. LOADING OVERLAY -->
     <div id="loadingOverlay" class="fixed inset-0 bg-white/95 backdrop-blur-md z-[9999] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex justify-center items-center mb-6">
             <div class="absolute w-20 h-20 border-[3px] border-gray-100 rounded-full"></div>
@@ -87,7 +86,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                             <i class="fa-brands fa-whatsapp text-gray-400"></i>
                         </div>
-                        <input type="text" id="loginWa" required class="w-full rounded-xl border-gray-200 border bg-gray-50 pl-10 pr-4 py-3 focus:bg-white focus:ring-2 focus:ring-brand-blue focus:border-transparent outline-none text-gray-700 font-medium transition-all" placeholder="08123..." oninput="formatWA(this)">
+                        <input type="text" id="loginWa" required class="w-full rounded-xl border-gray-200 border bg-gray-50 pl-10 pr-4 py-3 focus:bg-white focus:ring-2 focus:ring-brand-blue focus:border-transparent outline-none text-gray-700 font-medium transition-all" placeholder="08123..." oninput="formatWAInput(this)">
                     </div>
                 </div>
                 <button type="submit" class="w-full bg-brand-blue hover:bg-blue-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex justify-center items-center gap-2">
@@ -97,7 +96,7 @@
         </div>
 
         <div id="mainAppView" class="hidden fade-in">
-            <!-- User Info Card (Biru Muda / Sky Blue dengan Watermark) -->
+            <!-- User Info Card -->
             <div class="bg-gradient-to-r from-sky-400 to-blue-500 rounded-2xl p-5 mb-8 text-white shadow-floating flex flex-col sm:flex-row justify-between items-center gap-4 relative overflow-hidden">
                 <i class="fa-brands fa-whatsapp absolute -left-6 -bottom-6 text-white opacity-10 text-[120px] -rotate-12 pointer-events-none"></i>
                 <i class="fa-solid fa-envelope absolute right-20 -top-8 text-white opacity-10 text-[100px] rotate-12 pointer-events-none"></i>
@@ -131,7 +130,6 @@
 
                 <form id="broadcastForm" onsubmit="submitBroadcast(event)">
                     
-                    <!-- GRID TARGET & METODE -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <!-- TARGET -->
                         <div>
@@ -146,7 +144,7 @@
                             </div>
                         </div>
 
-                        <!-- METODE (HANYA 2 OPSI) -->
+                        <!-- METODE -->
                         <div>
                             <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Metode Pengiriman <span class="text-red-500">*</span></label>
                             <div class="grid grid-cols-2 gap-3 h-12">
@@ -168,6 +166,13 @@
                         </div>
                     </div>
                     
+                    <!-- SUBJEK (SELALU DITAMPILKAN KARENA DIMINTA TERCATAT) -->
+                    <div id="subjectContainer" class="mb-6">
+                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Subjek Broadcast (Penting) <span class="text-red-500">*</span></label>
+                        <input type="text" id="subjekInput" required class="w-full rounded-xl border-gray-200 border bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-300 focus:border-transparent outline-none text-gray-700 text-sm font-medium transition-all" placeholder="Tuliskan subjek / judul...">
+                        <p class="text-[10px] text-gray-400 mt-1 ml-1"><i class="fa-solid fa-info-circle"></i> Akan jadi Judul Email dan/atau identitas rekam Riwayat WA.</p>
+                    </div>
+
                     <!-- JEDA WA -->
                     <div id="delayContainer" class="hidden mb-6 bg-green-50/50 p-4 rounded-xl border border-green-100 flex flex-col sm:flex-row sm:items-center gap-4 transition-all">
                         <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-green-600 flex-shrink-0 border border-green-50">
@@ -180,12 +185,6 @@
                         <div class="w-full sm:w-32 flex-shrink-0">
                             <input type="number" id="delayInput" value="60" min="0" class="w-full rounded-lg border-gray-200 border bg-white px-3 py-2.5 text-center font-bold text-gray-700 focus:ring-2 focus:ring-green-300 outline-none">
                         </div>
-                    </div>
-
-                    <!-- SUBJEK EMAIL -->
-                    <div id="subjectContainer" class="hidden mb-6">
-                        <label class="block text-xs font-bold text-gray-600 mb-2 uppercase tracking-wide">Subjek Email <span class="text-red-500">*</span></label>
-                        <input type="text" id="subjekInput" class="w-full rounded-xl border-gray-200 border bg-gray-50 px-4 py-3 focus:bg-white focus:ring-2 focus:ring-blue-300 focus:border-transparent outline-none text-gray-700 text-sm font-medium transition-all" placeholder="Tuliskan subjek / judul email...">
                     </div>
 
                     <!-- LAMPIRAN FILE (Dinamis Aktif/Tidak) -->
@@ -230,7 +229,7 @@
                     <i class="fa-solid fa-envelope-circle-check text-4xl -rotate-3"></i>
                 </div>
                 <h2 class="text-2xl md:text-3xl font-extrabold text-gray-800 mb-2">Broadcast Diproses!</h2>
-                <p class="text-gray-500 mb-8 max-w-md mx-auto text-sm">Sistem telah menyimpan perintah dan memasukkan pesan ke dalam antrean pengiriman server.</p>
+                <p class="text-gray-500 mb-8 max-w-md mx-auto text-sm">Sistem telah menyimpan perintah dan memasukkan pesan ke dalam antrean pengiriman.</p>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 max-w-2xl mx-auto">
                     <div class="bg-gray-50 border border-gray-100 p-5 rounded-2xl flex flex-col items-center">
@@ -238,7 +237,7 @@
                         <p class="text-3xl font-black text-gray-800" id="resTarget">0</p>
                     </div>
                     <div class="bg-green-50/50 border border-green-100 p-5 rounded-2xl flex flex-col items-center">
-                        <p class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">WA Antrean</p>
+                        <p class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">WA Diantrekan</p>
                         <p class="text-3xl font-black text-green-600" id="resWa">0</p>
                     </div>
                     <div class="bg-blue-50/50 border border-blue-100 p-5 rounded-2xl flex flex-col items-center">
@@ -326,11 +325,9 @@
 
         function applyConfigRules() {
             const config = getMappedConfig();
-            
             const rWa = document.getElementById('m_wa');
             const rEmail = document.getElementById('m_email');
             
-            // Kunci radio button sesuai pengaturan
             if (config['WA_AKTIF'] !== 'YA') rWa.disabled = true;
             if (config['EMAIL_AKTIF'] !== 'YA') rEmail.disabled = true;
         }
@@ -342,19 +339,27 @@
             return config;
         }
 
-        function formatWA(input) {
-            let val = input.value.replace(/\D/g, '');
+        // FUNGSI NORMALISASI FORMAT WA (08 = 628)
+        function normalizeWA(waRaw) {
+            if (!waRaw) return "";
+            let val = String(waRaw).replace(/\D/g, ''); 
             if (val.startsWith('08')) val = '628' + val.substring(2);
-            input.value = val;
+            return val;
+        }
+
+        function formatWAInput(input) {
+            input.value = normalizeWA(input.value);
         }
 
         function handleLogin(e) {
             e.preventDefault();
-            const waInput = document.getElementById('loginWa').value;
-            const user = db.users.find(u => String(u.wa) === String(waInput));
+            const waInput = normalizeWA(document.getElementById('loginWa').value);
+            
+            // Pencocokan nomor WA dilakukan setelah dinormalisasi keduanya agar 08... dan 628... dikenali sama
+            const user = db.users.find(u => normalizeWA(u.wa) === waInput);
             
             if (user) {
-                currentUser.wa = user.wa;
+                currentUser.wa = normalizeWA(user.wa); // Simpan standar 628
                 currentUser.nama = user.nama;
                 
                 document.getElementById('loginView').classList.add('hidden');
@@ -365,7 +370,7 @@
                 
                 setupDropdown();
             } else {
-                Swal.fire('Ditolak', 'Nomor WA Admin tidak terdaftar.', 'error');
+                Swal.fire('Ditolak', 'Nomor WA Admin tidak terdaftar di sistem.', 'error');
             }
         }
 
@@ -383,17 +388,12 @@
             const config = getMappedConfig();
 
             const cDelay = document.getElementById('delayContainer');
-            const cSubject = document.getElementById('subjectContainer');
             const cFile = document.getElementById('fileContainer');
-            const inSubject = document.getElementById('subjekInput');
             const inDelay = document.getElementById('delayInput');
 
             if (isWA) {
                 cDelay.classList.remove('hidden');
                 inDelay.required = true;
-                
-                cSubject.classList.add('hidden');
-                inSubject.required = false;
 
                 if (config['WA_FILE_AKTIF'] === 'YA') cFile.classList.remove('hidden');
                 else cFile.classList.add('hidden');
@@ -401,14 +401,11 @@
             else if (isEmail) {
                 cDelay.classList.add('hidden');
                 inDelay.required = false;
-                
-                cSubject.classList.remove('hidden');
-                inSubject.required = true;
 
                 if (config['EMAIL_FILE_AKTIF'] === 'YA') cFile.classList.remove('hidden');
                 else cFile.classList.add('hidden');
             }
-            removeFile(); // Reset file saat pindah metode
+            removeFile(); 
         }
 
         // --- FILE HANDLING ---
@@ -416,7 +413,6 @@
             const file = input.files[0];
             if (!file) return;
 
-            // Validasi Max 3MB
             if (file.size > 3 * 1024 * 1024) {
                 Swal.fire('Ukuran Berlebih', 'Maksimal file yang diizinkan adalah 3 MB.', 'warning');
                 removeFile();
@@ -428,7 +424,7 @@
                 selectedFile = {
                     filename: file.name,
                     mimeType: file.type,
-                    base64: e.target.result.split(',')[1] // Ambil murni base64 string
+                    base64: e.target.result.split(',')[1] 
                 };
                 document.getElementById('fileNameText').innerText = file.name;
                 document.getElementById('fileNameText').classList.add('text-brand-blue', 'font-bold');
@@ -474,7 +470,7 @@
                 pesan: document.getElementById('pesanInput').value,
                 delay_detik: document.getElementById('delayInput').value,
                 subjek: document.getElementById('subjekInput').value,
-                fileData: selectedFile // bisa null
+                fileData: selectedFile 
             };
 
             startSaving();
@@ -512,9 +508,7 @@
             document.getElementById('broadcastForm').reset();
             removeFile();
             
-            // Sembunyikan field tambahan
             document.getElementById('delayContainer').classList.add('hidden');
-            document.getElementById('subjectContainer').classList.add('hidden');
             document.getElementById('fileContainer').classList.add('hidden');
         }
 
