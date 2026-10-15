@@ -8,7 +8,6 @@
     <meta property="og:image" content="../../monitoring_kinerja_pegawai.png">
     
     <title>KSBK - Perilaku Kerja</title>
-    <link rel="icon" type="image/png" href="../../logo_wahdah_islamiyah.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -39,7 +38,7 @@
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
         
-        /* CSS Khusus untuk Radio Button Skala 1-5 */
+        /* Custom Radio Buttons for 1-5 Scale */
         .scale-radio:checked + label { 
             background-color: #1e3a8a; 
             color: white; 
@@ -50,26 +49,36 @@
 </head>
 <body class="antialiased selection:bg-brand-gold selection:text-brand-blue" onload="loadData()">
 
-    <!-- LOADING OVERLAY -->
+    <!-- 1. LOADING OVERLAY (Awal Buka Aplikasi 0-100%) -->
     <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-opacity duration-300">
         <div class="relative flex justify-center items-center mb-8">
             <div class="absolute w-24 h-24 border-4 border-brand-gold border-t-transparent border-b-transparent rounded-full animate-spin"></div>
             <div class="absolute w-20 h-20 border-4 border-blue-400 border-l-transparent border-r-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
-            <img src="../../logo_wahdah_islamiyah.png" alt="Logo" class="h-12 w-12 drop-shadow-md z-10" onerror="this.style.display='none'">
         </div>
-        <p id="loadingText" class="mt-5 text-sm font-semibold text-blue-100 tracking-wide">Memuat data...</p>
+        <div class="w-64 h-2.5 bg-blue-900 rounded-full overflow-hidden shadow-inner relative">
+            <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_0.8s_ease-in-out_infinite] rounded-full"></div>
+        </div>
+        <p id="loadingText" class="mt-5 text-sm font-semibold text-blue-100 tracking-wide">Memuat data... <span id="loadingPercent" class="text-brand-gold font-bold">0%</span></p>
+    </div>
+
+    <!-- 2. SAVING OVERLAY (Saat Klik Simpan - Blur Background) -->
+    <div id="savingOverlay" class="fixed inset-0 bg-white/60 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center transition-opacity duration-300 hidden opacity-0">
+        <div class="relative flex justify-center items-center mb-4">
+            <div class="absolute w-16 h-16 border-4 border-brand-blue border-t-transparent border-b-transparent rounded-full animate-spin"></div>
+            <div class="absolute w-12 h-12 border-4 border-brand-gold border-l-transparent border-r-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
+        </div>
+        <p class="text-sm font-bold text-brand-blue tracking-wide bg-white/80 px-4 py-1.5 rounded-full shadow-sm">Menyimpan Penilaian...</p>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         <!-- HEADER -->
         <div class="text-center mb-6 fade-in hidden" id="headerLogo">
-            <img src="../../logo_wahdah_islamiyah.png" alt="Logo Wahdah" class="h-16 mx-auto mb-3 drop-shadow-xl" onerror="this.style.display='none'">
             <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight">Penilaian Perilaku Kerja</h1>
             <p class="text-gray-500 mt-1 text-sm font-medium">Kantor Pusat Wahdah Islamiyah</p>
         </div>
 
-        <!-- 1. VIEW LOGIN -->
+        <!-- VIEW LOGIN -->
         <div id="loginView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 fade-in border-t-4 border-t-brand-blue hidden mt-10">
             <h2 class="text-xl font-bold text-center text-brand-blue mb-2"><i class="fa-solid fa-right-to-bracket mr-2 text-brand-gold"></i>Masuk Aplikasi</h2>
             <p class="text-sm text-center text-gray-500 mb-6">Masukkan nomor WhatsApp Anda yang terdaftar.</p>
@@ -84,7 +93,7 @@
             </form>
         </div>
 
-        <!-- 2. VIEW PILIH BIDANG -->
+        <!-- VIEW PILIH BIDANG -->
         <div id="pilihBidangView" class="max-w-md mx-auto glass-panel rounded-2xl p-8 fade-in border-t-4 border-t-brand-gold hidden mt-10">
             <h2 class="text-xl font-bold text-center text-brand-blue mb-2">Pilih Bidang Kerja</h2>
             <p class="text-sm text-center text-gray-500 mb-6" id="welcomePilihBidang">Selamat datang,</p>
@@ -94,7 +103,7 @@
             </button>
         </div>
 
-        <!-- 3. MAIN APP VIEW -->
+        <!-- MAIN APP VIEW -->
         <div id="mainAppView" class="hidden fade-in">
             
             <!-- User Info Card -->
@@ -163,6 +172,7 @@
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-gray-200">
+                        <!-- Kelas tombol simpan dipisah, bisa berubah jadi hijau saat mode update -->
                         <button type="submit" id="btnSave" class="w-full bg-brand-blue hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-base md:text-lg">
                             <i class="fa-solid fa-paper-plane"></i> Simpan Penilaian
                         </button>
@@ -170,7 +180,7 @@
                 </form>
             </div>
 
-            <!-- SUCCESS VIEW (HALAMAN SUKSES) -->
+            <!-- SUCCESS VIEW -->
             <div id="successView" class="max-w-4xl mx-auto glass-panel rounded-2xl p-10 text-center border-t-4 border-t-green-500 hidden mt-4">
                 <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5 shadow-sm">
                     <i class="fa-solid fa-check text-5xl text-green-500"></i>
@@ -222,22 +232,54 @@
             }
         }
 
-        // --- LOADING SYSTEM ---
+        // --- ANIMASI LOADING (0-100%) ---
+        let loadInterval;
+        let loadProgress = 0;
+
         function startLoading(text = "Memuat data...") {
             const textEl = document.getElementById('loadingText');
-            if (textEl) textEl.innerHTML = text;
+            if (textEl) { textEl.innerHTML = `${text} <span id="loadingPercent" class="text-brand-gold font-bold">0%</span>`; }
             
             const overlay = document.getElementById('loadingOverlay');
             if (overlay) {
-                overlay.style.display = 'flex';
+                overlay.classList.remove('hidden');
+                setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+            }
+            
+            loadProgress = 0;
+            clearInterval(loadInterval);
+            loadInterval = setInterval(() => {
+                loadProgress += Math.floor(Math.random() * 20) + 15;
+                if (loadProgress > 95) loadProgress = 95;
+                const pct = document.getElementById('loadingPercent');
+                if(pct) pct.innerText = loadProgress + '%';
+            }, 60);
+        }
+
+        function endLoading() {
+            const pct = document.getElementById('loadingPercent');
+            if(pct) pct.innerText = '100%';
+            clearInterval(loadInterval);
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) overlay.style.opacity = '0';
+                setTimeout(() => { if(overlay) overlay.classList.add('hidden'); }, 300);
+            }, 200);
+        }
+
+        // --- ANIMASI SAVING (Blur Overlay) ---
+        function startSaving() {
+            const overlay = document.getElementById('savingOverlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
                 setTimeout(() => { overlay.style.opacity = '1'; }, 10);
             }
         }
 
-        function endLoading() {
-            const overlay = document.getElementById('loadingOverlay');
+        function endSaving() {
+            const overlay = document.getElementById('savingOverlay');
             if (overlay) overlay.style.opacity = '0';
-            setTimeout(() => { if(overlay) overlay.style.display = 'none'; }, 300);
+            setTimeout(() => { if(overlay) overlay.classList.add('hidden'); }, 300);
         }
 
         // --- CORE INIT ---
@@ -331,9 +373,10 @@
 
         // --- FORM LOGIC ---
         function setupForm() {
-            // Setup Dropdown Bulan
             const selectBulan = document.getElementById('bulanSelect');
             selectBulan.innerHTML = '<option value="">Pilih Bulan...</option>';
+            
+            // Validasi Case-Insensitive untuk status "Aktif"
             const activeBulan = db.bulan.filter(b => String(b.status).trim().toLowerCase() === "aktif");
             activeBulan.forEach(b => {
                 selectBulan.innerHTML += `<option value="${b.bulan}">${b.bulan}</option>`;
@@ -343,15 +386,13 @@
                 selectBulan.value = activeBulan[0].bulan;
             }
 
-            // Memanggil update dropdown staf sekaligus check mark (✅)
             updateSkuoOptions();
             resetFormInputs();
             hideForm();
         }
 
-        // Fungsi khusus untuk me-render ulang opsi staf & memberi centang
         function updateSkuoOptions() {
-            hideForm();
+            hideForm(); // Sembunyikan form indikator saat dropdown berubah
             const bulan = document.getElementById('bulanSelect').value;
             const mySkuo = db.skuo.filter(s => String(s.bidang_kerja_id).trim() === currentBidangId);
             
@@ -361,11 +402,15 @@
             
             mySkuo.forEach(s => {
                 let checkMark = "";
-                // Jika bulan sudah dipilih, cek apakah data sudah dinilai sebelumnya
                 if (bulan) {
-                    const isExist = db.perilaku_kerja.find(p => String(p.bulan).trim() === String(bulan).trim() && String(p.skuo_id).trim() === String(s.id).trim());
+                    // Validasi ketat (Robust) memastikan ID dicocokkan dengan benar
+                    const isExist = db.perilaku_kerja.find(p => 
+                        String(p.bulan).trim().toLowerCase() === String(bulan).trim().toLowerCase() && 
+                        String(p.skuo_id).trim() === String(s.id).trim()
+                    );
                     if (isExist) checkMark = " ✅";
                 }
+                // WAJIB mengirim value s.id agar dikenali oleh sistem (seperti SKUO017)
                 tomSelectInstance.addOption({value: s.id, text: s.nama + checkMark});
             });
             
@@ -411,7 +456,7 @@
 
         function checkExistingData() {
             const bulan = document.getElementById('bulanSelect').value;
-            const skuo = document.getElementById('skuoSelect').value;
+            const skuo = document.getElementById('skuoSelect').value; // Mengambil skuo_id seperti SKUO017
             const form = document.getElementById('penilaianForm');
             const badge = document.getElementById('statusBadge');
             
@@ -427,21 +472,27 @@
             form.classList.remove('hidden');
             badge.classList.remove('hidden');
 
-            // Cek apakah data sudah ada
-            const existing = db.perilaku_kerja.find(p => String(p.bulan).trim() === String(bulan).trim() && String(p.skuo_id).trim() === String(skuo).trim());
+            // Cek data yang sudah ada dengan validasi String ketat
+            const existing = db.perilaku_kerja.find(p => 
+                String(p.bulan).trim().toLowerCase() === String(bulan).trim().toLowerCase() && 
+                String(p.skuo_id).trim() === String(skuo).trim()
+            );
+
+            const btnSave = document.getElementById('btnSave');
 
             if (existing) {
                 badge.className = "mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-green-50 border-green-200 text-green-700 transition-all";
                 badge.innerHTML = `<i class="fa-solid fa-check-circle text-lg"></i> Staf ini sudah dinilai pada bulan ini. Anda dapat melakukan update nilainya.`;
-                document.getElementById('btnSave').innerHTML = '<i class="fa-solid fa-edit"></i> Update Penilaian';
-                document.getElementById('btnSave').classList.replace('bg-brand-blue', 'bg-green-600');
-                document.getElementById('btnSave').classList.replace('hover:bg-blue-800', 'hover:bg-green-700');
+                
+                // Ubah gaya tombol menjadi hijau (Mode Update)
+                btnSave.innerHTML = '<i class="fa-solid fa-edit"></i> Update Penilaian';
+                btnSave.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-base md:text-lg";
 
-                // Isi nilai existing yang diload dari Spreadsheet
+                // Isi ulang nilai sesuai database (Load Data)
                 indicatorsList.forEach(ind => {
                     const val = existing[ind.id];
                     if (val) {
-                        const radio = document.getElementById(`${ind.id}_${String(val)}`);
+                        const radio = document.getElementById(`${ind.id}_${String(val).trim()}`);
                         if(radio) radio.checked = true;
                     }
                     const inputKet = document.getElementById(`${ind.id}_ket`);
@@ -450,9 +501,10 @@
             } else {
                 badge.className = "mt-4 p-3 rounded-lg border flex items-center gap-2 text-sm font-bold bg-blue-50 border-blue-200 text-brand-blue transition-all";
                 badge.innerHTML = `<i class="fa-solid fa-info-circle text-lg"></i> Belum ada penilaian untuk staf ini di bulan terpilih.`;
-                document.getElementById('btnSave').innerHTML = '<i class="fa-solid fa-paper-plane"></i> Simpan Penilaian';
-                document.getElementById('btnSave').classList.replace('bg-green-600', 'bg-brand-blue');
-                document.getElementById('btnSave').classList.replace('hover:bg-green-700', 'hover:bg-blue-800');
+                
+                // Ubah gaya tombol menjadi biru (Mode Baru)
+                btnSave.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Simpan Penilaian';
+                btnSave.className = "w-full bg-brand-blue hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl shadow-lg transition-all flex justify-center items-center gap-2 text-base md:text-lg";
             }
         }
 
@@ -489,18 +541,27 @@
                 payload[`${ind.id}_ket`] = document.getElementById(`${ind.id}_ket`).value;
             });
 
-            startLoading("Menyimpan Penilaian...");
+            // Mulai animasi Saving
+            startSaving();
+            const startTime = Date.now();
 
             try {
                 // Memanggil API 
                 db = await fetchAPI({ action: 'savePenilaian', data: payload });
-                endLoading();
+                
+                // Jeda minimum 1.5 detik agar animasi blur dan spinner terlihat (UI/UX)
+                const elapsed = Date.now() - startTime;
+                if (elapsed < 1500) {
+                    await new Promise(r => setTimeout(r, 1500 - elapsed));
+                }
+
+                endSaving();
                 
                 // Pindah ke halaman sukses
                 document.getElementById('appFormContainer').classList.add('hidden');
                 document.getElementById('successView').classList.remove('hidden');
             } catch (error) {
-                endLoading();
+                endSaving();
                 Swal.fire('Error', 'Gagal menyimpan penilaian. Pastikan koneksi internet stabil.', 'error');
             }
         }
