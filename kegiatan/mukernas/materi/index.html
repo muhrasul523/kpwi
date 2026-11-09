@@ -4,50 +4,123 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Generator RPKA 2027</title>
+  <link rel="icon" href="data:,"> <!-- Mencegah error favicon 404 -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background-color: #f0fdf4; /* soft green bg */ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .input-field { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; outline: none; transition: border-color 0.2s; }
-    .input-field:focus { border-color: #3b82f6; ring: 2px; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { 
+      background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%); 
+      font-family: 'Inter', -apple-system, sans-serif; 
+      color: #1d1d1f;
+    }
+    .glass { 
+      background: rgba(255, 255, 255, 0.7); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px); 
+      border: 1px solid rgba(255, 255, 255, 0.5); 
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); 
+    }
+    .input-ios { 
+      width: 100%; padding: 0.875rem 1rem; border-radius: 1rem; 
+      background: rgba(255, 255, 255, 0.9); border: 1px solid #e5e5ea; 
+      outline: none; transition: all 0.25s ease; font-size: 0.95rem;
+    }
+    .input-ios:focus { 
+      border-color: #007aff; box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); background: #fff;
+    }
+    .btn-ios {
+      background: #007aff; color: white; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .btn-ios:hover { background: #0066d6; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); }
+    .btn-ios:active { transform: translateY(0); }
+    
+    /* Custom Scrollbar untuk Dropdown */
+    .dropdown-scroll::-webkit-scrollbar { width: 6px; }
+    .dropdown-scroll::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 10px; }
   </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 flex justify-center items-start text-gray-800">
+<body class="min-h-screen p-4 md:p-8 flex justify-center items-start">
 
-  <div class="max-w-3xl w-full space-y-6">
-    <div class="glass-card p-6 md:p-8 rounded-2xl">
-      <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-blue-600 mb-2">RPKA 2027 Presenter</h1>
-      <p class="text-gray-500 mb-6">Konversi tabel SIMAK PDF menjadi Slide Master secara otomatis.</p>
+  <div class="max-w-4xl w-full space-y-6 animate-fade-in mt-4 md:mt-10">
+    <div class="glass p-6 md:p-10 rounded-[2rem]">
       
-      <!-- Pemilihan Bidang -->
-      <label class="block text-sm font-semibold mb-2">Pilih Bidang</label>
-      <select id="selectBidang" class="input-field mb-6 bg-white" onchange="renderForm()">
-        <option value="">-- Memuat Data Bidang... --</option>
-      </select>
+      <div class="mb-8 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3" style="color: #1d1d1f;">RPKA Presenter <span class="text-blue-500">Pro</span></h1>
+        <p class="text-gray-500 text-sm md:text-base">Konversi cerdas tabel SIMAK menjadi slide presentasi.</p>
+      </div>
+      
+      <!-- Autosearch Dropdown Bidang -->
+      <div class="relative mb-8 z-50">
+        <label class="block text-sm font-semibold text-gray-700 mb-2 ml-1">Pilih Bidang</label>
+        <input type="text" id="searchInput" class="input-ios" placeholder="🔍 Ketik untuk mencari bidang..." autocomplete="off" onfocus="showDropdown()" oninput="filterDropdown()">
+        <div id="dropdownList" class="hidden absolute w-full mt-2 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl max-h-60 overflow-y-auto dropdown-scroll z-50">
+          <!-- List dimuat via JS -->
+        </div>
+      </div>
 
-      <div id="dynamicForm" class="hidden space-y-6">
-        <!-- Program Strategis -->
-        <div class="p-5 bg-teal-50 rounded-xl border border-teal-100">
-          <h3 class="font-semibold text-teal-800 mb-3">3 Program Strategis Bidang (2027)</h3>
-          <input type="text" id="strat1" class="input-field mb-3" placeholder="1. ...">
-          <input type="text" id="strat2" class="input-field mb-3" placeholder="2. ...">
-          <input type="text" id="strat3" class="input-field" placeholder="3. ...">
+      <div id="dynamicForm" class="hidden space-y-8 animate-fade-in">
+        
+        <!-- Rekap Kegiatan Manual Bidang -->
+        <div class="p-6 bg-white/50 rounded-[1.5rem] border border-gray-200">
+          <h3 class="font-semibold text-gray-800 mb-4 flex items-center">📊 Rekap Manual Jenis Kegiatan Bidang</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Total Event</label>
+              <input type="text" id="rekapEvent" class="input-ios py-2" placeholder="Cth: 15" value="-">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Total Rapat & Monev</label>
+              <input type="text" id="rekapRapat" class="input-ios py-2" placeholder="Cth: 30" value="-">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Kegiatan Lainnya</label>
+              <input type="text" id="rekapLainnya" class="input-ios py-2" placeholder="Cth: 10" value="-">
+            </div>
+          </div>
+        </div>
+
+        <!-- Program Strategis Dinamis -->
+        <div class="p-6 bg-blue-50/50 rounded-[1.5rem] border border-blue-100">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-semibold text-blue-900">🎯 Program Strategis Bidang</h3>
+            <button onclick="addStrategis()" class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1.5 rounded-full hover:bg-blue-200 transition">
+              + Tambah
+            </button>
+          </div>
+          <div id="strategisContainer" class="space-y-3">
+            <input type="text" class="input-ios input-strategis py-2" placeholder="1. Ketik program strategis di sini...">
+          </div>
         </div>
 
         <!-- Wadah SKUO -->
-        <div id="skuoContainer" class="space-y-4"></div>
+        <div class="mt-8">
+          <h3 class="font-bold text-xl text-gray-800 mb-4 ml-1">Daftar SKUO & Upload RPKA</h3>
+          <div id="skuoContainer" class="space-y-4"></div>
+        </div>
 
-        <button id="btnSubmit" onclick="submitData()" class="w-full py-4 bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg">
-          Proses & Buat Presentasi PPTX
+        <!-- Tombol Aksi -->
+        <button id="btnSubmit" onclick="submitData()" class="w-full py-4 btn-ios font-semibold rounded-2xl text-lg mt-8 flex justify-center items-center gap-2">
+          <span>✨ Proses & Generate Presentasi</span>
         </button>
         
-        <div id="statusText" class="text-center font-medium text-teal-700 mt-3 hidden">Memproses data dan membuat slide... (Ini membutuhkan waktu 10-30 detik)</div>
-        
-        <div id="resultLinks" class="hidden mt-6 p-5 bg-blue-50 rounded-xl border border-blue-100 flex flex-col gap-3">
-            <h3 class="font-bold text-blue-800">Berhasil! Unduh Hasil:</h3>
-            <a id="linkPptx" href="#" class="text-blue-600 hover:underline font-medium">📥 Download PPTX</a>
-            <a id="linkPdf" href="#" class="text-red-600 hover:underline font-medium">📄 Download PDF</a>
+        <!-- Status Loader -->
+        <div id="statusLoader" class="hidden flex flex-col items-center justify-center mt-6">
+          <svg class="animate-spin h-8 w-8 text-blue-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          <span class="text-gray-500 font-medium text-sm">Menyinkronkan data dengan Workspace... (10 - 30 detik)</span>
         </div>
+        
+        <!-- Hasil Sukses -->
+        <div id="resultLinks" class="hidden mt-6 p-6 glass rounded-[1.5rem] flex flex-col md:flex-row gap-4 justify-between items-center border border-green-200 bg-green-50/30">
+            <div class="text-green-800 font-semibold flex items-center gap-2">
+              <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Dokumen Berhasil Dibuat
+            </div>
+            <div class="flex gap-3 w-full md:w-auto">
+              <a id="linkPptx" href="#" class="flex-1 md:flex-none text-center bg-white border border-gray-200 shadow-sm text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 font-medium transition text-sm">Download PPTX</a>
+              <a id="linkPdf" href="#" class="flex-1 md:flex-none text-center bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 font-medium transition text-sm shadow-sm border border-red-600">Download PDF</a>
+            </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -55,69 +128,106 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxukoloqIK3a9-vsUey4HPmrUOUBXVFSAT5iXtrV5YuCrfc7Ck33vXh9sdzVdYS4mmSdg/exec"; 
     let masterData = {};
+    let selectedBidang = "";
 
-    // 1. Fetch Data Bidang & SKUO dari Apps Script
     window.onload = async () => {
       try {
         const response = await fetch(API_URL);
         masterData = await response.json();
-        const select = document.getElementById("selectBidang");
-        select.innerHTML = '<option value="">-- Pilih Bidang --</option>';
-        Object.keys(masterData).forEach(bidang => {
-          let opt = document.createElement("option");
-          opt.value = opt.textContent = bidang;
-          select.appendChild(opt);
-        });
+        renderDropdownList();
       } catch (error) {
-        alert("Gagal memuat data dari database.");
+        alert("Gagal memuat data dari server Google.");
       }
     };
 
-    // 2. Render Form SKUO berdasarkan Bidang terpilih
+    /* --- LOGIKA DROPDOWN AUTOSEARCH --- */
+    function renderDropdownList(filter = "") {
+      const listDiv = document.getElementById("dropdownList");
+      listDiv.innerHTML = "";
+      const bidangKeys = Object.keys(masterData);
+      
+      const filtered = bidangKeys.filter(b => b.toLowerCase().includes(filter.toLowerCase()));
+      
+      if (filtered.length === 0) {
+        listDiv.innerHTML = `<div class="p-4 text-gray-400 text-sm text-center">Bidang tidak ditemukan</div>`;
+      } else {
+        filtered.forEach(bidang => {
+          let item = document.createElement("div");
+          item.className = "px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 text-gray-700 transition font-medium text-sm";
+          item.textContent = bidang;
+          item.onclick = () => selectBidang(bidang);
+          listDiv.appendChild(item);
+        });
+      }
+    }
+
+    function showDropdown() {
+      document.getElementById("dropdownList").classList.remove("hidden");
+    }
+
+    function filterDropdown() {
+      const val = document.getElementById("searchInput").value;
+      renderDropdownList(val);
+      showDropdown();
+    }
+
+    function selectBidang(bidang) {
+      selectedBidang = bidang;
+      document.getElementById("searchInput").value = bidang;
+      document.getElementById("dropdownList").classList.add("hidden");
+      renderForm();
+    }
+
+    // Sembunyikan dropdown jika klik di luar
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.relative')) {
+        document.getElementById("dropdownList").classList.add("hidden");
+      }
+    });
+    /* --------------------------------- */
+
+    /* --- PROGRAM STRATEGIS DINAMIS --- */
+    function addStrategis() {
+      const container = document.getElementById("strategisContainer");
+      const currentCount = container.children.length + 1;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "input-ios input-strategis py-2";
+      input.placeholder = `${currentCount}. Ketik program strategis di sini...`;
+      container.appendChild(input);
+    }
+    /* --------------------------------- */
+
     function renderForm() {
-      const bidang = document.getElementById("selectBidang").value;
       const container = document.getElementById("skuoContainer");
       const dynamicForm = document.getElementById("dynamicForm");
       container.innerHTML = "";
 
-      if (!bidang) {
+      if (!selectedBidang) {
         dynamicForm.classList.add("hidden");
         return;
       }
 
       dynamicForm.classList.remove("hidden");
-      const skuolist = masterData[bidang];
+      const skuolist = masterData[selectedBidang];
 
       skuolist.forEach((skuo, index) => {
         const card = document.createElement('div');
-        card.className = "p-5 border border-gray-200 rounded-xl bg-white shadow-sm";
+        card.className = "p-5 md:p-6 bg-white rounded-[1.5rem] border border-gray-100 shadow-sm transition-all hover:shadow-md";
         card.innerHTML = `
-          <h4 class="font-bold text-gray-700 mb-3 border-b pb-2">${index + 1}. ${skuo}</h4>
-          <input type="hidden" class="skuo-name" value="${skuo}">
-          
-          <label class="block text-sm font-medium mb-1 mt-3">Upload PDF RPKA SIMAK</label>
-          <input type="file" accept="application/pdf" class="skuo-file input-field bg-gray-50 mb-4" required>
-          
-          <div class="grid grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Jml Event</label>
-              <input type="number" class="skuo-event input-field" value="0" min="0">
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Rapat/Monev</label>
-              <input type="number" class="skuo-rapat input-field" value="0" min="0">
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Keg. Lainnya</label>
-              <input type="number" class="skuo-lainnya input-field" value="0" min="0">
-            </div>
+          <div class="flex items-center gap-3 mb-4 border-b border-gray-100 pb-3">
+            <div class="bg-gray-100 text-gray-600 font-bold rounded-full w-8 h-8 flex items-center justify-center shrink-0">${index + 1}</div>
+            <h4 class="font-semibold text-gray-800 text-sm md:text-base leading-tight">${skuo}</h4>
+            <input type="hidden" class="skuo-name" value="${skuo}">
+          </div>
+          <div class="relative group">
+            <input type="file" accept="application/pdf" class="skuo-file block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition cursor-pointer" required>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
-    // Helper: Konversi File ke Base64
     const toBase64 = file => new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -125,24 +235,29 @@
       reader.onerror = error => reject(error);
     });
 
-    // 3. Kumpulkan Data & Kirim ke Backend
     async function submitData() {
       const btn = document.getElementById("btnSubmit");
-      const statusText = document.getElementById("statusText");
+      const statusLoader = document.getElementById("statusLoader");
       const resultLinks = document.getElementById("resultLinks");
       
-      btn.disabled = true;
-      btn.classList.add("opacity-50");
-      statusText.classList.remove("hidden");
+      btn.style.display = "none";
+      statusLoader.classList.remove("hidden");
+      statusLoader.classList.add("flex");
       resultLinks.classList.add("hidden");
 
       try {
-        const namaBidang = document.getElementById("selectBidang").value;
-        const programStrategis = [
-          document.getElementById("strat1").value,
-          document.getElementById("strat2").value,
-          document.getElementById("strat3").value
-        ];
+        const stratInputs = document.querySelectorAll(".input-strategis");
+        let programStrategis = [];
+        stratInputs.forEach(input => {
+          if(input.value.trim() !== "") programStrategis.push(input.value.trim());
+        });
+        if(programStrategis.length === 0) programStrategis.push("-"); // Fallback jika kosong
+
+        const rekapKegiatan = {
+          event: document.getElementById("rekapEvent").value || "-",
+          rapat: document.getElementById("rekapRapat").value || "-",
+          lainnya: document.getElementById("rekapLainnya").value || "-"
+        };
 
         let dataSkuo = [];
         const skuoCards = document.querySelectorAll("#skuoContainer > div");
@@ -150,26 +265,28 @@
         for (let card of skuoCards) {
           let fileInput = card.querySelector(".skuo-file");
           if (!fileInput.files[0]) {
-            alert(`Harap upload PDF untuk SKUO: ${card.querySelector(".skuo-name").value}`);
-            throw new Error("File missing");
+            alert(`File PDF wajib diupload untuk: ${card.querySelector(".skuo-name").value}`);
+            throw new Error("Missing File");
           }
           let base64 = await toBase64(fileInput.files[0]);
           dataSkuo.push({
             namaSkuo: card.querySelector(".skuo-name").value,
             fileName: fileInput.files[0].name,
-            fileBase64: base64,
-            event: card.querySelector(".skuo-event").value,
-            rapat: card.querySelector(".skuo-rapat").value,
-            lainnya: card.querySelector(".skuo-lainnya").value
+            fileBase64: base64
           });
         }
 
-        const payload = { namaBidang, programStrategis, dataSkuo };
+        const payload = { 
+          namaBidang: selectedBidang, 
+          programStrategis, 
+          rekapKegiatan,
+          dataSkuo 
+        };
 
         const response = await fetch(API_URL, {
           method: "POST",
           body: JSON.stringify(payload),
-          headers: { "Content-Type": "text/plain;charset=utf-8" } // Pakai text/plain untuk Apps Script CORS
+          headers: { "Content-Type": "text/plain;charset=utf-8" } 
         });
         
         const result = await response.json();
@@ -179,14 +296,15 @@
             document.getElementById("linkPdf").href = result.pdfUrl;
             resultLinks.classList.remove("hidden");
         } else {
-            alert("Terjadi kesalahan sistem: " + result.error);
+            alert("Kesalahan Sistem: " + result.error);
+            btn.style.display = "flex";
         }
       } catch (error) {
         console.error(error);
+        btn.style.display = "flex";
       } finally {
-        btn.disabled = false;
-        btn.classList.remove("opacity-50");
-        statusText.classList.add("hidden");
+        statusLoader.classList.add("hidden");
+        statusLoader.classList.remove("flex");
       }
     }
   </script>
