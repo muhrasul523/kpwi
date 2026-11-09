@@ -3,165 +3,173 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Meta tags untuk WhatsApp/Telegram Preview -->
   <title>Generator RPKA Wahdah Islamiyah</title>
-  <meta name="description" content="Aplikasi Generator Slide Presentasi RPKA Wahdah Islamiyah 2027">
-  <meta property="og:title" content="Generator RPKA Wahdah Islamiyah">
-  <meta property="og:description" content="Konversi tabel SIMAK PDF menjadi Slide Master secara otomatis.">
   <meta property="og:image" content="./logo_wi.png">
-  
-  <!-- Favicon Tab Browser -->
   <link rel="icon" type="image/png" href="./logo_wi.png">
-
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    body { 
-      background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%); 
-      font-family: 'Inter', -apple-system, sans-serif; 
-      color: #1d1d1f;
-    }
-    .glass { 
-      background: rgba(255, 255, 255, 0.7); 
-      backdrop-filter: blur(20px); 
-      -webkit-backdrop-filter: blur(20px); 
-      border: 1px solid rgba(255, 255, 255, 0.5); 
-      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); 
-    }
-    .input-ios { 
-      width: 100%; padding: 0.875rem 1rem; border-radius: 1rem; 
-      background: rgba(255, 255, 255, 0.9); border: 1px solid #e5e5ea; 
-      outline: none; transition: all 0.25s ease; font-size: 0.95rem;
-    }
-    .input-ios:focus { 
-      border-color: #007aff; box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); background: #fff;
-    }
-    .btn-ios {
-      background: #007aff; color: white; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
+    body { background: linear-gradient(135deg, #f5f7fa 0%, #eef2f6 100%); font-family: 'Inter', -apple-system, sans-serif; color: #1d1d1f; }
+    .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08); }
+    .input-ios { width: 100%; padding: 0.875rem 1rem; border-radius: 1rem; background: rgba(255, 255, 255, 0.9); border: 1px solid #e5e5ea; outline: none; transition: all 0.25s ease; font-size: 0.95rem; }
+    .input-ios:focus { border-color: #007aff; box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15); background: #fff; }
+    .btn-ios { background: #007aff; color: white; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
     .btn-ios:hover { background: #0066d6; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); }
-    .btn-ios:active { transform: translateY(0); }
-    
-    .dropdown-scroll::-webkit-scrollbar { width: 6px; }
-    .dropdown-scroll::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 10px; }
+    .dropdown-scroll::-webkit-scrollbar { width: 6px; } .dropdown-scroll::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 10px; }
   </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 flex justify-center items-start">
+<body class="min-h-screen p-4 flex justify-center items-start">
 
-  <div class="max-w-4xl w-full space-y-6 animate-fade-in mt-4 md:mt-10">
+  <!-- ================= APP VIEW ================= -->
+  <div id="appView" class="max-w-4xl w-full space-y-6 mt-2 md:mt-8">
     <div class="glass p-6 md:p-10 rounded-[2rem]">
       
-      <!-- Header dengan Logo -->
       <div class="mb-8 text-center flex flex-col items-center">
-        <img src="./logo_wi.png" alt="Logo Wahdah Islamiyah" class="w-24 h-24 mb-4 drop-shadow-md object-contain">
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3" style="color: #1d1d1f;">RPKA Presenter <span class="text-blue-500">Pro</span></h1>
-        <p class="text-gray-500 text-sm md:text-base">Konversi cerdas tabel SIMAK menjadi slide presentasi.</p>
+        <!-- Logo Klik Buka Admin -->
+        <img src="./logo_wi.png" alt="Logo" class="w-24 h-24 mb-4 drop-shadow-md object-contain cursor-pointer hover:scale-105 transition" onclick="openAdmin()" title="Buka Dashboard Admin">
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3">RPKA Presenter <span class="text-blue-500">Pro</span></h1>
       </div>
       
-      <!-- Autosearch Dropdown Bidang -->
+      <!-- Autosearch (No Delay) -->
       <div class="relative mb-8 z-50">
         <label class="block text-sm font-semibold text-gray-700 mb-2 ml-1">Pilih Bidang</label>
-        <input type="text" id="searchInput" class="input-ios" placeholder="🔍 Ketik untuk mencari bidang..." autocomplete="off" onfocus="showDropdown()" oninput="filterDropdown()">
-        <div id="dropdownList" class="hidden absolute w-full mt-2 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl max-h-60 overflow-y-auto dropdown-scroll z-50">
-          <!-- List dimuat via JS -->
-        </div>
+        <input type="text" id="searchInput" class="input-ios font-medium text-blue-900" placeholder="🔍 Cari / Pilih Bidang..." autocomplete="off" onclick="toggleDropdown()" oninput="filterDropdown()">
+        <div id="dropdownList" class="hidden absolute w-full mt-2 bg-white/95 backdrop-blur-xl border border-gray-200 rounded-2xl shadow-xl max-h-60 overflow-y-auto dropdown-scroll z-50"></div>
       </div>
 
       <div id="dynamicForm" class="hidden space-y-8 animate-fade-in">
-        
-        <!-- Rekap Kegiatan Manual Bidang -->
         <div class="p-6 bg-white/50 rounded-[1.5rem] border border-gray-200">
           <h3 class="font-semibold text-gray-800 mb-4 flex items-center">📊 Rekap Manual Jenis Kegiatan Bidang</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Total Event</label>
-              <input type="text" id="rekapEvent" class="input-ios py-2" placeholder="Cth: 15" value="-">
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Total Rapat & Monev</label>
-              <input type="text" id="rekapRapat" class="input-ios py-2" placeholder="Cth: 30" value="-">
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Kegiatan Lainnya</label>
-              <input type="text" id="rekapLainnya" class="input-ios py-2" placeholder="Cth: 10" value="-">
-            </div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Total Event</label><input type="text" id="rekapEvent" class="input-ios py-2" placeholder="-" value="-"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Rapat & Monev</label><input type="text" id="rekapRapat" class="input-ios py-2" placeholder="-" value="-"></div>
+            <div><label class="block text-xs font-medium text-gray-500 mb-1 ml-1">Keg. Lainnya</label><input type="text" id="rekapLainnya" class="input-ios py-2" placeholder="-" value="-"></div>
           </div>
         </div>
 
-        <!-- Program Strategis Dinamis -->
         <div class="p-6 bg-blue-50/50 rounded-[1.5rem] border border-blue-100">
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold text-blue-900">🎯 Program Strategis Bidang</h3>
-            <button onclick="addStrategis()" class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1.5 rounded-full hover:bg-blue-200 transition">
-              + Tambah
-            </button>
+            <button onclick="addStrategis('')" class="text-xs font-bold text-blue-600 bg-blue-100 px-3 py-1.5 rounded-full hover:bg-blue-200">Tambah</button>
           </div>
-          <div id="strategisContainer" class="space-y-3">
-            <input type="text" class="input-ios input-strategis py-2" placeholder="1. Ketik program strategis di sini...">
-          </div>
+          <div id="strategisContainer" class="space-y-3"></div>
         </div>
 
-        <!-- Wadah SKUO -->
         <div class="mt-8">
-          <h3 class="font-bold text-xl text-gray-800 mb-4 ml-1">Daftar SKUO & Upload RPKA</h3>
+          <h3 class="font-bold text-xl text-gray-800 mb-1 ml-1">Daftar SKUO & Upload RPKA</h3>
+          <p class="text-xs text-gray-500 mb-4 ml-1">*Upload PDF bersifat opsional. Kosongkan jika tidak ada data.</p>
           <div id="skuoContainer" class="space-y-4"></div>
         </div>
 
-        <!-- Tombol Aksi -->
-        <button id="btnSubmit" onclick="submitData()" class="w-full py-4 btn-ios font-semibold rounded-2xl text-lg mt-8 flex justify-center items-center gap-2">
-          <span>✨ Proses & Generate Presentasi</span>
-        </button>
-        
-        <!-- Status Loader -->
-        <div id="statusLoader" class="hidden flex flex-col items-center justify-center mt-6">
+        <button id="btnSubmit" onclick="submitData()" class="w-full py-4 btn-ios font-semibold rounded-2xl text-lg mt-8 flex justify-center gap-2">✨ Proses & Generate Dokumen</button>
+        <div id="statusLoader" class="hidden flex-col items-center justify-center mt-6">
           <svg class="animate-spin h-8 w-8 text-blue-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-          <span class="text-gray-500 font-medium text-sm">Menyinkronkan data dengan Workspace... (10 - 30 detik)</span>
+          <span class="text-gray-500 font-medium">Menyinkronkan data...</span>
         </div>
-        
-        <!-- Hasil Sukses -->
-        <div id="resultLinks" class="hidden mt-6 p-6 glass rounded-[1.5rem] flex flex-col md:flex-row gap-4 justify-between items-center border border-green-200 bg-green-50/30">
-            <div class="text-green-800 font-semibold flex items-center gap-2">
-              <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              Dokumen Berhasil Dibuat
-            </div>
-            <div class="flex gap-3 w-full md:w-auto">
-              <a id="linkPptx" href="#" class="flex-1 md:flex-none text-center bg-white border border-gray-200 shadow-sm text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 font-medium transition text-sm">Download PPTX</a>
-              <a id="linkPdf" href="#" class="flex-1 md:flex-none text-center bg-red-500 text-white px-4 py-2 rounded-xl hover:bg-red-600 font-medium transition text-sm shadow-sm border border-red-600">Download PDF</a>
-            </div>
-        </div>
-
       </div>
     </div>
   </div>
 
-  <script>
-    // URL Web App Google Apps Script Anda
-    const API_URL = "https://script.google.com/macros/s/AKfycbxukoloqIK3a9-vsUey4HPmrUOUBXVFSAT5iXtrV5YuCrfc7Ck33vXh9sdzVdYS4mmSdg/exec"; 
+  <!-- ================= SUCCESS PAGE ================= -->
+  <div id="successView" class="hidden max-w-2xl w-full mt-10">
+    <div class="glass p-10 rounded-[2rem] text-center">
+      <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+      </div>
+      <h2 class="text-3xl font-bold mb-2 text-gray-800">Dokumen Berhasil Dibuat!</h2>
+      <p class="text-gray-500 mb-8">Data berhasil diolah dan diubah menjadi slide presentasi.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <a id="linkPptx" href="#" target="_blank" class="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center justify-center text-blue-600 font-semibold">
+          <span class="text-3xl mb-2">📊</span> Download PPTX
+        </a>
+        <a id="linkPdf" href="#" target="_blank" class="p-4 bg-red-50 border border-red-100 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col items-center justify-center text-red-600 font-semibold">
+          <span class="text-3xl mb-2">📄</span> Download PDF
+        </a>
+      </div>
+      <button onclick="location.reload()" class="text-gray-500 hover:text-gray-800 font-medium underline">← Buat presentasi lainnya</button>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN DASHBOARD ================= -->
+  <div id="adminView" class="hidden w-full max-w-7xl bg-white/90 backdrop-blur-xl rounded-[2rem] p-6 md:p-10 shadow-2xl min-h-[90vh]">
+    <div class="flex justify-between items-center mb-8 border-b pb-4">
+      <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+        <img src="./logo_wi.png" class="w-8 h-8"> Admin Dashboard
+      </h2>
+      <button onclick="closeAdmin()" class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl text-sm font-semibold transition">Tutup ✕</button>
+    </div>
     
+    <!-- Rekap Angka -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100">
+        <div class="text-blue-500 text-sm font-bold mb-1">Total Program</div>
+        <div id="adProg" class="text-2xl font-black text-blue-900">0</div>
+      </div>
+      <div class="bg-indigo-50 p-5 rounded-2xl border border-indigo-100">
+        <div class="text-indigo-500 text-sm font-bold mb-1">Total Kegiatan</div>
+        <div id="adKeg" class="text-2xl font-black text-indigo-900">0</div>
+      </div>
+      <div class="bg-green-50 p-5 rounded-2xl border border-green-100">
+        <div class="text-green-600 text-sm font-bold mb-1">Total Pendapatan</div>
+        <div id="adPend" class="text-xl font-black text-green-900">Rp 0</div>
+      </div>
+      <div class="bg-red-50 p-5 rounded-2xl border border-red-100">
+        <div class="text-red-500 text-sm font-bold mb-1">Total Belanja</div>
+        <div id="adBel" class="text-xl font-black text-red-900">Rp 0</div>
+      </div>
+    </div>
+    
+    <!-- Tabel Riwayat -->
+    <h3 class="font-bold text-lg mb-4 text-gray-700">Riwayat Generasi Dokumen</h3>
+    <div class="overflow-x-auto bg-white rounded-2xl border border-gray-200 shadow-sm">
+      <table class="w-full text-sm text-left">
+        <thead class="bg-gray-50 text-gray-600 uppercase font-semibold border-b">
+          <tr>
+            <th class="px-4 py-3">Tanggal</th>
+            <th class="px-4 py-3">Bidang</th>
+            <th class="px-4 py-3">P</th>
+            <th class="px-4 py-3">K</th>
+            <th class="px-4 py-3 text-right">Pendapatan</th>
+            <th class="px-4 py-3 text-right">Belanja</th>
+            <th class="px-4 py-3 text-center">Unduhan</th>
+          </tr>
+        </thead>
+        <tbody id="adminTableBody" class="divide-y divide-gray-100"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxukoloqIK3a9-vsUey4HPmrUOUBXVFSAT5iXtrV5YuCrfc7Ck33vXh9sdzVdYS4mmSdg/exec"; 
     let masterData = {};
+    let autofillData = {};
     let selectedBidang = "";
+
+    // FORMAT RUPIAH
+    const fmtRp = (num) => "Rp " + parseInt(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
     window.onload = async () => {
       try {
         const response = await fetch(API_URL);
-        masterData = await response.json();
+        const json = await response.json();
+        masterData = json.master;
+        autofillData = json.autofill;
         renderDropdownList();
       } catch (error) {
-        alert("Gagal memuat data dari server Google.");
+        console.error("Gagal memuat API");
       }
     };
 
-    /* --- LOGIKA DROPDOWN AUTOSEARCH --- */
+    /* --- AUTOSEARCH CEPAT --- */
     function renderDropdownList(filter = "") {
       const listDiv = document.getElementById("dropdownList");
       listDiv.innerHTML = "";
       const bidangKeys = Object.keys(masterData);
-      
       const filtered = bidangKeys.filter(b => b.toLowerCase().includes(filter.toLowerCase()));
       
       if (filtered.length === 0) {
-        listDiv.innerHTML = `<div class="p-4 text-gray-400 text-sm text-center">Bidang tidak ditemukan</div>`;
+        listDiv.innerHTML = `<div class="p-4 text-gray-400 text-sm">Tidak ditemukan</div>`;
       } else {
         filtered.forEach(bidang => {
           let item = document.createElement("div");
@@ -173,14 +181,15 @@
       }
     }
 
-    function showDropdown() {
-      document.getElementById("dropdownList").classList.remove("hidden");
+    function toggleDropdown() {
+      const el = document.getElementById("dropdownList");
+      el.classList.toggle("hidden");
+      renderDropdownList(); 
     }
-
+    
     function filterDropdown() {
-      const val = document.getElementById("searchInput").value;
-      renderDropdownList(val);
-      showDropdown();
+      document.getElementById("dropdownList").classList.remove("hidden");
+      renderDropdownList(document.getElementById("searchInput").value);
     }
 
     function selectBidang(bidang) {
@@ -190,54 +199,62 @@
       renderForm();
     }
 
-    document.addEventListener('click', function(event) {
-      if (!event.target.closest('.relative')) {
-        document.getElementById("dropdownList").classList.add("hidden");
-      }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.relative')) document.getElementById("dropdownList").classList.add("hidden");
     });
 
-    /* --- PROGRAM STRATEGIS DINAMIS --- */
-    function addStrategis() {
+    /* --- FORM RENDER & AUTOFILL --- */
+    function addStrategis(val = "") {
       const container = document.getElementById("strategisContainer");
       const currentCount = container.children.length + 1;
       const input = document.createElement("input");
       input.type = "text";
       input.className = "input-ios input-strategis py-2";
-      input.placeholder = `${currentCount}. Ketik program strategis di sini...`;
+      input.placeholder = `${currentCount}. Program...`;
+      input.value = val;
       container.appendChild(input);
     }
 
     function renderForm() {
       const container = document.getElementById("skuoContainer");
-      const dynamicForm = document.getElementById("dynamicForm");
-      container.innerHTML = "";
+      const stratContainer = document.getElementById("strategisContainer");
+      stratContainer.innerHTML = ""; container.innerHTML = "";
+      document.getElementById("dynamicForm").classList.remove("hidden");
 
-      if (!selectedBidang) {
-        dynamicForm.classList.add("hidden");
-        return;
+      // Cek Autofill
+      let hist = autofillData[selectedBidang];
+      if (hist) {
+        document.getElementById("rekapEvent").value = hist.rekapKegiatan.event;
+        document.getElementById("rekapRapat").value = hist.rekapKegiatan.rapat;
+        document.getElementById("rekapLainnya").value = hist.rekapKegiatan.lainnya;
+        hist.programStrategis.forEach(p => { if (p !== "-") addStrategis(p) });
+      } else {
+        document.getElementById("rekapEvent").value = "-";
+        document.getElementById("rekapRapat").value = "-";
+        document.getElementById("rekapLainnya").value = "-";
+        addStrategis("");
       }
 
-      dynamicForm.classList.remove("hidden");
-      const skuolist = masterData[selectedBidang];
+      if (stratContainer.children.length === 0) addStrategis(""); // Minimal 1
 
-      skuolist.forEach((skuo, index) => {
+      // Render SKUO
+      masterData[selectedBidang].forEach((skuo, index) => {
         const card = document.createElement('div');
-        card.className = "p-5 md:p-6 bg-white rounded-[1.5rem] border border-gray-100 shadow-sm transition-all hover:shadow-md";
+        card.className = "p-5 bg-white rounded-[1.5rem] border border-gray-100 shadow-sm";
         card.innerHTML = `
-          <div class="flex items-center gap-3 mb-4 border-b border-gray-100 pb-3">
-            <div class="bg-gray-100 text-gray-600 font-bold rounded-full w-8 h-8 flex items-center justify-center shrink-0">${index + 1}</div>
-            <h4 class="font-semibold text-gray-800 text-sm md:text-base leading-tight">${skuo}</h4>
+          <div class="flex items-center gap-3 mb-3 border-b border-gray-50 pb-2">
+            <div class="bg-gray-100 text-gray-600 font-bold rounded-full w-7 h-7 flex items-center justify-center shrink-0 text-xs">${index + 1}</div>
+            <h4 class="font-semibold text-gray-800 text-sm leading-tight">${skuo}</h4>
             <input type="hidden" class="skuo-name" value="${skuo}">
           </div>
-          <div class="relative group">
-            <input type="file" accept="application/pdf" class="skuo-file block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition cursor-pointer" required>
-          </div>
+          <input type="file" accept="application/pdf" class="skuo-file block w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 cursor-pointer">
         `;
         container.appendChild(card);
       });
     }
 
     const toBase64 = file => new Promise((resolve, reject) => {
+      if(!file) return resolve(""); // Optional file
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
@@ -247,19 +264,13 @@
     async function submitData() {
       const btn = document.getElementById("btnSubmit");
       const statusLoader = document.getElementById("statusLoader");
-      const resultLinks = document.getElementById("resultLinks");
       
       btn.style.display = "none";
-      statusLoader.classList.remove("hidden");
-      statusLoader.classList.add("flex");
-      resultLinks.classList.add("hidden");
+      statusLoader.classList.remove("hidden"); statusLoader.classList.add("flex");
 
       try {
-        const stratInputs = document.querySelectorAll(".input-strategis");
         let programStrategis = [];
-        stratInputs.forEach(input => {
-          if(input.value.trim() !== "") programStrategis.push(input.value.trim());
-        });
+        document.querySelectorAll(".input-strategis").forEach(i => { if(i.value.trim()) programStrategis.push(i.value.trim()); });
         if(programStrategis.length === 0) programStrategis.push("-");
 
         const rekapKegiatan = {
@@ -270,51 +281,78 @@
 
         let dataSkuo = [];
         const skuoCards = document.querySelectorAll("#skuoContainer > div");
-        
         for (let card of skuoCards) {
           let fileInput = card.querySelector(".skuo-file");
-          if (!fileInput.files[0]) {
-            alert(`File PDF wajib diupload untuk: ${card.querySelector(".skuo-name").value}`);
-            throw new Error("Missing File");
-          }
           let base64 = await toBase64(fileInput.files[0]);
           dataSkuo.push({
             namaSkuo: card.querySelector(".skuo-name").value,
-            fileName: fileInput.files[0].name,
+            fileName: fileInput.files[0] ? fileInput.files[0].name : "",
             fileBase64: base64
           });
         }
 
-        const payload = { 
-          namaBidang: selectedBidang, 
-          programStrategis, 
-          rekapKegiatan,
-          dataSkuo 
-        };
-
-        const response = await fetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify(payload),
-          headers: { "Content-Type": "text/plain;charset=utf-8" } 
-        });
-        
+        const payload = { namaBidang: selectedBidang, programStrategis, rekapKegiatan, dataSkuo };
+        const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" }});
         const result = await response.json();
         
         if (result.success) {
+            document.getElementById("appView").classList.add("hidden");
+            document.getElementById("successView").classList.remove("hidden");
             document.getElementById("linkPptx").href = result.pptxUrl;
             document.getElementById("linkPdf").href = result.pdfUrl;
-            resultLinks.classList.remove("hidden");
         } else {
-            alert("Kesalahan Sistem: " + result.error);
+            alert("Error: " + result.error);
             btn.style.display = "flex";
         }
       } catch (error) {
-        console.error(error);
         btn.style.display = "flex";
       } finally {
-        statusLoader.classList.add("hidden");
-        statusLoader.classList.remove("flex");
+        statusLoader.classList.add("hidden"); statusLoader.classList.remove("flex");
       }
+    }
+
+    /* --- ADMIN DASHBOARD --- */
+    async function openAdmin() {
+      document.getElementById("appView").classList.add("hidden");
+      document.getElementById("successView").classList.add("hidden");
+      document.getElementById("adminView").classList.remove("hidden");
+      document.getElementById("adminTableBody").innerHTML = `<tr><td colspan="7" class="text-center py-10 text-gray-500">Memuat data...</td></tr>`;
+      
+      try {
+        const res = await fetch(API_URL + "?action=get_admin");
+        const data = await res.json();
+        
+        document.getElementById("adProg").innerText = data.rekap.program;
+        document.getElementById("adKeg").innerText = data.rekap.kegiatan;
+        document.getElementById("adPend").innerText = fmtRp(data.rekap.pendapatan);
+        document.getElementById("adBel").innerText = fmtRp(data.rekap.belanja);
+        
+        const tbody = document.getElementById("adminTableBody");
+        tbody.innerHTML = "";
+        data.riwayat.forEach(r => {
+          tbody.innerHTML += `
+            <tr class="hover:bg-gray-50 text-gray-700">
+              <td class="px-4 py-3 whitespace-nowrap">${r.tanggal}</td>
+              <td class="px-4 py-3 font-semibold">${r.bidang}</td>
+              <td class="px-4 py-3">${r.program}</td>
+              <td class="px-4 py-3">${r.kegiatan}</td>
+              <td class="px-4 py-3 text-right text-green-600 font-medium">${fmtRp(r.pendapatan)}</td>
+              <td class="px-4 py-3 text-right text-red-600 font-medium">${fmtRp(r.belanja)}</td>
+              <td class="px-4 py-3 text-center">
+                <a href="${r.urlPptx}" target="_blank" class="text-blue-500 hover:underline mr-2">PPTX</a>
+                <a href="${r.urlPdf}" target="_blank" class="text-red-500 hover:underline">PDF</a>
+              </td>
+            </tr>
+          `;
+        });
+      } catch (e) {
+        document.getElementById("adminTableBody").innerHTML = `<tr><td colspan="7" class="text-center py-4 text-red-500">Gagal memuat data</td></tr>`;
+      }
+    }
+
+    function closeAdmin() {
+      document.getElementById("adminView").classList.add("hidden");
+      document.getElementById("appView").classList.remove("hidden");
     }
   </script>
 </body>
