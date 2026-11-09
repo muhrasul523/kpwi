@@ -98,7 +98,6 @@
           Mulai Ekstraksi & Generate
         </button>
         
-        <!-- Live Progress Bar -->
         <div id="progressContainer" class="hidden mt-8 p-8 bg-white/80 backdrop-blur-md rounded-2xl border border-white shadow-lg scroll-mt-6">
            <div class="flex justify-between items-end mb-4">
               <div>
@@ -115,7 +114,7 @@
     </div>
   </div>
 
-  <!-- ================= SUCCESS PAGE (PREMIUM GENERIC ICONS) ================= -->
+  <!-- ================= SUCCESS PAGE (ICON POLOS/CLEAN) ================= -->
   <div id="successView" class="hidden max-w-3xl w-full mt-10 animate-fade-in">
     <div class="glass-premium p-12 rounded-[2.5rem] text-center relative overflow-hidden">
       <div class="absolute top-0 right-0 w-64 h-64 bg-green-200 rounded-full filter blur-[80px] opacity-60"></div>
@@ -129,28 +128,20 @@
         <p class="text-lg text-slate-500 mb-10 font-medium">Presentasi dan PDF telah tersinkronisasi di Google Drive.</p>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <!-- Generic PPTX Icon Card -->
-          <a id="linkPptx" href="#" target="_blank" class="group p-8 bg-white border border-slate-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-lg hover:border-orange-200 transition-all transform hover:-translate-y-2 flex flex-col items-center justify-center relative">
+          <a id="linkPptx" href="#" target="_blank" class="group p-8 bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-lg hover:border-orange-200 transition-all transform hover:-translate-y-2 flex flex-col items-center justify-center relative">
             <div class="w-20 h-20 mb-5 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
-               <!-- Ikon Presentasi Outline Bersih -->
-               <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
-               </svg>
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
             </div>
-            <span class="text-slate-800 font-extrabold text-xl">File Presentasi</span>
-            <span class="text-slate-400 font-medium text-sm mt-1">Siap untuk diedit (.pptx)</span>
+            <span class="text-slate-800 font-extrabold text-xl">File PPTX</span>
+            <span class="text-slate-400 font-medium text-sm mt-1">Slide Terformat</span>
           </a>
           
-          <!-- Generic PDF Icon Card -->
-          <a id="linkPdf" href="#" target="_blank" class="group p-8 bg-white border border-slate-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-lg hover:border-red-200 transition-all transform hover:-translate-y-2 flex flex-col items-center justify-center relative">
+          <a id="linkPdf" href="#" target="_blank" class="group p-8 bg-white border border-slate-100 rounded-3xl shadow-sm hover:shadow-lg hover:border-red-200 transition-all transform hover:-translate-y-2 flex flex-col items-center justify-center relative">
             <div class="w-20 h-20 mb-5 rounded-full bg-red-50 text-red-500 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
-               <!-- Ikon Dokumen Outline Bersih -->
-               <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-               </svg>
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
             </div>
-            <span class="text-slate-800 font-extrabold text-xl">Dokumen PDF</span>
-            <span class="text-slate-400 font-medium text-sm mt-1">Siap untuk dibagikan</span>
+            <span class="text-slate-800 font-extrabold text-xl">File PDF</span>
+            <span class="text-slate-400 font-medium text-sm mt-1">Dokumen Presentasi</span>
           </a>
         </div>
         <button onclick="location.reload()" class="text-slate-500 hover:text-blue-600 font-bold underline transition text-lg">← Proses Bidang Lainnya</button>
@@ -293,8 +284,10 @@
       const container = document.getElementById('progressContainer');
       container.classList.remove('hidden');
       
-      // AUTO SCROLL MULUS KE BAWAH!
-      container.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+      // AUTO SCROLL KE PROGRESS BAR
+      setTimeout(() => {
+          container.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
+      }, 100);
       
       const bar = document.getElementById('progressBar'); const pct = document.getElementById('progressPercent'); const txt = document.getElementById('progressText');
       bar.style.width = "0%"; pct.innerText = "0%"; txt.innerText = "Mengamankan Koneksi Server...";
@@ -384,8 +377,8 @@
               <td class="px-6 py-4 text-right font-bold text-emerald-600">${fmtRp(r.pendapatan)}</td>
               <td class="px-6 py-4 text-right font-bold text-rose-600">${fmtRp(r.belanja)}</td>
               <td class="px-6 py-4 flex justify-center gap-4">
-                <a href="${r.urlPptx}" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-orange-100 text-orange-600 font-bold rounded-full hover:bg-orange-500 hover:text-white transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg> Slide</a>
-                <a href="${r.urlPdf}" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-600 font-bold rounded-full hover:bg-red-500 hover:text-white transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Dokumen</a>
+                <a href="${r.urlPptx}" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-orange-100 text-orange-600 font-bold rounded-full hover:bg-orange-500 hover:text-white transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg> PPT</a>
+                <a href="${r.urlPdf}" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-red-100 text-red-600 font-bold rounded-full hover:bg-red-500 hover:text-white transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> PDF</a>
               </td>
             </tr>
           `;
