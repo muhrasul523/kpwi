@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator RPKA 2027</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #f0fdf4; /* soft green bg */ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .input-field { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; outline: none; transition: border-color 0.2s; }
+    .input-field:focus { border-color: #3b82f6; ring: 2px; }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex justify-center items-start text-gray-800">
+
+  <div class="max-w-3xl w-full space-y-6">
+    <div class="glass-card p-6 md:p-8 rounded-2xl">
+      <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-600 to-blue-600 mb-2">RPKA 2027 Presenter</h1>
+      <p class="text-gray-500 mb-6">Konversi tabel SIMAK PDF menjadi Slide Master secara otomatis.</p>
+      
+      <!-- Pemilihan Bidang -->
+      <label class="block text-sm font-semibold mb-2">Pilih Bidang</label>
+      <select id="selectBidang" class="input-field mb-6 bg-white" onchange="renderForm()">
+        <option value="">-- Memuat Data Bidang... --</option>
+      </select>
+
+      <div id="dynamicForm" class="hidden space-y-6">
+        <!-- Program Strategis -->
+        <div class="p-5 bg-teal-50 rounded-xl border border-teal-100">
+          <h3 class="font-semibold text-teal-800 mb-3">3 Program Strategis Bidang (2027)</h3>
+          <input type="text" id="strat1" class="input-field mb-3" placeholder="1. ...">
+          <input type="text" id="strat2" class="input-field mb-3" placeholder="2. ...">
+          <input type="text" id="strat3" class="input-field" placeholder="3. ...">
+        </div>
+
+        <!-- Wadah SKUO -->
+        <div id="skuoContainer" class="space-y-4"></div>
+
+        <button id="btnSubmit" onclick="submitData()" class="w-full py-4 bg-gradient-to-r from-teal-500 to-blue-500 hover:from-teal-600 hover:to-blue-600 text-white font-bold rounded-xl transition-all transform hover:scale-[1.01] shadow-lg">
+          Proses & Buat Presentasi PPTX
+        </button>
+        
+        <div id="statusText" class="text-center font-medium text-teal-700 mt-3 hidden">Memproses data dan membuat slide... (Ini membutuhkan waktu 10-30 detik)</div>
+        
+        <div id="resultLinks" class="hidden mt-6 p-5 bg-blue-50 rounded-xl border border-blue-100 flex flex-col gap-3">
+            <h3 class="font-bold text-blue-800">Berhasil! Unduh Hasil:</h3>
+            <a id="linkPptx" href="#" class="text-blue-600 hover:underline font-medium">📥 Download PPTX</a>
+            <a id="linkPdf" href="#" class="text-red-600 hover:underline font-medium">📄 Download PDF</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxukoloqIK3a9-vsUey4HPmrUOUBXVFSAT5iXtrV5YuCrfc7Ck33vXh9sdzVdYS4mmSdg/exec"; 
+    let masterData = {};
+
+    // 1. Fetch Data Bidang & SKUO dari Apps Script
+    window.onload = async () => {
+      try {
+        const response = await fetch(API_URL);
+        masterData = await response.json();
+        const select = document.getElementById("selectBidang");
+        select.innerHTML = '<option value="">-- Pilih Bidang --</option>';
+        Object.keys(masterData).forEach(bidang => {
+          let opt = document.createElement("option");
+          opt.value = opt.textContent = bidang;
+          select.appendChild(opt);
+        });
+      } catch (error) {
+        alert("Gagal memuat data dari database.");
+      }
+    };
+
+    // 2. Render Form SKUO berdasarkan Bidang terpilih
+    function renderForm() {
+      const bidang = document.getElementById("selectBidang").value;
+      const container = document.getElementById("skuoContainer");
+      const dynamicForm = document.getElementById("dynamicForm");
+      container.innerHTML = "";
+
+      if (!bidang) {
+        dynamicForm.classList.add("hidden");
+        return;
+      }
+
+      dynamicForm.classList.remove("hidden");
+      const skuolist = masterData[bidang];
+
+      skuolist.forEach((skuo, index) => {
+        const card = document.createElement('div');
+        card.className = "p-5 border border-gray-200 rounded-xl bg-white shadow-sm";
+        card.innerHTML = `
+          <h4 class="font-bold text-gray-700 mb-3 border-b pb-2">${index + 1}. ${skuo}</h4>
+          <input type="hidden" class="skuo-name" value="${skuo}">
+          
+          <label class="block text-sm font-medium mb-1 mt-3">Upload PDF RPKA SIMAK</label>
+          <input type="file" accept="application/pdf" class="skuo-file input-field bg-gray-50 mb-4" required>
+          
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Jml Event</label>
+              <input type="number" class="skuo-event input-field" value="0" min="0">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Rapat/Monev</label>
+              <input type="number" class="skuo-rapat input-field" value="0" min="0">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1">Keg. Lainnya</label>
+              <input type="number" class="skuo-lainnya input-field" value="0" min="0">
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Helper: Konversi File ke Base64
+    const toBase64 = file => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+
+    // 3. Kumpulkan Data & Kirim ke Backend
+    async function submitData() {
+      const btn = document.getElementById("btnSubmit");
+      const statusText = document.getElementById("statusText");
+      const resultLinks = document.getElementById("resultLinks");
+      
+      btn.disabled = true;
+      btn.classList.add("opacity-50");
+      statusText.classList.remove("hidden");
+      resultLinks.classList.add("hidden");
+
+      try {
+        const namaBidang = document.getElementById("selectBidang").value;
+        const programStrategis = [
+          document.getElementById("strat1").value,
+          document.getElementById("strat2").value,
+          document.getElementById("strat3").value
+        ];
+
+        let dataSkuo = [];
+        const skuoCards = document.querySelectorAll("#skuoContainer > div");
+        
+        for (let card of skuoCards) {
+          let fileInput = card.querySelector(".skuo-file");
+          if (!fileInput.files[0]) {
+            alert(`Harap upload PDF untuk SKUO: ${card.querySelector(".skuo-name").value}`);
+            throw new Error("File missing");
+          }
+          let base64 = await toBase64(fileInput.files[0]);
+          dataSkuo.push({
+            namaSkuo: card.querySelector(".skuo-name").value,
+            fileName: fileInput.files[0].name,
+            fileBase64: base64,
+            event: card.querySelector(".skuo-event").value,
+            rapat: card.querySelector(".skuo-rapat").value,
+            lainnya: card.querySelector(".skuo-lainnya").value
+          });
+        }
+
+        const payload = { namaBidang, programStrategis, dataSkuo };
+
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "text/plain;charset=utf-8" } // Pakai text/plain untuk Apps Script CORS
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById("linkPptx").href = result.pptxUrl;
+            document.getElementById("linkPdf").href = result.pdfUrl;
+            resultLinks.classList.remove("hidden");
+        } else {
+            alert("Terjadi kesalahan sistem: " + result.error);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove("opacity-50");
+        statusText.classList.add("hidden");
+      }
+    }
+  </script>
+</body>
+</html>
