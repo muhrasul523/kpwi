@@ -36,7 +36,6 @@
     }
     .btn-premium:hover { transform: translateY(-3px); box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.5); }
     
-    /* Dynamic Progress Bar */
     .progress-bar-container { background: #e2e8f0; border-radius: 999px; overflow: hidden; height: 1.25rem; position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #06b6d4); border-radius: 999px; transition: width 0.4s ease-out; position: relative; }
     .progress-bar-fill::after {
@@ -99,8 +98,8 @@
           Mulai Ekstraksi & Generate
         </button>
         
-        <!-- Live Progress Bar (Auto-scroll target) -->
-        <div id="progressContainer" class="hidden mt-8 p-8 bg-white/80 backdrop-blur-md rounded-2xl border border-white shadow-lg scroll-m-4">
+        <!-- Live Progress Bar -->
+        <div id="progressContainer" class="hidden mt-8 p-8 bg-white/80 backdrop-blur-md rounded-2xl border border-white shadow-lg scroll-mt-6">
            <div class="flex justify-between items-end mb-4">
               <div>
                 <h4 class="font-bold text-slate-800 text-lg">Memproses Dokumen...</h4>
@@ -116,7 +115,7 @@
     </div>
   </div>
 
-  <!-- ================= SUCCESS PAGE ================= -->
+  <!-- ================= SUCCESS PAGE (PREMIUM GENERIC ICONS) ================= -->
   <div id="successView" class="hidden max-w-3xl w-full mt-10 animate-fade-in">
     <div class="glass-premium p-12 rounded-[2.5rem] text-center relative overflow-hidden">
       <div class="absolute top-0 right-0 w-64 h-64 bg-green-200 rounded-full filter blur-[80px] opacity-60"></div>
@@ -130,9 +129,10 @@
         <p class="text-lg text-slate-500 mb-10 font-medium">Presentasi dan PDF telah tersinkronisasi di Google Drive.</p>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <!-- Generic Slide Icon -->
+          <!-- Generic PPTX Icon Card -->
           <a id="linkPptx" href="#" target="_blank" class="group p-8 bg-white border border-slate-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-lg hover:border-orange-200 transition-all transform hover:-translate-y-2 flex flex-col items-center justify-center relative">
             <div class="w-20 h-20 mb-5 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
+               <!-- Ikon Presentasi Outline Bersih -->
                <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path>
                </svg>
@@ -141,9 +141,10 @@
             <span class="text-slate-400 font-medium text-sm mt-1">Siap untuk diedit (.pptx)</span>
           </a>
           
-          <!-- Generic Doc Icon -->
+          <!-- Generic PDF Icon Card -->
           <a id="linkPdf" href="#" target="_blank" class="group p-8 bg-white border border-slate-100 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] hover:shadow-lg hover:border-red-200 transition-all transform hover:-translate-y-2 flex flex-col items-center justify-center relative">
             <div class="w-20 h-20 mb-5 rounded-full bg-red-50 text-red-500 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
+               <!-- Ikon Dokumen Outline Bersih -->
                <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                </svg>
@@ -287,13 +288,12 @@
       reader.readAsDataURL(file); reader.onload = () => resolve(reader.result);
     });
 
-    // SIMULASI PROGRESS BAR DENGAN AUTO SCROLL
     function startProgress(totalFiles) {
       let p = 0; 
       const container = document.getElementById('progressContainer');
       container.classList.remove('hidden');
       
-      // Auto Scroll Smoothly 
+      // AUTO SCROLL MULUS KE BAWAH!
       container.scrollIntoView({ behavior: 'smooth', block: 'center' }); 
       
       const bar = document.getElementById('progressBar'); const pct = document.getElementById('progressPercent'); const txt = document.getElementById('progressText');
