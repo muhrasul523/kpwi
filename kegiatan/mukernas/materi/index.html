@@ -3,8 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generator RPKA 2027</title>
-  <link rel="icon" href="data:,"> <!-- Mencegah error favicon 404 -->
+  
+  <!-- Meta tags untuk WhatsApp/Telegram Preview -->
+  <title>Generator RPKA Wahdah Islamiyah</title>
+  <meta name="description" content="Aplikasi Generator Slide Presentasi RPKA Wahdah Islamiyah 2027">
+  <meta property="og:title" content="Generator RPKA Wahdah Islamiyah">
+  <meta property="og:description" content="Konversi tabel SIMAK PDF menjadi Slide Master secara otomatis.">
+  <meta property="og:image" content="./logo_wi.png">
+  
+  <!-- Favicon Tab Browser -->
+  <link rel="icon" type="image/png" href="./logo_wi.png">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -34,7 +43,6 @@
     .btn-ios:hover { background: #0066d6; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3); }
     .btn-ios:active { transform: translateY(0); }
     
-    /* Custom Scrollbar untuk Dropdown */
     .dropdown-scroll::-webkit-scrollbar { width: 6px; }
     .dropdown-scroll::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 10px; }
   </style>
@@ -44,7 +52,9 @@
   <div class="max-w-4xl w-full space-y-6 animate-fade-in mt-4 md:mt-10">
     <div class="glass p-6 md:p-10 rounded-[2rem]">
       
-      <div class="mb-8 text-center">
+      <!-- Header dengan Logo -->
+      <div class="mb-8 text-center flex flex-col items-center">
+        <img src="./logo_wi.png" alt="Logo Wahdah Islamiyah" class="w-24 h-24 mb-4 drop-shadow-md object-contain">
         <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-3" style="color: #1d1d1f;">RPKA Presenter <span class="text-blue-500">Pro</span></h1>
         <p class="text-gray-500 text-sm md:text-base">Konversi cerdas tabel SIMAK menjadi slide presentasi.</p>
       </div>
@@ -126,7 +136,9 @@
   </div>
 
   <script>
+    // URL Web App Google Apps Script Anda
     const API_URL = "https://script.google.com/macros/s/AKfycbxukoloqIK3a9-vsUey4HPmrUOUBXVFSAT5iXtrV5YuCrfc7Ck33vXh9sdzVdYS4mmSdg/exec"; 
+    
     let masterData = {};
     let selectedBidang = "";
 
@@ -178,13 +190,11 @@
       renderForm();
     }
 
-    // Sembunyikan dropdown jika klik di luar
     document.addEventListener('click', function(event) {
       if (!event.target.closest('.relative')) {
         document.getElementById("dropdownList").classList.add("hidden");
       }
     });
-    /* --------------------------------- */
 
     /* --- PROGRAM STRATEGIS DINAMIS --- */
     function addStrategis() {
@@ -196,7 +206,6 @@
       input.placeholder = `${currentCount}. Ketik program strategis di sini...`;
       container.appendChild(input);
     }
-    /* --------------------------------- */
 
     function renderForm() {
       const container = document.getElementById("skuoContainer");
@@ -251,7 +260,7 @@
         stratInputs.forEach(input => {
           if(input.value.trim() !== "") programStrategis.push(input.value.trim());
         });
-        if(programStrategis.length === 0) programStrategis.push("-"); // Fallback jika kosong
+        if(programStrategis.length === 0) programStrategis.push("-");
 
         const rekapKegiatan = {
           event: document.getElementById("rekapEvent").value || "-",
