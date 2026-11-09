@@ -438,9 +438,10 @@
         document.getElementById("adStrategis").innerText = data.rekap.strategis;
         
         // Render Baris 3 (Persentase File)
-        let totalBidang = data.riwayat.length;
+        let totalBidang = data.rekap.totalBidangMaster;
         let countUpload = data.riwayat.filter(r => r.isUpload).length;
         let countKosong = totalBidang - countUpload;
+        if(countKosong < 0) countKosong = 0; 
         let persentase = totalBidang > 0 ? Math.round((countUpload / totalBidang) * 100) : 0;
         
         document.getElementById("adTotalBidang").innerText = totalBidang;
