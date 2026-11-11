@@ -49,6 +49,20 @@
 </head>
 <body class="p-4 md:p-8 flex justify-center items-start pb-20 relative min-h-screen">
 
+  <!-- ================= AUTH OVERLAY (KODE AKSES) ================= -->
+  <div id="authOverlay" class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/80 backdrop-blur-md transition-opacity duration-500">
+    <div class="bg-white p-10 rounded-[2rem] max-w-sm w-full mx-4 shadow-2xl text-center transform transition-transform duration-300">
+      <div class="w-20 h-20 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-5">
+        <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
+      </div>
+      <h3 class="font-bold text-2xl text-slate-800 mb-2">Kode Akses</h3>
+      <p class="text-sm text-slate-500 mb-6 font-medium">Masukkan kode akses untuk masuk ke Generator RPKA.</p>
+      <input type="password" id="accessCode" class="input-premium mb-4 text-center text-xl tracking-[0.5em] font-bold text-slate-800" placeholder="••••••">
+      <button onclick="checkAccess()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-[0_8px_20px_rgba(37,99,235,0.3)] transition-all hover:-translate-y-1">Masuk</button>
+      <p id="authError" class="text-red-500 text-sm font-bold mt-4 opacity-0 transition-opacity">Kode akses salah!</p>
+    </div>
+  </div>
+
   <!-- ================= APP VIEW ================= -->
   <div id="appView" class="max-w-4xl w-full space-y-6 mt-2 md:mt-6 animate-fade-in pb-10">
     <div class="glass-premium p-6 md:p-12 rounded-[2rem]">
@@ -69,26 +83,12 @@
       </div>
 
       <div id="dynamicForm" class="hidden space-y-10 animate-fade-in">
-        <div class="p-8 bg-white/60 rounded-[1.5rem] border border-white shadow-sm">
-          <h3 class="font-bold text-slate-800 mb-5 flex items-center text-lg">📊 Rekap Manual Kategori Kegiatan</h3>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div><label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Total Event</label><input type="number" id="rekapEvent" class="input-premium" placeholder="0"></div>
-            <div><label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Rapat & Monev</label><input type="number" id="rekapRapat" class="input-premium" placeholder="0"></div>
-            <div><label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Lainnya</label><input type="number" id="rekapLainnya" class="input-premium" placeholder="0"></div>
-          </div>
-        </div>
+        
+        <!-- BAGIAN REKAP MANUAL & STRATEGIS DISEMBUNYIKAN SEPERTI INSTRUKSI -->
 
-        <div class="p-8 bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-[1.5rem] border border-blue-100 shadow-sm">
-          <div class="flex justify-between items-center mb-5">
-            <h3 class="font-bold text-slate-800 text-lg">🎯 Program Strategis Bidang</h3>
-            <button onclick="addStrategis('')" class="text-sm font-bold text-blue-600 bg-blue-100 px-5 py-2 rounded-full hover:bg-blue-200 shadow-sm transition">+ Tambah</button>
-          </div>
-          <div id="strategisContainer" class="space-y-4"></div>
-        </div>
-
-        <div class="mt-10">
+        <div class="mt-4">
           <h3 class="font-bold text-2xl text-slate-800 mb-1 ml-2">Daftar SKUO & Data RPKA</h3>
-          <p class="text-sm text-slate-500 font-medium mb-5 ml-2">*File PDF bersifat opsional. Kosongkan jika tidak ada data tahun ini.</p>
+          <p class="text-sm text-slate-500 font-medium mb-5 ml-2">*File PDF opsional. Data yang sudah pernah diunggah akan tersimpan otomatis.</p>
           <div id="skuoContainer" class="space-y-5"></div>
         </div>
 
@@ -177,38 +177,19 @@
       </div>
     </div>
     
-    <!-- BARIS 2: Rekap Jenis Kegiatan & Program Strategis -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-        <div class="text-slate-500 text-xs font-bold uppercase tracking-widest">Total Event</div>
-        <div id="adEvent" class="text-xl font-bold text-slate-700">0</div>
-      </div>
-      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-        <div class="text-slate-500 text-xs font-bold uppercase tracking-widest">Total Rapat & Monev</div>
-        <div id="adRapat" class="text-xl font-bold text-slate-700">0</div>
-      </div>
-      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-        <div class="text-slate-500 text-xs font-bold uppercase tracking-widest">Total Kegiatan Lainnya</div>
-        <div id="adLainnya" class="text-xl font-bold text-slate-700">0</div>
-      </div>
-      <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-        <div class="text-slate-500 text-xs font-bold uppercase tracking-widest">Total Prog. Strategis</div>
-        <div id="adStrategis" class="text-xl font-bold text-slate-700">0</div>
-      </div>
-    </div>
-
-    <!-- BARIS 3: Status File Bidang -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+    <!-- BARIS 2 & BARIS 3 (Dihapus/Disembunyikan Sesuai Instruksi) -->
+    
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 mt-6">
       <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
         <div class="text-slate-500 text-xs font-bold uppercase tracking-widest">Total Bidang Terdata</div>
         <div id="adTotalBidang" class="text-xl font-bold text-slate-700">0</div>
       </div>
       <div class="bg-green-50 p-4 rounded-2xl border border-green-200">
-        <div class="text-green-600 text-xs font-bold uppercase tracking-widest">Telah Upload File (Ada Data)</div>
+        <div class="text-green-600 text-xs font-bold uppercase tracking-widest">Telah Upload File</div>
         <div id="adUpload" class="text-xl font-bold text-green-700">0</div>
       </div>
       <div class="bg-red-50 p-4 rounded-2xl border border-red-200">
-        <div class="text-red-500 text-xs font-bold uppercase tracking-widest">Belum Ada File (Kosong)</div>
+        <div class="text-red-500 text-xs font-bold uppercase tracking-widest">Belum Ada File</div>
         <div id="adKosong" class="text-xl font-bold text-red-700">0</div>
       </div>
       <div class="bg-blue-50 p-4 rounded-2xl border border-blue-200">
@@ -226,10 +207,6 @@
             <th class="px-5 py-4">Entitas Bidang</th>
             <th class="px-3 py-4 text-center">Prog.</th>
             <th class="px-3 py-4 text-center">Keg.</th>
-            <th class="px-3 py-4 text-center">Event</th>
-            <th class="px-3 py-4 text-center">Rapat</th>
-            <th class="px-3 py-4 text-center">Lainnya</th>
-            <th class="px-3 py-4 text-center">Prog. Strategis</th>
             <th class="px-5 py-4 text-right">Pendapatan</th>
             <th class="px-5 py-4 text-right">Belanja</th>
             <th class="px-5 py-4 text-center">Aksi Output</th>
@@ -265,6 +242,19 @@
 
     const fmtRp = (num) => "Rp " + parseInt(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
+    function checkAccess() {
+      const code = document.getElementById('accessCode').value.trim().toLowerCase();
+      if (code === 'wahdah') {
+        document.getElementById('authOverlay').style.opacity = '0';
+        setTimeout(() => document.getElementById('authOverlay').classList.add('hidden'), 500);
+      } else {
+        const err = document.getElementById('authError');
+        err.style.opacity = '1';
+        setTimeout(() => err.style.opacity = '0', 3000);
+      }
+    }
+    document.getElementById('accessCode').addEventListener('keyup', (e) => { if(e.key === 'Enter') checkAccess(); });
+
     window.onload = async () => {
       try {
         const res = await fetch(API_URL);
@@ -297,40 +287,46 @@
     function selectBidang(b) { selectedBidang = b; document.getElementById("searchInput").value = b; document.getElementById("dropdownList").classList.add("hidden"); renderForm(); }
     document.addEventListener('click', (e) => { if (!e.target.closest('.relative')) document.getElementById("dropdownList").classList.add("hidden"); });
 
-    function addStrategis(val = "") {
-      const c = document.getElementById("strategisContainer");
-      const idx = c.children.length + 1;
-      const inp = document.createElement("input");
-      inp.type = "text"; inp.className = "input-premium input-strategis py-3"; inp.placeholder = `${idx}. Tuliskan program...`; inp.value = val;
-      c.appendChild(inp);
-    }
-
     function renderForm() {
-      const c = document.getElementById("skuoContainer"); const sc = document.getElementById("strategisContainer");
-      sc.innerHTML = ""; c.innerHTML = ""; document.getElementById("dynamicForm").classList.remove("hidden");
+      const c = document.getElementById("skuoContainer"); 
+      c.innerHTML = ""; document.getElementById("dynamicForm").classList.remove("hidden");
 
       let hist = autofillData[selectedBidang];
-      if (hist) {
-        document.getElementById("rekapEvent").value = hist.rekapKegiatan.event;
-        document.getElementById("rekapRapat").value = hist.rekapKegiatan.rapat;
-        document.getElementById("rekapLainnya").value = hist.rekapKegiatan.lainnya;
-        hist.programStrategis.forEach(p => { if (p !== "-") addStrategis(p) });
-      } else {
-        document.getElementById("rekapEvent").value = ""; document.getElementById("rekapRapat").value = ""; document.getElementById("rekapLainnya").value = "";
-        addStrategis("");
-      }
-      if (!sc.children.length) addStrategis("");
 
       masterData[selectedBidang].forEach((skuo, idx) => {
+        let existingData = null;
+        if (hist && hist.skuoData) {
+           let s = hist.skuoData.find(x => x.namaSkuo === skuo);
+           if (s && s.parsed && (s.parsed.jumlahProgram > 0 || s.parsed.jumlahKegiatan > 0)) existingData = s;
+        }
+
         const card = document.createElement('div');
-        card.className = "p-6 bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition";
+        card.className = "p-6 bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition relative";
+        
+        let fileUploadEl = `<input type="file" accept="application/pdf" class="skuo-file block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition cursor-pointer">`;
+        
+        let savedBanner = "";
+        if(existingData) {
+           savedBanner = `
+             <div class="existing-banner flex items-center justify-between mb-4 p-3 bg-green-50 border border-green-200 rounded-xl">
+               <div class="flex items-center gap-2">
+                 <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                 <span class="text-sm font-bold text-green-700">File Tersimpan (${existingData.parsed.jumlahProgram} Prog.)</span>
+               </div>
+               <button type="button" onclick="this.parentElement.style.display='none'; this.parentElement.nextElementSibling.value='';" class="text-xs font-bold bg-white text-red-500 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 transition">Ganti/Hapus</button>
+             </div>
+           `;
+        }
+
         card.innerHTML = `
           <div class="flex items-center gap-4 mb-4 border-b border-slate-100 pb-4">
             <div class="bg-blue-100 text-blue-700 font-black rounded-full w-8 h-8 flex items-center justify-center shrink-0 text-sm">${idx + 1}</div>
-            <h4 class="font-bold text-slate-800 text-lg">${skuo}</h4>
+            <h4 class="font-bold text-slate-800 text-lg pr-4">${skuo}</h4>
             <input type="hidden" class="skuo-name" value="${skuo}">
+            <input type="hidden" class="existing-parsed" value="${existingData ? encodeURIComponent(JSON.stringify(existingData.parsed)) : ''}">
           </div>
-          <input type="file" accept="application/pdf" class="skuo-file block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition cursor-pointer">
+          ${savedBanner}
+          <div class="file-container">${fileUploadEl}</div>
         `;
         c.appendChild(card);
       });
@@ -375,27 +371,37 @@
       document.getElementById("btnSubmit").style.display = "none";
       
       try {
-        let programStrategis = [];
-        document.querySelectorAll(".input-strategis").forEach(i => { if(i.value.trim()) programStrategis.push(i.value.trim()); });
-        if(!programStrategis.length) programStrategis.push("-");
-
-        const rekapKegiatan = {
-          event: document.getElementById("rekapEvent").value || "0",
-          rapat: document.getElementById("rekapRapat").value || "0",
-          lainnya: document.getElementById("rekapLainnya").value || "0"
-        };
+        // Hardcode array dan parameter yang disembunyikan agar log/sheet tidak terganggu
+        let programStrategis = ["-"];
+        const rekapKegiatan = { event: 0, rapat: 0, lainnya: 0 };
 
         let dataSkuo = []; let uploadedFilesCount = 0;
         const skuoCards = document.querySelectorAll("#skuoContainer > div");
         
         for (let card of skuoCards) {
           let fileInput = card.querySelector(".skuo-file");
-          if(fileInput.files[0]) uploadedFilesCount++;
-          let base64 = await toBase64(fileInput.files[0]);
-          dataSkuo.push({ namaSkuo: card.querySelector(".skuo-name").value, fileName: fileInput.files[0] ? fileInput.files[0].name : "", fileBase64: base64 });
+          let existingInput = card.querySelector(".existing-parsed").value;
+          let banner = card.querySelector(".existing-banner");
+          
+          let base64 = "";
+          let existingParsedData = null;
+
+          if (fileInput && fileInput.files[0]) {
+             uploadedFilesCount++;
+             base64 = await toBase64(fileInput.files[0]);
+          } else if (banner && banner.style.display !== 'none' && existingInput) {
+             existingParsedData = JSON.parse(decodeURIComponent(existingInput));
+          }
+
+          dataSkuo.push({ 
+            namaSkuo: card.querySelector(".skuo-name").value, 
+            fileName: (fileInput && fileInput.files[0]) ? fileInput.files[0].name : "", 
+            fileBase64: base64,
+            existingParsedData: existingParsedData 
+          });
         }
         
-        startProgress(uploadedFilesCount);
+        startProgress(uploadedFilesCount || 1);
 
         const payload = { namaBidang: selectedBidang, programStrategis, rekapKegiatan, dataSkuo };
         const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" }});
@@ -433,12 +439,6 @@
         document.getElementById("adPend").innerText = fmtRp(data.rekap.pendapatan); 
         document.getElementById("adBel").innerText = fmtRp(data.rekap.belanja);
         
-        // Render Baris 2
-        document.getElementById("adEvent").innerText = data.rekap.event;
-        document.getElementById("adRapat").innerText = data.rekap.rapat;
-        document.getElementById("adLainnya").innerText = data.rekap.lainnya;
-        document.getElementById("adStrategis").innerText = data.rekap.strategis;
-        
         // Render Baris 3 (Persentase File)
         let totalBidang = data.rekap.totalBidangMaster;
         let countUpload = data.riwayat.filter(r => r.isUpload).length;
@@ -460,10 +460,6 @@
               <td class="px-5 py-4 font-bold text-slate-800">${r.bidang}</td>
               <td class="px-3 py-4 text-center font-bold text-blue-600">${r.program}</td>
               <td class="px-3 py-4 text-center font-bold text-indigo-600">${r.kegiatan}</td>
-              <td class="px-3 py-4 text-center font-semibold text-slate-600">${r.event}</td>
-              <td class="px-3 py-4 text-center font-semibold text-slate-600">${r.rapat}</td>
-              <td class="px-3 py-4 text-center font-semibold text-slate-600">${r.lainnya}</td>
-              <td class="px-3 py-4 text-center font-bold text-slate-700">${r.strategis}</td>
               <td class="px-5 py-4 text-right font-bold text-emerald-600">${fmtRp(r.pendapatan)}</td>
               <td class="px-5 py-4 text-right font-bold text-rose-600">${fmtRp(r.belanja)}</td>
               <td class="px-5 py-4 flex justify-center gap-3">
@@ -473,7 +469,7 @@
             </tr>
           `;
         });
-      } catch (e) { tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 font-bold text-red-500">Gagal terhubung ke Server</td></tr>`; }
+      } catch (e) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 font-bold text-red-500">Gagal terhubung ke Server</td></tr>`; }
     }
     
     function closeAdmin() { document.getElementById("adminView").classList.add("hidden"); document.getElementById("appView").classList.remove("hidden"); }
