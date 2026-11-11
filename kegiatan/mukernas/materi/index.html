@@ -84,8 +84,6 @@
 
       <div id="dynamicForm" class="hidden space-y-10 animate-fade-in">
         
-        <!-- BAGIAN REKAP MANUAL & STRATEGIS DISEMBUNYIKAN SEPERTI INSTRUKSI -->
-
         <div class="mt-4">
           <h3 class="font-bold text-2xl text-slate-800 mb-1 ml-2">Daftar SKUO & Data RPKA</h3>
           <p class="text-sm text-slate-500 font-medium mb-5 ml-2">*File PDF opsional. Data yang sudah pernah diunggah akan tersimpan otomatis.</p>
@@ -148,7 +146,7 @@
     </div>
   </div>
 
-  <!-- ================= ADMIN DASHBOARD (LEBAR 95%) ================= -->
+  <!-- ================= ADMIN DASHBOARD ================= -->
   <div id="adminView" class="hidden w-full max-w-[95%] bg-white/95 backdrop-blur-3xl rounded-[2rem] p-6 md:p-10 shadow-2xl min-h-[95vh] border border-white mt-4 animate-fade-in mx-auto">
     <div class="flex justify-between items-center mb-10 border-b border-slate-200 pb-6">
       <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 flex items-center gap-4">
@@ -157,7 +155,6 @@
       <button onclick="closeAdmin()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl text-sm font-bold transition shadow-sm">✕ Tutup</button>
     </div>
     
-    <!-- BARIS 1: Rekap Utama -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-2xl border border-blue-200 shadow-sm relative overflow-hidden">
         <div class="text-blue-600 text-xs font-bold uppercase tracking-widest mb-1">Total Program</div>
@@ -176,8 +173,6 @@
         <div id="adBel" class="text-xl font-black text-slate-800 mt-1">Rp 0</div>
       </div>
     </div>
-    
-    <!-- BARIS 2 & BARIS 3 (Dihapus/Disembunyikan Sesuai Instruksi) -->
     
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 mt-6">
       <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
@@ -217,7 +212,6 @@
     </div>
   </div>
 
-  <!-- FOOTER & MODAL WADAH DIGITAL -->
   <footer class="absolute bottom-0 w-full text-center py-4 text-sm text-slate-500 font-medium">
     2026 | <button onclick="openWadahDigital()" class="font-bold text-blue-600 hover:text-blue-800 underline transition">Wadah Digital</button>
   </footer>
@@ -371,7 +365,6 @@
       document.getElementById("btnSubmit").style.display = "none";
       
       try {
-        // Hardcode array dan parameter yang disembunyikan agar log/sheet tidak terganggu
         let programStrategis = ["-"];
         const rekapKegiatan = { event: 0, rapat: 0, lainnya: 0 };
 
@@ -433,13 +426,11 @@
       try {
         const res = await fetch(API_URL + "?action=get_admin"); const data = await res.json();
         
-        // Render Baris 1
         document.getElementById("adProg").innerText = data.rekap.program; 
         document.getElementById("adKeg").innerText = data.rekap.kegiatan;
         document.getElementById("adPend").innerText = fmtRp(data.rekap.pendapatan); 
         document.getElementById("adBel").innerText = fmtRp(data.rekap.belanja);
         
-        // Render Baris 3 (Persentase File)
         let totalBidang = data.rekap.totalBidangMaster;
         let countUpload = data.riwayat.filter(r => r.isUpload).length;
         let countKosong = totalBidang - countUpload;
