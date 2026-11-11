@@ -64,14 +64,12 @@
       
       <div class="relative mb-10 z-50">
         <label class="block text-sm font-bold text-slate-700 mb-2 ml-2 uppercase tracking-wider">Pilih Departemen / Bidang</label>
-        <input type="text" id="searchInput" class="input-premium font-semibold text-blue-900 bg-slate-100 cursor-not-allowed" placeholder="⏳ Memuat data dari server..." autocomplete="off" onclick="toggleDropdown()" oninput="filterDropdown()" disabled>
+        <input type="text" id="searchInput" class="input-premium font-semibold text-blue-900" placeholder="🔍 Cari / Pilih Bidang..." autocomplete="off" onclick="toggleDropdown()" oninput="filterDropdown()">
         <div id="dropdownList" class="hidden absolute w-full mt-3 bg-white/95 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-2xl max-h-64 overflow-y-auto dropdown-scroll z-50"></div>
       </div>
 
       <div id="dynamicForm" class="hidden space-y-10 animate-fade-in">
-        
-        <!-- ================= BAGIAN YANG DISEMBUNYIKAN (KATEGORI KEGIATAN) ================= -->
-        <div class="hidden p-8 bg-white/60 rounded-[1.5rem] border border-white shadow-sm">
+        <div class="p-8 bg-white/60 rounded-[1.5rem] border border-white shadow-sm">
           <h3 class="font-bold text-slate-800 mb-5 flex items-center text-lg">📊 Rekap Manual Kategori Kegiatan</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div><label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Total Event</label><input type="number" id="rekapEvent" class="input-premium" placeholder="0"></div>
@@ -80,8 +78,7 @@
           </div>
         </div>
 
-        <!-- ================= BAGIAN YANG DISEMBUNYIKAN (PROGRAM STRATEGIS) ================= -->
-        <div class="hidden p-8 bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-[1.5rem] border border-blue-100 shadow-sm">
+        <div class="p-8 bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-[1.5rem] border border-blue-100 shadow-sm">
           <div class="flex justify-between items-center mb-5">
             <h3 class="font-bold text-slate-800 text-lg">🎯 Program Strategis Bidang</h3>
             <button onclick="addStrategis('')" class="text-sm font-bold text-blue-600 bg-blue-100 px-5 py-2 rounded-full hover:bg-blue-200 shadow-sm transition">+ Tambah</button>
@@ -180,8 +177,8 @@
       </div>
     </div>
     
-    <!-- ================= BAGIAN YANG DISEMBUNYIKAN (BARIS 2 ADMIN: Rekap Event & Strategis) ================= -->
-    <div class="hidden grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <!-- BARIS 2: Rekap Jenis Kegiatan & Program Strategis -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
         <div class="text-slate-500 text-xs font-bold uppercase tracking-widest">Total Event</div>
         <div id="adEvent" class="text-xl font-bold text-slate-700">0</div>
@@ -229,7 +226,10 @@
             <th class="px-5 py-4">Entitas Bidang</th>
             <th class="px-3 py-4 text-center">Prog.</th>
             <th class="px-3 py-4 text-center">Keg.</th>
-            <!-- Kolom event, rapat, lainnya, dan strategis disembunyikan dari tabel -->
+            <th class="px-3 py-4 text-center">Event</th>
+            <th class="px-3 py-4 text-center">Rapat</th>
+            <th class="px-3 py-4 text-center">Lainnya</th>
+            <th class="px-3 py-4 text-center">Prog. Strategis</th>
             <th class="px-5 py-4 text-right">Pendapatan</th>
             <th class="px-5 py-4 text-right">Belanja</th>
             <th class="px-5 py-4 text-center">Aksi Output</th>
@@ -258,10 +258,8 @@
   </div>
 
   <script>
-    // GANTI LINK INI DENGAN LINK DEPLOY WEBAPP ANDA
     const API_URL = "https://script.google.com/macros/s/AKfycbxukoloqIK3a9-vsUey4HPmrUOUBXVFSAT5iXtrV5YuCrfc7Ck33vXh9sdzVdYS4mmSdg/exec"; 
     let masterData = {}; let autofillData = {}; let selectedBidang = ""; let progressInterval;
-    let globalExistingSkuo = {}; // Penyimpan data parsing di memory agar terhindar dari error HTML injection
 
     const fmtRp = (num) => "Rp " + parseInt(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
@@ -270,18 +268,8 @@
         const res = await fetch(API_URL);
         const json = await res.json();
         masterData = json.master; autofillData = json.autofill;
-        
-        const searchInput = document.getElementById("searchInput");
-        searchInput.disabled = false;
-        searchInput.classList.remove("bg-slate-100", "cursor-not-allowed");
-        searchInput.placeholder = "🔍 Cari / Pilih Bidang...";
-        searchInput.value = "";
-        
         renderDropdownList();
-      } catch (e) { 
-        console.error(e); 
-        document.getElementById("searchInput").placeholder = "❌ Gagal memuat server.";
-      }
+      } catch (e) { console.error(e); }
     };
 
     function renderDropdownList(filter = "") {
@@ -315,28 +303,16 @@
       c.appendChild(inp);
     }
 
-    function replaceFile(btn) {
-       const card = btn.closest('.skuo-card');
-       card.querySelector('.existing-area').classList.add('hidden');
-       card.querySelector('.upload-area').classList.remove('hidden');
-       card.querySelector('.is-deleted').value = "true";
-       card.querySelector('.skuo-file').value = ""; 
-    }
-
     function renderForm() {
       const c = document.getElementById("skuoContainer"); const sc = document.getElementById("strategisContainer");
       sc.innerHTML = ""; c.innerHTML = ""; document.getElementById("dynamicForm").classList.remove("hidden");
-      globalExistingSkuo = {};
 
       let hist = autofillData[selectedBidang];
-      let skuoFiles = hist && hist.skuoFiles ? hist.skuoFiles : {};
-
       if (hist) {
-        // Meskipun di form tidak tampil, datanya tetap ada (opsional di hide)
-        document.getElementById("rekapEvent").value = hist.rekapKegiatan ? hist.rekapKegiatan.event : "";
-        document.getElementById("rekapRapat").value = hist.rekapKegiatan ? hist.rekapKegiatan.rapat : "";
-        document.getElementById("rekapLainnya").value = hist.rekapKegiatan ? hist.rekapKegiatan.lainnya : "";
-        if(hist.programStrategis) hist.programStrategis.forEach(p => { if (p !== "-") addStrategis(p) });
+        document.getElementById("rekapEvent").value = hist.rekapKegiatan.event;
+        document.getElementById("rekapRapat").value = hist.rekapKegiatan.rapat;
+        document.getElementById("rekapLainnya").value = hist.rekapKegiatan.lainnya;
+        hist.programStrategis.forEach(p => { if (p !== "-") addStrategis(p) });
       } else {
         document.getElementById("rekapEvent").value = ""; document.getElementById("rekapRapat").value = ""; document.getElementById("rekapLainnya").value = "";
         addStrategis("");
@@ -344,42 +320,15 @@
       if (!sc.children.length) addStrategis("");
 
       masterData[selectedBidang].forEach((skuo, idx) => {
-        let existingData = skuoFiles[skuo];
-        let hasExisting = existingData && existingData.fileUrl && existingData.parsedData && existingData.parsedData.jumlahProgram !== undefined;
-        let existingUrl = hasExisting ? existingData.fileUrl : "";
-        
-        if (hasExisting) {
-            globalExistingSkuo[skuo] = existingData.parsedData;
-        }
-
         const card = document.createElement('div');
-        card.className = "p-6 bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition relative skuo-card";
+        card.className = "p-6 bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition";
         card.innerHTML = `
           <div class="flex items-center gap-4 mb-4 border-b border-slate-100 pb-4">
             <div class="bg-blue-100 text-blue-700 font-black rounded-full w-8 h-8 flex items-center justify-center shrink-0 text-sm">${idx + 1}</div>
             <h4 class="font-bold text-slate-800 text-lg">${skuo}</h4>
             <input type="hidden" class="skuo-name" value="${skuo}">
           </div>
-          
-          <div class="upload-area ${hasExisting ? 'hidden' : ''}">
-            <input type="file" accept="application/pdf" class="skuo-file block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition cursor-pointer">
-          </div>
-
-          <div class="existing-area ${hasExisting ? 'flex' : 'hidden'} items-center justify-between bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
-             <div class="flex items-center gap-3">
-                <svg class="w-8 h-8 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                <div>
-                   <div class="text-sm font-bold text-emerald-800">File RPKA Tersimpan</div>
-                   <a href="${existingUrl}" target="_blank" class="text-xs font-bold text-emerald-600 hover:underline">Lihat Dokumen ↗</a>
-                </div>
-             </div>
-             <div class="flex gap-2">
-                <button type="button" onclick="replaceFile(this)" class="text-xs bg-white border border-slate-200 px-4 py-2 rounded-xl font-bold text-slate-600 hover:bg-slate-50 shadow-sm transition">Ganti / Hapus</button>
-             </div>
-          </div>
-
-          <input type="hidden" class="existing-url" value="${existingUrl}">
-          <input type="hidden" class="is-deleted" value="false">
+          <input type="file" accept="application/pdf" class="skuo-file block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-full file:border-0 file:font-bold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition cursor-pointer">
         `;
         c.appendChild(card);
       });
@@ -424,35 +373,24 @@
       document.getElementById("btnSubmit").style.display = "none";
       
       try {
-        // Paksa nilai array dan object kosong karena disembunyikan
-        let programStrategis = ["-"];
-        const rekapKegiatan = { event: 0, rapat: 0, lainnya: 0 };
+        let programStrategis = [];
+        document.querySelectorAll(".input-strategis").forEach(i => { if(i.value.trim()) programStrategis.push(i.value.trim()); });
+        if(!programStrategis.length) programStrategis.push("-");
+
+        const rekapKegiatan = {
+          event: document.getElementById("rekapEvent").value || "0",
+          rapat: document.getElementById("rekapRapat").value || "0",
+          lainnya: document.getElementById("rekapLainnya").value || "0"
+        };
 
         let dataSkuo = []; let uploadedFilesCount = 0;
         const skuoCards = document.querySelectorAll("#skuoContainer > div");
         
         for (let card of skuoCards) {
           let fileInput = card.querySelector(".skuo-file");
-          let isDeleted = card.querySelector(".is-deleted").value === "true";
-          let existingUrl = card.querySelector(".existing-url").value;
-          let skuoName = card.querySelector(".skuo-name").value;
-
           if(fileInput.files[0]) uploadedFilesCount++;
           let base64 = await toBase64(fileInput.files[0]);
-          
-          let existingParsed = null;
-          if (!isDeleted && globalExistingSkuo[skuoName]) {
-             existingParsed = globalExistingSkuo[skuoName];
-          }
-
-          dataSkuo.push({ 
-             namaSkuo: skuoName, 
-             fileName: fileInput.files[0] ? fileInput.files[0].name : "", 
-             fileBase64: base64,
-             existingUrl: isDeleted ? "" : existingUrl,
-             existingParsed: isDeleted ? null : existingParsed,
-             isDeleted: isDeleted
-          });
+          dataSkuo.push({ namaSkuo: card.querySelector(".skuo-name").value, fileName: fileInput.files[0] ? fileInput.files[0].name : "", fileBase64: base64 });
         }
         
         startProgress(uploadedFilesCount);
@@ -483,8 +421,7 @@
 
     async function openAdmin() {
       document.getElementById("appView").classList.add("hidden"); document.getElementById("adminView").classList.remove("hidden");
-      // colspan disesuaikan jadi 7 karena 4 kolom dihapus dari view
-      document.getElementById("adminTableBody").innerHTML = `<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400">Menarik Data dari Server...</td></tr>`;
+      document.getElementById("adminTableBody").innerHTML = `<tr><td colspan="11" class="text-center py-10 font-bold text-slate-400">Menarik Data dari Server...</td></tr>`;
       try {
         const res = await fetch(API_URL + "?action=get_admin"); const data = await res.json();
         
@@ -493,6 +430,12 @@
         document.getElementById("adKeg").innerText = data.rekap.kegiatan;
         document.getElementById("adPend").innerText = fmtRp(data.rekap.pendapatan); 
         document.getElementById("adBel").innerText = fmtRp(data.rekap.belanja);
+        
+        // Render Baris 2
+        document.getElementById("adEvent").innerText = data.rekap.event;
+        document.getElementById("adRapat").innerText = data.rekap.rapat;
+        document.getElementById("adLainnya").innerText = data.rekap.lainnya;
+        document.getElementById("adStrategis").innerText = data.rekap.strategis;
         
         // Render Baris 3 (Persentase File)
         let totalBidang = data.rekap.totalBidangMaster;
@@ -507,17 +450,19 @@
         document.getElementById("adPersen").innerText = persentase + "%";
 
         const tbody = document.getElementById("adminTableBody"); tbody.innerHTML = "";
-        
-        if (data.riwayat.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 font-bold text-slate-400">Belum ada riwayat dokumen yang diproses.</td></tr>`;
-        } else {
-            data.riwayat.forEach(r => {
-              let indicatorColor = r.isUpload ? "border-l-4 border-green-500" : "border-l-4 border-red-400";
-              
-              // Kolom Event, Rapat, Lainnya, Program Strategis dihapus/disembunyikan dari tabel
-              tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 transition ${indicatorColor}">
-                  <td class="px-5 py-4 font-medium text-slate-500 text-xs">${r.tanggal}</td>
+        data.riwayat.forEach(r => {
+          let indicatorColor = r.isUpload ? "border-l-4 border-green-500" : "border-l-4 border-red-400";
+          tbody.innerHTML += `
+            <tr class="hover:bg-slate-50 transition ${indicatorColor}">
+              <td class="px-5 py-4 font-medium text-slate-500 text-xs">${r.tanggal}</td>
+              <td class="px-5 py-4 font-bold text-slate-800">${r.bidang}</td>
+              <td class="px-3 py-4 text-center font-bold text-blue-600">${r.program}</td>
+              <td class="px-3 py-4 text-center font-bold text-indigo-600">${r.kegiatan}</td>
+              <td class="px-3 py-4 text-center font-semibold text-slate-600">${r.event}</td>
+              <td class="px-3 py-4 text-center font-semibold text-slate-600">${r.rapat}</td>
+              <td class="px-3 py-4 text-center font-semibold text-slate-600">${r.lainnya}</td>
+              <td class="px-3 py-4 text-center font-bold text-slate-700">${r.strategis}</td>
+              <td class="px-5 py-4 text-right font-bold text-emerald-600">${fmtRp(r.pendapatan)}</td>
               <td class="px-5 py-4 text-right font-bold text-rose-600">${fmtRp(r.belanja)}</td>
               <td class="px-5 py-4 flex justify-center gap-3">
                 <a href="${r.urlPptx}" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-orange-100 text-orange-600 font-bold rounded-full hover:bg-orange-500 hover:text-white transition text-xs"><svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M21 14H3V4h18v10zM21 2H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h8v4H8v2h8v-2h-3v-4h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg> PPT</a>
@@ -526,7 +471,7 @@
             </tr>
           `;
         });
-      } catch (e) { tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 font-bold text-red-500">Gagal terhubung ke Server</td></tr>`; }
+      } catch (e) { tbody.innerHTML = `<tr><td colspan="11" class="text-center py-4 font-bold text-red-500">Gagal terhubung ke Server</td></tr>`; }
     }
     
     function closeAdmin() { document.getElementById("adminView").classList.add("hidden"); document.getElementById("appView").classList.remove("hidden"); }
