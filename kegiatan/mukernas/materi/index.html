@@ -64,7 +64,7 @@
       
       <div class="relative mb-10 z-50">
         <label class="block text-sm font-bold text-slate-700 mb-2 ml-2 uppercase tracking-wider">Pilih Departemen / Bidang</label>
-        <input type="text" id="searchInput" class="input-premium font-semibold text-blue-900" placeholder="🔍 Cari / Pilih Bidang..." autocomplete="off" onclick="toggleDropdown()" oninput="filterDropdown()">
+        <input type="text" id="searchInput" class="input-premium font-semibold text-blue-900 bg-slate-100 cursor-not-allowed" placeholder="⏳ Memuat data dari server..." autocomplete="off" onclick="toggleDropdown()" oninput="filterDropdown()" disabled>
         <div id="dropdownList" class="hidden absolute w-full mt-3 bg-white/95 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-2xl max-h-64 overflow-y-auto dropdown-scroll z-50"></div>
       </div>
 
@@ -261,6 +261,7 @@
     // GANTI LINK INI DENGAN LINK DEPLOY WEBAPP ANDA
     const API_URL = "https://script.google.com/macros/s/AKfycbxukoloqIK3a9-vsUey4HPmrUOUBXVFSAT5iXtrV5YuCrfc7Ck33vXh9sdzVdYS4mmSdg/exec"; 
     let masterData = {}; let autofillData = {}; let selectedBidang = ""; let progressInterval;
+    let globalExistingSkuo = {}; // Penyimpan data parsing di memory agar terhindar dari error HTML injection
 
     const fmtRp = (num) => "Rp " + parseInt(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
@@ -269,8 +270,18 @@
         const res = await fetch(API_URL);
         const json = await res.json();
         masterData = json.master; autofillData = json.autofill;
+        
+        const searchInput = document.getElementById("searchInput");
+        searchInput.disabled = false;
+        searchInput.classList.remove("bg-slate-100", "cursor-not-allowed");
+        searchInput.placeholder = "🔍 Cari / Pilih Bidang...";
+        searchInput.value = "";
+        
         renderDropdownList();
-      } catch (e) { console.error(e); }
+      } catch (e) { 
+        console.error(e); 
+        document.getElementById("searchInput").placeholder = "❌ Gagal memuat server.";
+      }
     };
 
     function renderDropdownList(filter = "") {
@@ -315,6 +326,7 @@
     function renderForm() {
       const c = document.getElementById("skuoContainer"); const sc = document.getElementById("strategisContainer");
       sc.innerHTML = ""; c.innerHTML = ""; document.getElementById("dynamicForm").classList.remove("hidden");
+      globalExistingSkuo = {};
 
       let hist = autofillData[selectedBidang];
       let skuoFiles = hist && hist.skuoFiles ? hist.skuoFiles : {};
@@ -335,7 +347,10 @@
         let existingData = skuoFiles[skuo];
         let hasExisting = existingData && existingData.fileUrl && existingData.parsedData && existingData.parsedData.jumlahProgram !== undefined;
         let existingUrl = hasExisting ? existingData.fileUrl : "";
-        let existingParsedStr = hasExisting ? JSON.stringify(existingData.parsedData).replace(/'/g, "&#39;") : "";
+        
+        if (hasExisting) {
+            globalExistingSkuo[skuo] = existingData.parsedData;
+        }
 
         const card = document.createElement('div');
         card.className = "p-6 bg-white rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition relative skuo-card";
@@ -364,7 +379,6 @@
           </div>
 
           <input type="hidden" class="existing-url" value="${existingUrl}">
-          <input type="hidden" class="existing-parsed" value='${existingParsedStr}'>
           <input type="hidden" class="is-deleted" value="false">
         `;
         c.appendChild(card);
@@ -421,18 +435,18 @@
           let fileInput = card.querySelector(".skuo-file");
           let isDeleted = card.querySelector(".is-deleted").value === "true";
           let existingUrl = card.querySelector(".existing-url").value;
-          let existingParsedStr = card.querySelector(".existing-parsed").value;
+          let skuoName = card.querySelector(".skuo-name").value;
 
           if(fileInput.files[0]) uploadedFilesCount++;
           let base64 = await toBase64(fileInput.files[0]);
           
           let existingParsed = null;
-          if (existingParsedStr && !isDeleted) {
-             try { existingParsed = JSON.parse(existingParsedStr); } catch(e){}
+          if (!isDeleted && globalExistingSkuo[skuoName]) {
+             existingParsed = globalExistingSkuo[skuoName];
           }
 
           dataSkuo.push({ 
-             namaSkuo: card.querySelector(".skuo-name").value, 
+             namaSkuo: skuoName, 
              fileName: fileInput.files[0] ? fileInput.files[0].name : "", 
              fileBase64: base64,
              existingUrl: isDeleted ? "" : existingUrl,
@@ -493,17 +507,17 @@
         document.getElementById("adPersen").innerText = persentase + "%";
 
         const tbody = document.getElementById("adminTableBody"); tbody.innerHTML = "";
-        data.riwayat.forEach(r => {
-          let indicatorColor = r.isUpload ? "border-l-4 border-green-500" : "border-l-4 border-red-400";
-          
-          // Kolom Event, Rapat, Lainnya, Program Strategis dihapus/disembunyikan dari tabel
-          tbody.innerHTML += `
-            <tr class="hover:bg-slate-50 transition ${indicatorColor}">
-              <td class="px-5 py-4 font-medium text-slate-500 text-xs">${r.tanggal}</td>
-              <td class="px-5 py-4 font-bold text-slate-800">${r.bidang}</td>
-              <td class="px-3 py-4 text-center font-bold text-blue-600">${r.program}</td>
-              <td class="px-3 py-4 text-center font-bold text-indigo-600">${r.kegiatan}</td>
-              <td class="px-5 py-4 text-right font-bold text-emerald-600">${fmtRp(r.pendapatan)}</td>
+        
+        if (data.riwayat.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 font-bold text-slate-400">Belum ada riwayat dokumen yang diproses.</td></tr>`;
+        } else {
+            data.riwayat.forEach(r => {
+              let indicatorColor = r.isUpload ? "border-l-4 border-green-500" : "border-l-4 border-red-400";
+              
+              // Kolom Event, Rapat, Lainnya, Program Strategis dihapus/disembunyikan dari tabel
+              tbody.innerHTML += `
+                <tr class="hover:bg-slate-50 transition ${indicatorColor}">
+                  <td class="px-5 py-4 font-medium text-slate-500 text-xs">${r.tanggal}</td>
               <td class="px-5 py-4 text-right font-bold text-rose-600">${fmtRp(r.belanja)}</td>
               <td class="px-5 py-4 flex justify-center gap-3">
                 <a href="${r.urlPptx}" target="_blank" class="flex items-center gap-1 px-3 py-1.5 bg-orange-100 text-orange-600 font-bold rounded-full hover:bg-orange-500 hover:text-white transition text-xs"><svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M21 14H3V4h18v10zM21 2H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h8v4H8v2h8v-2h-3v-4h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg> PPT</a>
